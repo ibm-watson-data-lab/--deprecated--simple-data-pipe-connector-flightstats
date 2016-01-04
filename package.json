@@ -1,0 +1,29 @@
+{
+  "name": "pipes-connector-flightstats",
+  "version": "0.1.0",
+  "description": "Connector for generating Training, Test and Blind data for Spark MLLib Flight predictor application",
+  "main": "./lib",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibm-cds-labs/pipes-connector-flightstats.git"
+  },
+  "pipes-connector-name": "flightstats",
+  "keywords": [
+    "pipes",
+    "dataworks",
+    "dashDb",
+    "Cloudant",
+    "Data Movement"
+  ],
+  "dependencies": {
+    "async": "^1.5.0",
+    "bluemix-helper-config": "^0.1.9",
+    "lodash": "^3.10.1",
+    "pipes-sdk": "^0.1.0",
+    "request": "^2.67.0"
+  },
+  "author": "david_taieb@us.ibm.com",
+  "license": "Apache-2.0",
+  "readmeFilename": "README.md"
+}
