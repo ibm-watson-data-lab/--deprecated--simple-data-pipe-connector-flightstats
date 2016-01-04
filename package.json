@@ -21,7 +21,9 @@
     "bluemix-helper-config": "^0.1.9",
     "lodash": "^3.10.1",
     "pipes-sdk": "^0.1.0",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "when": "~3.7.3",
+    "moment": "^2.10.3"
   },
   "author": "david_taieb@us.ibm.com",
   "license": "Apache-2.0",
