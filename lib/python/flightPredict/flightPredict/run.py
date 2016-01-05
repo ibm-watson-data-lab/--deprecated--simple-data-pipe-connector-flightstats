@@ -43,7 +43,7 @@ def getWeather(airportCode, dtString):
         ftime=datetime.fromtimestamp(f['fcst_valid'])
         if ftime.hour==dt.hour:
             weatherForecast=f
-    return weatherForecast
+    return (weatherForecast, doc['name'])
 
 mlModels=None
 def useModels(*models):
@@ -51,8 +51,10 @@ def useModels(*models):
     mlModels=models
     
 def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
-    depWeather=getWeather(depAirportCode, departureDT)
-    arrWeather=getWeather(arrAirportCode, arrivalDT)
+    depTuple = getWeather(depAirportCode, departureDT)
+    arrTuple = getWeather(arrAirportCode, arrivalDT)
+    depWeather=depTuple[0]
+    arrWeather=arrTuple[0]
 
     #create the features vector
     features=[]
@@ -61,7 +63,7 @@ def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
     for attr in attributes:
         features.append(arrWeather[attr])
 
-    html='<table width=100%><tr><th>Weather</th><th>Prediction</th><th>Weather</th></tr>'
+    html='<table width=100%><tr><th>'+depTuple[1]+'</th><th>Prediction</th><th>'+arrTuple[1]+'</th></tr>'
     html+='<tr><td>'+formatWeather(depWeather)+'</td>'
     html+='<td><ul>'
     for model in mlModels:
