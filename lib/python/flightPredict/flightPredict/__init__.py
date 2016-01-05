@@ -9,6 +9,7 @@ cloudantHost=None
 cloudantUserName=None
 cloudantPassword=None
 sqlContext=None
+weatherUrl=None
 def loadDataSet(dbName,sqlTable):
     if (sqlContext==None):
         raise Exception("sqlContext not set")
@@ -28,82 +29,31 @@ def loadDataSet(dbName,sqlTable):
     print("Successfully registered SQL table " + sqlTable);
     return cloudantdata
 
-def loadLabeledDataRDD(sqlTable):
-    df = sqlContext.sql("select \
-    	departureWeather.pressure_tend as pressure_tend_1 \
-    	,departureWeather.dewPt as dewPt_1 \
-    	,departureWeather.heat_index as heat_index_1 \
-    	,departureWeather.rh as rh_1 \
-    	,departureWeather.pressure as pressure_1 \
-    	,departureWeather.vis as vis_1 \
-    	,departureWeather.wc as wc_1 \
-    	,departureWeather.wdir as wdir_1 \
-	    ,departureWeather.wspd as wspd_1 \
-	    ,departureWeather.max_temp as max_temp_1 \
-	    ,departureWeather.min_temp as min_temp_1 \
-	    ,departureWeather.precip_total as precip_total_1 \
-	    ,departureWeather.precip_hrly as precip_hrly_1 \
-	    ,departureWeather.snow_hrly as snow_hrly_1 \
-	    ,departureWeather.feels_like as feels_like_1 \
-	    ,departureWeather.uv_index as uv_index_1 \
-	    ,classification\
-	    ,arrivalWeather.pressure_tend as pressure_tend_2 \
-	    ,arrivalWeather.dewPt as dewPt_2 \
-	    ,arrivalWeather.heat_index as heat_index_2 \
-	    ,arrivalWeather.rh as rh_2 \
-	    ,arrivalWeather.pressure as pressure_2 \
-	    ,arrivalWeather.vis as vis_2 \
-	    ,arrivalWeather.wc as wc_2 \
-	    ,arrivalWeather.wdir as wdir_2 \
-	    ,arrivalWeather.wspd as wspd_2 \
-	    ,arrivalWeather.max_temp as max_temp_2 \
-	    ,arrivalWeather.min_temp as min_temp_2 \
-	    ,arrivalWeather.precip_total as precip_total_2 \
-	    ,arrivalWeather.precip_hrly as precip_hrly_2 \
-	    ,arrivalWeather.snow_hrly as snow_hrly_2 \
-	    ,arrivalWeather.feels_like as feels_like_2 \
-	    ,arrivalWeather.uv_index as uv_index_2 \
-	    from " + sqlTable \
-    )
+attributes=['dewPt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
+def buildLabeledPoint(s):
+    features=[]
+    for attr in attributes:
+        features.append(getattr(s, attr + '_1'))
+    for attr in attributes:
+        features.append(getattr(s, attr + '_2'))
+    return LabeledPoint(s.classification,Vectors.dense(features))
 
-    datardd = df.map(lambda s: LabeledPoint(\
-        s.classification, \
-        Vectors.dense([\
-           s.pressure_tend_1,\
-           s.dewPt_1,\
-           s.heat_index_1,\
-           s.rh_1,\
-           s.pressure_1,\
-           s.vis_1,\
-           s.wc_1,\
-           s.wdir_1,\
-           s.wspd_1,\
-           s.max_temp_1,\
-           s.min_temp_1,\
-           s.precip_total_1,\
-           s.precip_hrly_1,\
-           s.snow_hrly_1,\
-           s.feels_like_1,\
-           s.uv_index_1,\
-           s.pressure_tend_2,\
-           s.dewPt_2,\
-           s.heat_index_2,\
-           s.rh_2,\
-           s.pressure_2,\
-           s.vis_2,\
-           s.wc_2,\
-           s.wdir_2,\
-           s.wspd_2,\
-           s.max_temp_2,\
-           s.min_temp_2,\
-           s.precip_total_2,\
-           s.precip_hrly_2,\
-           s.snow_hrly_2,\
-           s.feels_like_2,\
-           s.uv_index_2\
-        ])\
-     )\
-    )
+def loadLabeledDataRDD(sqlTable):
+    select = 'select '
+    comma=''
+    for attr in attributes:
+        select += comma + 'departureWeather.' + attr + ' as ' + attr + '_1'
+        comma=','
+
+    select += ',classification'
+    for attr in attributes:
+        select += comma + 'arrivalWeather.' + attr + ' as ' + attr + '_2'
+		
+    select += ' from ' + sqlTable
+	
+    df = sqlContext.sql(select)
+
+    datardd = df.map(lambda s: buildLabeledPoint(s))
     datardd.cache()
     return datardd
     
