@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: flightPredict
+Version: 0.2
+Summary: Python Library for SPark MLLIB Flight Predict sample application
+Home-page: https://github.com/ibm-cds-labs/pipes-connector-flightstats/raw/master/lib/python/flightPredict/dist/flightPredict-0.2.tar.gz
+Author: David Taieb
+Author-email: david_taieb@us.ibm.com
+License: Apache 2.0
+Description: UNKNOWN
+Platform: UNKNOWN
