@@ -43,7 +43,7 @@ def getWeather(airportCode, dtString):
         ftime=datetime.fromtimestamp(f['fcst_valid'])
         if ftime.hour==dt.hour:
             weatherForecast=f
-    return (weatherForecast, doc['name'])
+    return (weatherForecast, doc['name'],str(doc['latitude']),str(doc['longitude']))
 
 mlModels=None
 def useModels(*models):
@@ -72,5 +72,20 @@ def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
     html+='</ul></td>'
     html+='<td>'+formatWeather(arrWeather)+'</td>'
     html+='</tr></table>'
+    html+='<div id="map" style="height:300px"></div>'
+    
+    #display map
+    html+='<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfYX6GG1foO1l7TAPk2LQVV_nACb7T4Q&callback=renderMap" type="text/javascript"></script>'
+    html+='<script type="text/javascript">'
+    html+='function renderMap() {'
+    html+='var map = new google.maps.Map(document.getElementById("map"), {zoom: 4,center: new google.maps.LatLng(40, -100),mapTypeId: google.maps.MapTypeId.TERRAIN});'
+    html+='var depAirport = new google.maps.LatLng(' + depTuple[2] + ',' + depTuple[3] + ');'
+    html+='var arrAirport = new google.maps.LatLng(' + arrTuple[2] + ',' + arrTuple[3] + ');'
+    html+='var markerP1 = new google.maps.Marker({position: depAirport, map: map});'
+    html+='var markerP2 = new google.maps.Marker({position: arrAirport, map: map});'
+    html+='var flightPlanCoordinates = [depAirport,arrAirport];'
+    html+='var flightPath = new google.maps.Polyline({path: flightPlanCoordinates,strokeColor: "#0000FF",strokeOpacity: 1.0,strokeWeight: 2});'
+    html+='flightPath.setMap(map);}'
+    html+='</script>'
 
     display(HTML(html))
