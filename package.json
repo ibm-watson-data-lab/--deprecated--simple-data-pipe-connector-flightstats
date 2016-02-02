@@ -20,7 +20,7 @@
     "async": "^1.5.0",
     "bluemix-helper-config": "^0.1.9",
     "lodash": "^3.10.1",
-    "pipes-sdk": "^0.1.0",
+    "simple-data-pipe-sdk": "git://github.com/ibm-cds-labs/simple-data-pipe-sdk.git#sdp-ng",
     "request": "^2.67.0",
     "when": "~3.7.3",
     "moment": "^2.10.3"
