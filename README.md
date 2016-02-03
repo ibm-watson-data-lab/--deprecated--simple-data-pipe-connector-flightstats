@@ -9,7 +9,7 @@
 
 TBD
 
-##### Install the SugarCRM connector
+##### Install the flightstats.com connector
 
 Install the connector using [these instructions](https://github.com/ibm-cds-labs/pipes/wiki/Installing-a-Simple-Data-Pipe-Connector) into the Simple Data Pipe.  
 
