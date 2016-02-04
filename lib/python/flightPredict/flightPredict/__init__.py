@@ -30,21 +30,23 @@ def loadDataSet(dbName,sqlTable):
     return cloudantdata
 
 attributes=['dewPt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
-def buildLabeledPoint(s):
+def buildLabeledPoint(s, computeClassification):
     features=[]
     for attr in attributes:
         features.append(getattr(s, attr + '_1'))
     for attr in attributes:
         features.append(getattr(s, attr + '_2'))
-    return LabeledPoint(s.classification,Vectors.dense(features))
+    return LabeledPoint(computeClassification(s.deltaDeparture, s.classification),Vectors.dense(features))
 
-def loadLabeledDataRDD(sqlTable):
+def loadLabeledDataRDD(sqlTable, computeClassification):
+    if ( computeClassification == None ):
+        computeClassification = (lambda deltaDep, defaultClassification: defaultClassification)
     select = 'select '
     comma=''
     for attr in attributes:
         select += comma + 'departureWeather.' + attr + ' as ' + attr + '_1'
         comma=','
-
+    select += ',deltaDeparture'
     select += ',classification'
     for attr in attributes:
         select += comma + 'arrivalWeather.' + attr + ' as ' + attr + '_2'
@@ -53,12 +55,13 @@ def loadLabeledDataRDD(sqlTable):
 	
     df = sqlContext.sql(select)
 
-    datardd = df.map(lambda s: buildLabeledPoint(s))
+    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification))
     datardd.cache()
     return datardd
     
 def runMetrics(labeledDataRDD, *args):
     html='<table width=100%><tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th></tr>'
+    confusionHtml = '<p>Confusion Tables for each Model</p>'
     for model in args:
         label= model.__class__.__name__
         predictionAndLabels = model.predict(labeledDataRDD.map(lambda lp: lp.features))
@@ -67,7 +70,23 @@ def runMetrics(labeledDataRDD, *args):
         )
         html+='<tr><td>{0}</td><td>{1:.2f}%</td><td>{2:.2f}%</td><td>{3:.2f}%</td></tr>'\
             .format(label,metrics.weightedFMeasure(beta=1.0)*100, metrics.weightedPrecision*100,metrics.weightedRecall*100 )
+            
+        confusionMatrix = metrics.call("confusionMatrix")
+        confusionMatrixArray = confusionMatrix.toArray()
+        #labels = metrics.call("labels")
+        confusionHtml += "<p>" + label + "<p>"
+        confusionHtml += "<table>"
+        for row in confusionMatrixArray:
+            confusionHtml += "<tr>"
+            for cell in row:
+                confusionHtml+="<td>" + str(cell) + "</td>"
+            confusionHtml += "</tr>"
+        confusionHtml += "</table>"
+        
     html+='</table>'
+    
+    html+=confusionHtml
+    
     display(HTML(html))
     
 def makeList(l):
