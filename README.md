@@ -17,7 +17,7 @@ To load flightstats.com data you have to have a <a href="https://developer.fligh
 
 This connector requires the [Insights for Weather service](https://console.ng.bluemix.net/catalog/services/insights-for-weather/) in IBM Bluemix to be bound to the Simple Data Pipe application. 
 
-To provision and bind an Insights for Weather service instance in Bluemix run the follow commands [(Show me how)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix):
+Provision and bind an _Insights for Weather service_ instance using the Bluemix web console ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Bluemix-web-console)) or run the follow Cloud Foundry commands ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Cloud-Foundry-command-line-client)):
 
 ````
   $ cf create-service weatherinsights Free weather
