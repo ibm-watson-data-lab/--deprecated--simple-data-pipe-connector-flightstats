@@ -17,7 +17,7 @@ To load flightstats.com data you have to have a <a href="https://developer.fligh
 
 This connector requires the [Insights for Weather service](https://console.ng.bluemix.net/catalog/services/insights-for-weather/) in IBM Bluemix to be bound to the Simple Data Pipe application. 
 
-To provision and bind an Insights for Weather service instance in Bluemix run the follow commands:
+To provision and bind an Insights for Weather service instance in Bluemix run the follow commands [(Show me how)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix):
 
 ````
   $ cf create-service weatherinsights Free weather
@@ -25,7 +25,9 @@ To provision and bind an Insights for Weather service instance in Bluemix run th
   $ cf restage simple-data-pipe
 ````
 
-> Pro Tip: If you want to re-use an existing instance that is not named `weather`, create a [USER-DEFINED Environment Variable](https://www.ng.bluemix.net/docs/manageapps/depapps.html#ud_env) in the Simple Data Pipe application named __WEATHER__ and set its value to the name of the existing Insights for Weather service.
+
+
+> Pro Tip: If you want to re-use an existing instance that is not named `weather`, create a [USER-DEFINED Environment Variable](https://www.ng.bluemix.net/docs/manageapps/depapps.html#ud_env) in the Simple Data Pipe application named __WEATHER__ and set its value to the name of the existing Insights for Weather service. [(Show me how)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-create-a-user-defined-environment-variable-in-Bluemix)
 
 ##### Install the flightstats.com connector
 
