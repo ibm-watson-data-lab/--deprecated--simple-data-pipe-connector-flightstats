@@ -10,6 +10,7 @@ cloudantUserName=None
 cloudantPassword=None
 sqlContext=None
 weatherUrl=None
+displayConfusionTable=False
 def loadDataSet(dbName,sqlTable):
     if (sqlContext==None):
         raise Exception("sqlContext not set")
@@ -70,22 +71,24 @@ def runMetrics(labeledDataRDD, *args):
         )
         html+='<tr><td>{0}</td><td>{1:.2f}%</td><td>{2:.2f}%</td><td>{3:.2f}%</td></tr>'\
             .format(label,metrics.weightedFMeasure(beta=1.0)*100, metrics.weightedPrecision*100,metrics.weightedRecall*100 )
-            
-        confusionMatrix = metrics.call("confusionMatrix")
-        confusionMatrixArray = confusionMatrix.toArray()
-        #labels = metrics.call("labels")
-        confusionHtml += "<p>" + label + "<p>"
-        confusionHtml += "<table>"
-        for row in confusionMatrixArray:
-            confusionHtml += "<tr>"
-            for cell in row:
-                confusionHtml+="<td>" + str(cell) + "</td>"
-            confusionHtml += "</tr>"
-        confusionHtml += "</table>"
+
+        if ( displayConfusionTable ):
+            confusionMatrix = metrics.call("confusionMatrix")
+            confusionMatrixArray = confusionMatrix.toArray()
+            #labels = metrics.call("labels")
+            confusionHtml += "<p>" + label + "<p>"
+            confusionHtml += "<table>"
+            for row in confusionMatrixArray:
+                confusionHtml += "<tr>"
+                for cell in row:
+                    confusionHtml+="<td>" + str(cell) + "</td>"
+                confusionHtml += "</tr>"
+            confusionHtml += "</table>"
         
     html+='</table>'
     
-    html+=confusionHtml
+    if ( displayConfusionTable ):
+        html+=confusionHtml
     
     display(HTML(html))
     
