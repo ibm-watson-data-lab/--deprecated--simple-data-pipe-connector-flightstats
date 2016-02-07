@@ -39,7 +39,7 @@ def buildLabeledPoint(s, computeClassification):
         features.append(getattr(s, attr + '_2'))
     return LabeledPoint(computeClassification(s.deltaDeparture, s.classification),Vectors.dense(features))
 
-def loadLabeledDataRDD(sqlTable, computeClassification):
+def loadLabeledDataRDD(sqlTable, computeClassification=None):
     if ( computeClassification == None ):
         computeClassification = (lambda deltaDep, defaultClassification: defaultClassification)
     select = 'select '
