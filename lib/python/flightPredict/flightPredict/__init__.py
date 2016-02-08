@@ -31,13 +31,13 @@ def loadDataSet(dbName,sqlTable):
     return cloudantdata
 
 attributes=['dewPt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
-def buildLabeledPoint(s, computeClassification):
+def buildLabeledPoint(s, classification):
     features=[]
     for attr in attributes:
         features.append(getattr(s, attr + '_1'))
     for attr in attributes:
         features.append(getattr(s, attr + '_2'))
-    return LabeledPoint(computeClassification((s.deltaDeparture, s.classification)),Vectors.dense(features))
+    return LabeledPoint(classification,Vectors.dense(features))
 
 def loadLabeledDataRDD(sqlTable, computeClassification=None):
     if ( computeClassification == None ):
@@ -56,7 +56,7 @@ def loadLabeledDataRDD(sqlTable, computeClassification=None):
 	
     df = sqlContext.sql(select)
 
-    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification))
+    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification((s.deltaDeparture, s.classification))))
     datardd.cache()
     return datardd
     

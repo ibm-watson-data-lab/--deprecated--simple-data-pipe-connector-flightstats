@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='flightPredict',
-      version='0.2',
+      version='0.3',
       description='Python Library for SPark MLLIB Flight Predict sample application',
       url='git+https://github.com/ibm-cds-labs/pipes-connector-flightstats.git',
       author='David Taieb',
