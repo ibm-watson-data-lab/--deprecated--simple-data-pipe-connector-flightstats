@@ -31,7 +31,8 @@ def formatPrediction(prediction):
     
 def getWeather(airportCode, dtString):
     dt=parser.parse(dtString)
-    url=cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
+    schema="" if (cloudantHost.startswith("http")) else "https://"
+    url=schema + cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
     response = requests.get(url,auth=(cloudantUserName, cloudantPassword))
     doc = response.json()['rows'][0]['doc']
     url=weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
