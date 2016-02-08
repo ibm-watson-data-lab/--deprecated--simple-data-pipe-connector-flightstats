@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from datetime import timezone
+from dateutil import parser
 from IPython.display import display, HTML
 
 from flightPredict import cloudantHost, cloudantUserName, cloudantPassword, weatherUrl
@@ -30,8 +30,7 @@ def formatPrediction(prediction):
     return prediction
     
 def getWeather(airportCode, dtString):
-    dt=datetime.strptime(dtString, "%Y-%m-%d %H:%M%z")
-    dt=dt.astimezone(timezone.utc)
+    dt=parser.parse(dtString)
     url=cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
     response = requests.get(url,auth=(cloudantUserName, cloudantPassword))
     doc = response.json()['rows'][0]['doc']
