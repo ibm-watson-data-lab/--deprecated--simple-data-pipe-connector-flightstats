@@ -37,11 +37,11 @@ def buildLabeledPoint(s, computeClassification):
         features.append(getattr(s, attr + '_1'))
     for attr in attributes:
         features.append(getattr(s, attr + '_2'))
-    return LabeledPoint(computeClassification(s.deltaDeparture, s.classification),Vectors.dense(features))
+    return LabeledPoint(computeClassification((s.deltaDeparture, s.classification)),Vectors.dense(features))
 
 def loadLabeledDataRDD(sqlTable, computeClassification=None):
     if ( computeClassification == None ):
-        computeClassification = (lambda deltaDep, defaultClassification: defaultClassification)
+        computeClassification = (lambda x: x[1])
     select = 'select '
     comma=''
     for attr in attributes:
