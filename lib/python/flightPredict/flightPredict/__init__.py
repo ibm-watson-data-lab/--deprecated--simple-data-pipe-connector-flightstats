@@ -40,8 +40,6 @@ def buildLabeledPoint(s, classification):
     return LabeledPoint(classification,Vectors.dense(features))
 
 def loadLabeledDataRDD(sqlTable, computeClassification=None):
-    if ( computeClassification == None ):
-        computeClassification = (lambda x: x[1])
     select = 'select '
     comma=''
     for attr in attributes:
@@ -56,7 +54,7 @@ def loadLabeledDataRDD(sqlTable, computeClassification=None):
 	
     df = sqlContext.sql(select)
 
-    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification((s.deltaDeparture, s.classification))))
+    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification(s.deltaDeparture ) if computeClassification != None else s.classification))
     datardd.cache()
     return datardd
     

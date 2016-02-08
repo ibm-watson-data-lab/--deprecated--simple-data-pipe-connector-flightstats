@@ -29,3 +29,5 @@ node_modules
 lib/python/flightPredict/build
 
 lib/python/notebook/.ipynb_checkpoints
+
+lib/python/notebook/metastore_db
