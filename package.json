@@ -1,12 +1,12 @@
 {
-  "name": "pipes-connector-flightstats",
+  "name": "simple-data-pipe-connector-flightstats",
   "version": "0.1.0",
   "description": "Connector for generating Training, Test and Blind data for Spark MLLib Flight predictor application",
   "main": "./lib",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibm-cds-labs/pipes-connector-flightstats.git"
+    "url": "https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats.git"
   },
   "simple_data_pipe": {
                         "name": "flightstats",
