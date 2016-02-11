@@ -8,11 +8,13 @@
     "type": "git",
     "url": "https://github.com/ibm-cds-labs/pipes-connector-flightstats.git"
   },
-  "pipes-connector-name": "flightstats",
+  "simple_data_pipe": {
+                        "name": "flightstats",
+                        "service_dependencies": []
+  },
   "keywords": [
-    "pipes",
-    "dataworks",
-    "dashDb",
+    "Simple Data Pipe",
+    "Flighstats",
     "Cloudant",
     "Data Movement"
   ],
@@ -27,5 +29,8 @@
   },
   "author": "david_taieb@us.ibm.com",
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats/issues"
+  },
   "readmeFilename": "README.md"
 }
