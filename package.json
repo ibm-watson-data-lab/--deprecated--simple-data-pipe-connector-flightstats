@@ -10,7 +10,14 @@
   },
   "simple_data_pipe": {
                         "name": "flightstats",
-                        "service_dependencies": []
+                        "service_dependencies": [
+                                                  {
+                                                    "service_name"  : "weatherinsights",
+                                                    "service_plan"  : "Free",
+                                                    "instance_name" : "weather",
+                                                    "vcap_env_service_alias" : "WHEATHER"                               
+                                                  }
+                        ]
   },
   "keywords": [
     "Simple Data Pipe",
