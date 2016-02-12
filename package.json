@@ -15,7 +15,7 @@
                                                     "service_name"  : "weatherinsights",
                                                     "service_plan"  : "Free",
                                                     "instance_name" : "weather",
-                                                    "vcap_env_service_alias" : "WHEATHER"                               
+                                                    "vcap_env_service_alias" : "WEATHER"                               
                                                   }
                         ]
   },
