@@ -4,6 +4,8 @@
 
 This connector generates training, test and blind data for the flight predictor spark MLLib application. It uses the [flightstats API](https://developer.flightstats.com/api-docs/) to fetch flight departure information for selected US airports, combines it with local weather data and stores the data sets using the [Simple Data Pipe SDK](https://github.com/ibm-cds-labs/simple-data-pipe-sdk) in Cloudant. 
 
+Need to load data from other sources? Check out the [connector repository](https://developer.ibm.com/clouddataservices/simple-data-pipe-connectors/).
+
 ### Pre-requisites
 
 ##### General 
