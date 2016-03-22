@@ -30,16 +30,20 @@ def loadDataSet(dbName,sqlTable):
     print("Successfully registered SQL table " + sqlTable);
     return cloudantdata
 
-attributes=['dewPt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
-def buildLabeledPoint(s, classification):
+#attributes=['dewPt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
+attributes=['dewPt','rh','vis','wc', 'wspd','feels_like','uv_index']
+def buildLabeledPoint(s, classification, customFeatureHandler):
     features=[]
     for attr in attributes:
         features.append(getattr(s, attr + '_1'))
     for attr in attributes:
         features.append(getattr(s, attr + '_2'))
+    if(customFeatureHandler!=None):
+        for v in customFeatureHandler(s):
+            features.append(v)
     return LabeledPoint(classification,Vectors.dense(features))
 
-def loadLabeledDataRDD(sqlTable, computeClassification=None):
+def loadLabeledDataRDD(sqlTable, computeClassification=None, customFeatureHandler=None):
     select = 'select '
     comma=''
     for attr in attributes:
@@ -49,12 +53,14 @@ def loadLabeledDataRDD(sqlTable, computeClassification=None):
     select += ',classification'
     for attr in attributes:
         select += comma + 'arrivalWeather.' + attr + ' as ' + attr + '_2'
-		
+	
+    for attr in [] if customFeatureHandler==None else customFeatureHandler(None):
+        select += comma + attr
     select += ' from ' + sqlTable
 	
     df = sqlContext.sql(select)
 
-    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification(s.deltaDeparture ) if computeClassification != None else s.classification))
+    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification(s.deltaDeparture ) if computeClassification != None else s.classification, customFeatureHandler))
     datardd.cache()
     return datardd
     
