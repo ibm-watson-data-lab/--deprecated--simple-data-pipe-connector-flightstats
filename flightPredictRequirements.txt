@@ -1,1 +1,1 @@
-flightPredict --global-option="--user"
+--user
