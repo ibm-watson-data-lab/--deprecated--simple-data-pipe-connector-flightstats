@@ -26,6 +26,7 @@ def loadDataSet(dbName,sqlTable):
     .option("cloudant.password",cloudantPassword)\
     .load(dbName)
     
+    cloudantdata.cache()
     cloudantdata.registerTempTable(sqlTable)
     print("Successfully registered SQL table " + sqlTable);
     return cloudantdata
