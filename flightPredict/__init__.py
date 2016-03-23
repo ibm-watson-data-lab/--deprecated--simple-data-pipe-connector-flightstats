@@ -27,6 +27,7 @@ def loadDataSet(dbName,sqlTable):
     .load(dbName)
     
     cloudantdata.cache()
+    print("Successfully cached dataframe")
     cloudantdata.registerTempTable(sqlTable)
     print("Successfully registered SQL table " + sqlTable);
     return cloudantdata
