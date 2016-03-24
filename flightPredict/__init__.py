@@ -24,6 +24,7 @@ def loadDataSet(dbName,sqlTable):
     .option("cloudant.host",cloudantHost)\
     .option("cloudant.username",cloudantUserName)\
     .option("cloudant.password",cloudantPassword)\
+    .option("schemaSampleSize", "-1")\
     .load(dbName)
     
     cloudantdata.cache()
