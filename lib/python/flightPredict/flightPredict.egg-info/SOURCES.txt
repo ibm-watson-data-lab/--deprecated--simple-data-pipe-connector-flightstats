@@ -1,8 +1,0 @@
-setup.py
-flightPredict/__init__.py
-flightPredict/run.py
-flightPredict.egg-info/PKG-INFO
-flightPredict.egg-info/SOURCES.txt
-flightPredict.egg-info/dependency_links.txt
-flightPredict.egg-info/not-zip-safe
-flightPredict.egg-info/top_level.txt
