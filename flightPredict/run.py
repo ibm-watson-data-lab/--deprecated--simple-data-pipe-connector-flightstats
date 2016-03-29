@@ -3,16 +3,12 @@ from datetime import datetime
 from dateutil import parser
 from IPython.display import display, HTML
 
-from flightPredict import cloudantHost, cloudantUserName, cloudantPassword, weatherUrl
-
-attributes=['dewpt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
-attributesMsg = ['Dew Point', 'Relative Humidity', 'Prevailing Hourly visibility', 'Wind Chill', 'Wind direction',\
-                'Wind Speed','Feels Like Temperature', 'Hourly Maximum UV Index']
+from flightPredict import cloudantHost, cloudantUserName, cloudantPassword, weatherUrl,attributes, attributesMsg
     
 def formatWeather(weather):
     html = "<ul><li><b>Forecast:</b> " + weather['phrase_12char'] + '</li>'
     for attr,msg in zip(attributes, attributesMsg):
-        html+="<li><b>"+msg+":</b> "+ str(weather[attr])
+        html+="<li><b>"+msg+":</b> "+ str(weather[mapAttribute(attr)])
     html+="</ul>"
     return html
 
@@ -49,6 +45,11 @@ mlModels=None
 def useModels(*models):
     global mlModels
     mlModels=models
+
+def mapAttribute(attr):
+    if attr=="dewPt":
+        return "dewpt"
+    return attr
     
 def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
     depTuple = getWeather(depAirportCode, departureDT)
@@ -59,9 +60,9 @@ def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
     #create the features vector
     features=[]
     for attr in attributes:
-        features.append(depWeather[attr])
+        features.append(depWeather[mapAttribute(attr)])
     for attr in attributes:
-        features.append(arrWeather[attr])
+        features.append(arrWeather[mapAttribute(attr)])
 
     html='<table width=100%><tr><th>'+depTuple[1]+'</th><th>Prediction</th><th>'+arrTuple[1]+'</th></tr>'
     html+='<tr><td>'+formatWeather(depWeather)+'</td>'

@@ -33,8 +33,13 @@ def loadDataSet(dbName,sqlTable):
     print("Successfully registered SQL table " + sqlTable);
     return cloudantdata
 
-#attributes=['dewPt','rh','vis','wc','wdir','wspd','feels_like','uv_index']
-attributes=['dewPt','rh','vis','wc', 'wspd','feels_like','uv_index']
+attributes=['dewPt','rh','vis','wc',
+    #'wdir',
+    'wspd','feels_like','uv_index']
+attributesMsg = ['Dew Point', 'Relative Humidity', 'Prevailing Hourly visibility', 'Wind Chill', 
+     #'Wind direction',
+    'Wind Speed','Feels Like Temperature', 'Hourly Maximum UV Index']
+
 def buildLabeledPoint(s, classification, customFeatureHandler):
     features=[]
     for attr in attributes:
