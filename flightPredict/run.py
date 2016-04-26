@@ -1,13 +1,31 @@
+# -------------------------------------------------------------------------------
+# Copyright IBM Corp. 2016
+# 
+# Licensed under the Apache License, Version 2.0 (the 'License');
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an 'AS IS' BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# -------------------------------------------------------------------------------
+
 import requests
 from datetime import datetime
 from dateutil import parser
 from IPython.display import display, HTML
 
-from flightPredict import cloudantHost, cloudantUserName, cloudantPassword, weatherUrl,attributes, attributesMsg
-    
+import flightPredict as f
+
+mlModels=None
+        
 def formatWeather(weather):
     html = "<ul><li><b>Forecast:</b> " + weather['phrase_12char'] + '</li>'
-    for attr,msg in zip(attributes, attributesMsg):
+    for attr,msg in zip(f.attributes, f.attributesMsg):
         html+="<li><b>"+msg+":</b> "+ str(weather[mapAttribute(attr)])
     html+="</ul>"
     return html
@@ -26,12 +44,13 @@ def formatPrediction(prediction):
     return prediction
     
 def getWeather(airportCode, dtString):
+    import flightPredict as f
     dt=parser.parse(dtString)
-    schema="" if (cloudantHost.startswith("http")) else "https://"
-    url=schema + cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
-    response = requests.get(url,auth=(cloudantUserName, cloudantPassword))
+    schema="" if (f.cloudantHost.startswith("http")) else "https://"
+    url=schema + f.cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
+    response = requests.get(url,auth=(f.cloudantUserName, f.cloudantPassword))
     doc = response.json()['rows'][0]['doc']
-    url=weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
+    url=f.weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
     forecasts=requests.get(url, params=[('geocode',str(doc['latitude'])+','+str(doc['longitude'])),('units','m'),('language','en-US')]).json()['forecasts']
     #find the forecasts that is closest to dt.tm_hour
     weatherForecast=None
@@ -41,7 +60,6 @@ def getWeather(airportCode, dtString):
             weatherForecast=f
     return (weatherForecast, doc['name'],str(doc['latitude']),str(doc['longitude']))
 
-mlModels=None
 def useModels(*models):
     global mlModels
     mlModels=models
@@ -59,9 +77,9 @@ def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
 
     #create the features vector
     features=[]
-    for attr in attributes:
+    for attr in f.attributes:
         features.append(depWeather[mapAttribute(attr)])
-    for attr in attributes:
+    for attr in f.attributes:
         features.append(arrWeather[mapAttribute(attr)])
 
     html='<table width=100%><tr><th>'+depTuple[1]+'</th><th>Prediction</th><th>'+arrTuple[1]+'</th></tr>'
