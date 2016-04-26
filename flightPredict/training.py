@@ -21,7 +21,20 @@ from pyspark.mllib.evaluation import MulticlassMetrics
 from IPython.display import display, HTML
 import matplotlib.pyplot as plt
 
-import flightPredict as f
+#global variables
+#credentials
+cloudantHost=None
+cloudantUserName=None
+cloudantPassword=None
+sqlContext=None
+weatherUrl=None
+
+attributes=['dewPt','rh','vis','wc',
+    #'wdir',
+    'wspd','feels_like','uv_index']
+attributesMsg = ['Dew Point', 'Relative Humidity', 'Prevailing Hourly visibility', 'Wind Chill', 
+     #'Wind direction',
+    'Wind Speed','Feels Like Temperature', 'Hourly Maximum UV Index']
 
 #Function used to customize classification of data
 computeClassification=None
@@ -36,18 +49,18 @@ numClasses=5
 displayConfusionTable=False
 
 def loadDataSet(dbName,sqlTable):
-    if (f.sqlContext==None):
+    if (sqlContext==None):
         raise Exception("sqlContext not set")
-    if (f.cloudantHost==None):
+    if (cloudantHost==None):
         raise Exception("cloudantHost not set")
-    if (f.cloudantUserName==None):
+    if (cloudantUserName==None):
         raise Exception("cloudantUserName not set")
-    if (f.cloudantPassword==None):
+    if (cloudantPassword==None):
         raise Exception("cloudantPassword not set")
-    cloudantdata = f.sqlContext.read.format("com.cloudant.spark")\
-    .option("cloudant.host",f.cloudantHost)\
-    .option("cloudant.username",f.cloudantUserName)\
-    .option("cloudant.password",f.cloudantPassword)\
+    cloudantdata = sqlContext.read.format("com.cloudant.spark")\
+    .option("cloudant.host",cloudantHost)\
+    .option("cloudant.username",cloudantUserName)\
+    .option("cloudant.password",cloudantPassword)\
     .option("schemaSampleSize", "-1")\
     .load(dbName)
     
@@ -59,9 +72,9 @@ def loadDataSet(dbName,sqlTable):
 
 def buildLabeledPoint(s, classification, customFeatureHandler):
     features=[]
-    for attr in f.attributes:
+    for attr in attributes:
         features.append(getattr(s, attr + '_1'))
-    for attr in f.attributes:
+    for attr in attributes:
         features.append(getattr(s, attr + '_2'))
     if(customFeatureHandler!=None):
         for v in customFeatureHandler(s):
@@ -71,19 +84,19 @@ def buildLabeledPoint(s, classification, customFeatureHandler):
 def loadLabeledDataRDD(sqlTable):
     select = 'select '
     comma=''
-    for attr in f.attributes:
+    for attr in attributes:
         select += comma + 'departureWeather.' + attr + ' as ' + attr + '_1'
         comma=','
     select += ',deltaDeparture'
     select += ',classification'
-    for attr in f.attributes:
+    for attr in attributes:
         select += comma + 'arrivalWeather.' + attr + ' as ' + attr + '_2'
     
     for attr in [] if customFeatureHandler==None else customFeatureHandler(None):
         select += comma + attr
     select += ' from ' + sqlTable
     
-    df = f.sqlContext.sql(select)
+    df = sqlContext.sql(select)
 
     datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification(s.deltaDeparture ) if computeClassification != None else s.classification, customFeatureHandler))
     datardd.cache()

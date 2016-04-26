@@ -19,7 +19,7 @@ from datetime import datetime
 from dateutil import parser
 from IPython.display import display, HTML
 
-import flightPredict as f
+import training as f
 
 mlModels=None
         
@@ -44,7 +44,7 @@ def formatPrediction(prediction):
     return prediction
     
 def getWeather(airportCode, dtString):
-    import flightPredict as f
+    import training as f
     dt=parser.parse(dtString)
     schema="" if (f.cloudantHost.startswith("http")) else "https://"
     url=schema + f.cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'

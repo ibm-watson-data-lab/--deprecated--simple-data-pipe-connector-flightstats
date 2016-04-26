@@ -14,17 +14,3 @@
 # limitations under the License.
 # -------------------------------------------------------------------------------
 
-#global variable
-#credentials
-cloudantHost=None
-cloudantUserName=None
-cloudantPassword=None
-sqlContext=None
-weatherUrl=None
-
-attributes=['dewPt','rh','vis','wc',
-    #'wdir',
-    'wspd','feels_like','uv_index']
-attributesMsg = ['Dew Point', 'Relative Humidity', 'Prevailing Hourly visibility', 'Wind Chill', 
-     #'Wind direction',
-    'Wind Speed','Feels Like Temperature', 'Hourly Maximum UV Index']
