@@ -29,19 +29,6 @@ def formatWeather(weather):
         html+="<li><b>"+msg+":</b> "+ str(weather[mapAttribute(attr)])
     html+="</ul>"
     return html
-
-def formatPrediction(prediction):
-    if ( prediction==0 ):
-        return "Canceled"
-    elif (prediction==1 ):
-        return "On Time"
-    elif (prediction == 2 ):
-        return "Delayed less than 2 hours"
-    elif (prediction == 3 ):
-        return "Delayed between 2 and 4 hours"
-    elif (prediction == 4 ):
-        return "Delayed more than 4 hours"
-    return prediction
     
 def getWeather(airportCode, dtString):
     import training as f
@@ -70,6 +57,7 @@ def mapAttribute(attr):
     return attr
     
 def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
+    import training as f
     depTuple = getWeather(depAirportCode, departureDT)
     arrTuple = getWeather(arrAirportCode, arrivalDT)
     depWeather=depTuple[0]
@@ -81,13 +69,20 @@ def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
         features.append(depWeather[mapAttribute(attr)])
     for attr in f.attributes:
         features.append(arrWeather[mapAttribute(attr)])
+    
+    #Call training handler for custom features
+    s=type('dummy', (object,), {'departureTime':departureDT, 'arrivalTime':arrivalDT, 'arrivalAirportFsCode': arrAirportCode, 'departureAirportFsCode':depAirportCode,
+                                'departureWeather': depWeather, 'arrivalWeather': arrWeather})
+    customFeaturesForRunModel=f.getTrainingHandler().customTrainingFeatures(s) 
+    for value in customFeaturesForRunModel:
+        features.append( value )
 
     html='<table width=100%><tr><th>'+depTuple[1]+'</th><th>Prediction</th><th>'+arrTuple[1]+'</th></tr>'
     html+='<tr><td>'+formatWeather(depWeather)+'</td>'
     html+='<td><ul>'
     for model in mlModels:
         label= model.__class__.__name__
-        html+='<li>' + label + ': ' + formatPrediction(model.predict(features)) + '</li>'
+        html+='<li>' + label + ': ' + f.getTrainingHandler().getClassLabel(model.predict(features)) + '</li>'
     html+='</ul></td>'
     html+='<td>'+formatWeather(arrWeather)+'</td>'
     html+='</tr></table>'

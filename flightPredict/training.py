@@ -37,13 +37,7 @@ attributesMsg = ['Dew Point', 'Relative Humidity', 'Prevailing Hourly visibility
     'Wind Speed','Feels Like Temperature', 'Hourly Maximum UV Index']
 
 #Function used to customize classification of data
-computeClassification=None
-
-#Function used to customize how features are extracted from the training data
-customFeatureHandler=None
-
-#number of classes
-numClasses=5
+customTrainingHandler=None
 
 #Display Confusion Matrix as an HTML table when computing metrics
 displayConfusionTable=False
@@ -70,18 +64,54 @@ def loadDataSet(dbName,sqlTable):
     print("Successfully registered SQL table " + sqlTable);
     return cloudantdata
 
-def buildLabeledPoint(s, classification, customFeatureHandler):
+def buildLabeledPoint(s, classification, handler):
     features=[]
     for attr in attributes:
         features.append(getattr(s, attr + '_1'))
     for attr in attributes:
         features.append(getattr(s, attr + '_2'))
-    if(customFeatureHandler!=None):
-        for v in customFeatureHandler(s):
-            features.append(v)
+    customFeatures=handler.customTrainingFeatures(s)
+    for v in customFeatures:
+        features.append(v)
     return LabeledPoint(classification,Vectors.dense(features))
 
-def loadLabeledDataRDD(sqlTable):
+#default training handler class
+class defaultTrainingHandler:
+    def getClassLabel(self, value):
+        if ( int(value)==0 ):
+            return "Canceled"
+        elif (int(value)==1 ):
+            return "On Time"
+        elif (int(value) == 2 ):
+            return "Delayed less than 2 hours"
+        elif (int(value) == 3 ):
+            return "Delayed between 2 and 4 hours"
+        elif (int(value) == 4 ):
+            return "Delayed more than 4 hours"
+        return value
+        
+    def numClasses(self):
+        return 5
+    
+    def computeClassification(self, s):
+        return s.classification
+    
+    def customTrainingFeaturesNames(self ):
+        return []
+    
+    def customTrainingFeatures(self, s):
+        return []
+    
+def getTrainingHandler():
+    global customTrainingHandler
+    if ( customTrainingHandler == None ):
+        customTrainingHandler=defaultTrainingHandler()
+    return customTrainingHandler
+
+def getNumClasses():
+    return getTrainingHandler().numClasses()
+    
+def loadLabeledDataRDD(sqlTable):    
     select = 'select '
     comma=''
     for attr in attributes:
@@ -92,13 +122,14 @@ def loadLabeledDataRDD(sqlTable):
     for attr in attributes:
         select += comma + 'arrivalWeather.' + attr + ' as ' + attr + '_2'
     
-    for attr in [] if customFeatureHandler==None else customFeatureHandler(None):
+    for attr in getTrainingHandler().customTrainingFeaturesNames():
         select += comma + attr
     select += ' from ' + sqlTable
     
     df = sqlContext.sql(select)
 
-    datardd = df.map(lambda s: buildLabeledPoint(s, computeClassification(s.deltaDeparture ) if computeClassification != None else s.classification, customFeatureHandler))
+    handler=getTrainingHandler()
+    datardd = df.map(lambda s: buildLabeledPoint(s, handler.computeClassification(s), handler))
     datardd.cache()
     return datardd
     
@@ -115,15 +146,24 @@ def runMetrics(labeledDataRDD, *args):
             .format(label,metrics.weightedFMeasure(beta=1.0)*100, metrics.weightedPrecision*100,metrics.weightedRecall*100 )
 
         if ( displayConfusionTable ):
+            #get labels from RDD
+            handler=getTrainingHandler()
+            classLabels = labeledDataRDD.map(lambda t: t.label).distinct().map(lambda l: handler.getClassLabel(l)).collect()
             confusionMatrix = metrics.call("confusionMatrix")
             confusionMatrixArray = confusionMatrix.toArray()
             #labels = metrics.call("labels")
             confusionHtml += "<p>" + label + "<p>"
             confusionHtml += "<table>"
-            for row in confusionMatrixArray:
+            confusionHtml+="<tr><td></td>"
+            for classLabel in classLabels:
+                confusionHtml+="<td>" + str(classLabel) + "</td>"
+            confusionHtml+="</tr>"
+            
+            for i, row in enumerate(confusionMatrixArray):
                 confusionHtml += "<tr>"
-                for cell in row:
-                    confusionHtml+="<td>" + str(cell) + "</td>"
+                confusionHtml += "<td>" + classLabels[i] + "</td>"
+                for j, cell in enumerate(row):
+                    confusionHtml+="<td style='text-align:center'>" + ("<b>" if (i==j) else "") +  str(cell) + ("</b>" if (i==j) else "") + "</td>"
                 confusionHtml += "</tr>"
             confusionHtml += "</table>"
         
