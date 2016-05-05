@@ -71,8 +71,8 @@ def runModel(depAirportCode, departureDT, arrAirportCode, arrivalDT):
         features.append(arrWeather[mapAttribute(attr)])
     
     #Call training handler for custom features
-    s=type('dummy', (object,), {'departureTime':departureDT, 'arrivalTime':arrivalDT, 'arrivalAirportFsCode': arrAirportCode, 'departureAirportFsCode':depAirportCode,
-                                'departureWeather': depWeather, 'arrivalWeather': arrWeather})
+    s=type('dummy', (object,), {'departureTime':departureDT, 'arrivalTime':arrivalDT, 'arrivalAirportFsCode': arrAirportCode, 
+                    'departureAirportFsCode':depAirportCode,'departureWeather': depWeather, 'arrivalWeather': arrWeather})
     customFeaturesForRunModel=f.getTrainingHandler().customTrainingFeatures(s) 
     for value in customFeaturesForRunModel:
         features.append( value )

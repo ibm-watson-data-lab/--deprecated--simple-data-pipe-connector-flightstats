@@ -15,11 +15,17 @@
 # -------------------------------------------------------------------------------
 
 from pyspark.sql import SQLContext
+from pyspark.sql import Row
 from pyspark.mllib.regression import LabeledPoint
 from pyspark.mllib.linalg import Vectors
 from pyspark.mllib.evaluation import MulticlassMetrics
 from IPython.display import display, HTML
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import sys
+if sys.version >= '3':
+    from functools import reduce
 
 #global variables
 #credentials
@@ -176,16 +182,25 @@ def runMetrics(labeledDataRDD, *args):
     
 def makeList(l):
     return l if isinstance(l, list) else [l]
+
 def scatterPlotForFeatures(df, f1,f2,legend1,legend2):
-    darr = df.select(f1,"classification", f2)\
-        .map(lambda r: (r[1],(r[0],r[2])))\
+    f1=f1.split(".")
+    f2=f2.split(".")
+    handler=getTrainingHandler()
+    darr=df.map(lambda s: ( handler.computeClassification(s),(\
+        reduce(lambda x,y: getattr(x,y) if isinstance(x, Row) else getattr(getattr(s,x),y), f1) if len(f1)>1 else getattr(s,f1[0]),\
+        reduce(lambda x,y: getattr(x,y) if isinstance(x, Row) else getattr(getattr(s,x),y), f2) if len(f2)>1 else getattr(s,f2[0])\
+        )))\
         .reduceByKey(lambda x,y: makeList(x) + makeList(y))\
         .collect()
-    colors = ["yellow", "red", "black", "blue", "green"]
-    legends= ["Canceled", "On Time", "Delay < 2h", "2h<delay<4h", "delay>4h"]
+    numClasses=getTrainingHandler().numClasses()
+    citer=iter(cm.rainbow(np.linspace(0, 1, numClasses)))
+    colors = [next(citer) for i in range(0, numClasses)]
+    legends= [getTrainingHandler().getClassLabel(i) for i in range(0,numClasses)]
     sets=[]
     for t in darr:
-        sets.append((plt.scatter([x[0] for x in t[1]],[x[1] for x in t[1]], color=colors[t[0]],alpha=0.5),legends[t[0]]))
+        sets.append((plt.scatter([x[0] for x in t[1]],[x[1] for x in t[1]],
+                     color=colors[t[0]],alpha=0.5),legends[t[0]]))
 
     params = plt.gcf()
     plSize = params.get_size_inches()
@@ -196,6 +211,6 @@ def scatterPlotForFeatures(df, f1,f2,legend1,legend2):
                [x[1] for x in sets],
                scatterpoints=1,
                loc='lower left',
-               ncol=5,
+               ncol=numClasses,
                fontsize=12)
     plt.show()
