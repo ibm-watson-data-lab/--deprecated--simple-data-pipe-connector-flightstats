@@ -1,75 +1,64 @@
-<h1>
-  Connect to {{selectedConnector.label}}
-</h1>
+<section class="layout_section theme_light">
+    <h1 class="type_heading" id="toc_0">
+        <mark class="type_mark">Connect to {{selectedConnector.label}}</mark>
+    </h1>
+</section>
 
-<div ng-show="selectedPipe.tables && selectedPipe.tables.length > 0" class="alert alert-success">
-  <p>
-    <span class="glyphicon glyphicon-ok"></span> <strong>You're connected!</strong> If you want to change the data sets contents <a data-toggle="collapse" data-target="#connect-form">click here</a>.
-  </p>
-</div>
+<section class="layout_section">
+	<div ng-show="selectedPipe.tables && selectedPipe.tables.length > 0" class="alert alert-success">
+	  <p>
+	    <span class="glyphicon glyphicon-ok"></span> <strong>You're connected!</strong> If you want to change the data sets contents <a class="type_link" ng-click="toggle('connect-form')">click here</a>.
+	  </p>
+	</div>
 
-<div id="connect-form" ng-class="{collapse: selectedPipe.tables && selectedPipe.tables.length > 0}">
-  <section>
-    <div class="well well-lg">
-      This connector generates data for flights that have been completed in the last 24 hours<p>
-      The data is broken down into 3 sets: Training, Test and Blind<p>
-      Each set defines a set of departure airport codes from which the flight originate<p>
-      You can control which data sets get generated in the Table tab
-    </div>
-
-    <form name="pipeConnectionForm" class="form-horizontal" novalidate>
-      <div class="form-group">
-       	<label for="appId" class="control-label col-sm-3">FlightStats App ID</label>
-       	<div class="col-sm-9">
-       		<input type="text" class="form-control" name="amaURL" id="appId" required ng-model="selectedPipe.appId">
-       	</div>
-       	<label for="appKey" class="control-label col-sm-3">FlightStats App Key</label>
-       	<div class="col-sm-9">
-       		<input type="text" class="form-control" name="amaURL" id="appKey" required ng-model="selectedPipe.appKey">
-       	</div>
-      </div>
-      <div class="form-group">
-        <table class="table table-striped">
-        	<tr>
-	    		<th>Data Set</th>
-		    	<th>Airports</th> 
-			</tr>
-        	<tr ng-repeat="set in selectedPipe.tables | filter:{name:''}">
-        		<td>
-        			{{set.name}}
-        		</td>
-        		<td>
-        			<ul>
-        				<li ng-repeat="code in set.CLIENT_airportCodes">{{code}}</li>
-        			</ul>
-        		</td>
-        	</tr>
-		</table>
-      </div>
-      
-      <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-9">
-          <button class="btn btn-primary" data-toggle="modal" data-target="#WaitFlightStatsLoad" ng-click="savePipe({connect:true})" ng-disabled="pipeConnectionForm.$invalid">
-          	Connect to FlightStats
-          </button>
-        </div>
-      </div>
-    </form>
-  </section>
-</div>
-
-<div class="modal fade" id="WaitFlightStatsLoad" tabindex="-1" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">FlightStats Loading</h4>
-      </div>
-      <div class="modal-body">
-        Connecting to flightstats.com. Please wait...
-      </div>
-    </div>
-  </div>
-</div>
-
-<page-button-bar nextPageTab="{{selectedPipe.hasOwnProperty('tables') ? 'tables' : ''}}" skipButtonDisabled="{{!selectedPipe.hasOwnProperty('tables')}}"/>
+	<div id="connect-form" ng-class="{collapse: selectedPipe.tables && selectedPipe.tables.length > 0}">
+	    <p class="type_copy">
+	      This connector generates data for flights that have been completed in the last 24 hours<p>
+	      The data is broken down into 3 sets: Training, Test and Blind<p>
+	      Each set defines a set of departure airport codes from which the flight originate<p>
+	      You can control which data sets get generated in the Table tab
+	    </p>
+	
+	    <div class="form_container">
+		    <form name="pipeConnectionForm" class="form_standard" novalidate>
+	            <div class="form_field">
+		           <label for="appId" class="form_label">FlightStats App ID</label>
+	       		   <input type="text" class="input_text input_wide" name="appId" id="appId" required ng-model="selectedPipe.appId">
+	            </div>
+	            <div class="form_field">
+		       	   <label for="appKey" class="form_label">FlightStats App Key</label>
+		       	   <input type="text" class="input_text input_wide" name="appKey" id="appKey" required ng-model="selectedPipe.appKey">
+		       	</div>
+		       	
+		       	<div class="button_group">
+			        <table class="table table-striped">
+			        	<tr>
+				    		<th>Data Set</th>
+					    	<th>Airports</th> 
+						</tr>
+			        	<tr ng-repeat="set in selectedPipe.tables | filter:{name:''}">
+			        		<td>
+			        			{{set.name}}
+			        		</td>
+			        		<td>
+			        			<ul>
+			        				<li ng-repeat="code in set.CLIENT_airportCodes">{{code}}</li>
+			        			</ul>
+			        		</td>
+			        	</tr>
+					</table>
+		       </div>
+		      
+		      <div class="button_group">
+	                <button type="button" class="button_primary" ng-class="{'disabled':connectingpipe || pipeConnectionForm.$invalid}"
+	                       ng-click="connectingpipe = true;savePipe({connect:true})" 
+	                       ng-disabled="connectingpipe || pipeConnectionForm.$invalid">
+		          	    Connect to FlightStats
+	          	    </button>
+	          	    <p class="type_copy" ng-if="connectingpipe">Connecting to flightstats.com. Please wait...</p>
+		      </div>
+		    </form>
+	    </div>
+	</div>
+    <page-button-bar nextPageTab="{{selectedPipe.hasOwnProperty('tables') ? 'tables' : ''}}" skipButtonDisabled="{{!selectedPipe.hasOwnProperty('tables')}}"/>
+</section>
