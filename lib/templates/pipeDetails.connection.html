@@ -13,9 +13,9 @@
 
 	<div id="connect-form" ng-class="{collapse: selectedPipe.tables && selectedPipe.tables.length > 0}">
 	    <p class="type_copy">
-	      This connector generates data for flights that have been completed in the last 24 hours<p>
-	      The data is broken down into 3 sets: Training, Test and Blind<p>
-	      Each set defines a set of departure airport codes from which the flight originate<p>
+	      This connector generates data for flights that have been completed in the last 24 hours<br/>
+	      The data is broken down into 3 sets: Training, Test and Blind<br/>
+	      Each set defines a set of departure airport codes from which the flight originate<br/>
 	      You can control which data sets get generated in the Table tab
 	    </p>
 	
@@ -30,8 +30,8 @@
 		       	   <input type="text" class="input_text input_wide" name="appKey" id="appKey" required ng-model="selectedPipe.appKey">
 		       	</div>
 		       	
-		       	<div class="button_group">
-			        <table class="table table-striped">
+		       	<div class="table_container">
+			        <table class="table_basic">
 			        	<tr>
 				    		<th>Data Set</th>
 					    	<th>Airports</th> 
@@ -41,9 +41,7 @@
 			        			{{set.name}}
 			        		</td>
 			        		<td>
-			        			<ul>
-			        				<li ng-repeat="code in set.CLIENT_airportCodes">{{code}}</li>
-			        			</ul>
+			        			<span ng-repeat="code in set.CLIENT_airportCodes">{{code}}{{$last?'':','}}</span>
 			        		</td>
 			        	</tr>
 					</table>
