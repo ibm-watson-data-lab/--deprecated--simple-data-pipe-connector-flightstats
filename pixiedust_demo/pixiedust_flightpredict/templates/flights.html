@@ -1,0 +1,287 @@
+{%extends "basedialog.html"%}
+{%block title %}Predict Flight Delays with Apache Spark MLLib, FlightStats, and Weather Data{%endblock%}
+
+{%block body%}
+  <style>
+    .chart-wrapper {
+      background: #fff;
+      margin: 10px;
+      padding: 10px;
+    }
+    .chart-wrapper .chart-title {
+      border-bottom: 1px solid #152935;
+      color: #152935;
+      font-size: 1.25em;
+      font-weight: 400;
+      padding: 10px 0px 5px;
+    }
+    .chart-wrapper .chart-stage {
+      overflow: hidden;
+      position: relative;
+      margin: 10px 0px 5px;
+    }
+    .pixiedust-spinner {
+      color: #fff;
+      font-size: 24px;
+      margin-top: 2px;
+    }
+    .pixiedust .modal-header {
+      background-color: #152935;
+      color: #ffffff;
+    }
+    .pixiedust .modal-body {
+      padding: 10px;
+    }
+    .pixiedust .modal-dialog .btn.focus,
+    .pixiedust .modal-dialog .btn:focus {
+      outline: none;
+    }
+    .pixiedust .modal-dialog .btn-cancel,
+    .pixiedust .modal-dialog .btn-ok {
+      display: none;
+    }
+    .pixiedust .modal-dialog .btn-back {
+      background-color: #fff;
+      border: 2px solid #082632;
+      color: #082632;
+      font-weight: 500;
+      padding: 0.625em 1.375em;
+    }
+    .pixiedust .modal-dialog .btn-back:hover {
+      background-color: #082632;
+      border-color: #082632;
+      color: #fff;
+    }
+    .pixiedust .modal-dialog .btn-next,
+    .pixiedust .modal-dialog .btn-ok {
+      background-color: #a6266e;
+      border: 2px solid #a6266e;
+      color: #fff;
+      font-weight: 500;
+      padding: 0.625em 1.375em;
+    }
+    .pixiedust .modal-dialog .btn-next:hover,
+    .pixiedust .modal-dialog .btn-ok:hover {
+      background-color: #fff;
+      border: 2px solid #a6266e;
+      color: #a6266e;
+    }
+    .pixiedust .modal-footer {
+      border-top: 0px;
+      padding: 20px 30px;
+    }
+    .pixiedust .modal-dialog svg text {
+      fill: black;
+      font-size: 11px;
+      font-weight: normal;
+    }
+    .modal-dialog-flightpredictform {
+      width: 65% !important;
+    }
+    .modal-dialog-flightpredictdata {
+      width: 95% !important;
+    }
+    .modal-header .note {
+      color: lightgray;
+      display: inline-block;
+      float: right;
+      font-size: 12px;
+      padding: 4px 10px;
+    }
+    .pixiedust-formfield {
+      padding: 10px;
+    }
+    .pixiedust-formfield label {
+      font-size: 18px;
+    }
+    .pixiedust-formfield input {
+      border: 1px solid #1d3649;
+      font-size: 20px;
+      font-weight: 300;
+      margin: 0 0 20px;
+      padding: 5px 10px;
+    }
+    .pixiedust-formfield input:focus,
+    .pixiedust-formfield input.focus {
+      border-color: #a6266e;
+    }
+  </style>
+  <div class="tab-content container-fluid" >
+    <div class="tab-pane tab-pane-flightpredict row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="chart-wrapper">
+              <div class="chart-title">
+                Weather
+              </div>
+              <div class="chart-stage">
+                
+              </div>
+              <div class="chart-notes"> </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="chart-wrapper">
+              <div class="chart-title">
+                Flight
+              </div>
+              <div class="chart-stage">
+                
+              </div>
+              <div class="chart-notes"> </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="chart-wrapper">
+              <div class="chart-title">
+                Connecting Flight
+              </div>
+              <div class="chart-stage">
+                
+              </div>
+              <div class="chart-notes"> </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="chart-wrapper">
+              <div class="chart-title">
+                Map
+              </div>
+              <div class="chart-stage">
+                <div id="map" style="height:300px"></div>
+                <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfYX6GG1foO1l7TAPk2LQVV_nACb7T4Q&callback=renderMap" type="text/javascript"></script>
+                <script type="text/javascript">
+                  function renderMap() {
+                    var map = new google.maps.Map(document.getElementById("map"), {zoom: 4,center: new google.maps.LatLng(40, -100),mapTypeId: google.maps.MapTypeId.TERRAIN});
+                    //var depAirport = new google.maps.LatLng(' + depTuple[2] + ',' + depTuple[3] + ');
+                    //var arrAirport = new google.maps.LatLng(' + arrTuple[2] + ',' + arrTuple[3] + ');
+                    //var markerP1 = new google.maps.Marker({position: depAirport, map: map});
+                    //var markerP2 = new google.maps.Marker({position: arrAirport, map: map});
+                    //var flightPlanCoordinates = [depAirport,arrAirport];
+                    //var flightPath = new google.maps.Polyline({path: flightPlanCoordinates,strokeColor: "#0000FF",strokeOpacity: 1.0,strokeWeight: 2});
+                    //flightPath.setMap(map);
+                  }
+                </script>-->
+              </div>
+              <div class="chart-notes"> </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane tab-pane-form row active">
+      <div class="col-sm-3"> </div>
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Enter your flight information
+          </div>
+          <div class="chart-stage">
+            <div class="pixiedust-formfield">
+              <label for="flight-predict-date">Flight Date</label>
+              <input id="flight-predict-date" name="flight-predict-date" class="col-sm-12" type="date" placeholder="e.g., YYYY-MM-DD" required>
+            </div>
+            <div class="pixiedust-formfield">
+              <label for="flight-predict-flight">Flight Number</label>
+              <input id="flight-predict-flight" name="flight-predict-flight" class="col-sm-12" type="text" placeholder="e.g., VA0315" required>
+            </div>
+            <div class="pixiedust-formfield">
+              <label for="flight-predict-connection">Connecting Flight Number (optional)</label>
+              <input id="flight-predict-connection" name="flight-predict-connection" class="col-sm-12" type="text" placeholder="e.g., CV0811">
+            </div>
+          </div>
+          <div class="chart-notes"> </div>
+        </div>
+      </div>
+      <div class="col-sm-3"> </div>
+    </div>
+  </div>
+{%endblock%}
+
+{%block onCancel%}
+  $('#results{{prefix}}').html('<p class="text-center">Flight Predict has been cancelled.</p>');
+  $('#loading{{prefix}}').css('display','none');
+{%endblock%}
+
+{%block onOK%}
+  $('#results{{prefix}}').html('<p class="text-center">Thank you for using Flight Predict. Have a safe flight!</p>');
+  $('#loading{{prefix}}').css('display','none');
+{%endblock%}
+
+{%block onDialogShown%}
+  window.Pixiedust = window.Pixiedust || {};
+  window.Pixiedust.flightpredict = window.Pixiedust.flightpredict || {};
+  var pix = window.Pixiedust.flightpredict;
+
+  var tdiag = $(this).find('.modal-dialog')
+    .addClass('modal-dialog-flightpredictform');
+
+  var pixiedustSpinner = $('.pixiedust .modal-header button.close')
+    .html('<i class="fa fa-spinner fa-spin pixiedust-spinner"></i>')
+    .prop('disabled', true)
+    .css({display: 'none'});
+
+  var okBtn = $('.btn-ok', tdiag);
+  var cancelBtn = $('.btn-cancel', tdiag);
+  var backBtn = $('<button class="btn btn-sm btn-back">Back to Notebook</button>');
+  var nextBtn = $('<button class="btn btn-sm btn-next">Continue</button>');
+  okBtn.after(backBtn);
+  okBtn.after(nextBtn);
+
+  backBtn.click(function(event) {
+    event.preventDefault();
+    cancelBtn.click();
+  });
+
+  nextBtn.click(function(event) {
+    event.preventDefault();
+
+    $('.tab-pane-form').removeClass('active');
+    $('.tab-pane-flightpredict').addClass('active');
+    tdiag
+      .removeClass('modal-dialog-flightpredictform')
+      .addClass('modal-dialog-flightpredictdata');
+    nextBtn.css({'display': 'none'});
+    //okBtn.css({'display': 'inline'});
+  });
+
+
+  $('#flight-predict-date').change(function() {
+    if ($(this).val() && $('#flight-predict-flight').val()) {
+      nextBtn.prop('disabled', false);
+    }
+    else {
+      nextBtn.prop('disabled', true);
+    }
+  });
+
+  $('#flight-predict-flight').change(function() {
+    if ($(this).val() && $('#flight-predict-date').val()) {
+      nextBtn.prop('disabled', false);
+    }
+    else {
+      nextBtn.prop('disabled', true);
+    }
+  });
+
+   nextBtn.prop('disabled', true);
+
+  pixiedustSpinner.after('<a class="note" target="_blank" href="https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats">Fork me on GitHub</a>');
+{%endblock%}
+
+{%block onDialogHide%}
+  
+{%endblock%}
+
+{%block cellOuputHTML%}
+  <div id="loading{{prefix}}" style="display:none">
+    <div style="width:100px;height:60px;left:47%;position:relative">
+        <i class="fa fa-circle-o-notch fa-spin" style="font-size:48px"></i>
+    </div>
+    <div style="text-align:center">Generating the notebook cells for the demo. Please wait...</div>
+  </div>
+  <div id="results{{prefix}}"></div>
+{%endblock%}
