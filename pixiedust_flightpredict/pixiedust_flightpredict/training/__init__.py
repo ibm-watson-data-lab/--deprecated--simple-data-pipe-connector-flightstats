@@ -14,23 +14,6 @@
 # limitations under the License.
 # -------------------------------------------------------------------------------
 
-from pixiedust.display.display import *
-from pixiedust.display import *
-from .flightPredict import *
+import training
 
-class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
-
-  @addId
-  def getMenuInfo(self,entity):
-    if entity==self.__class__:
-      return [{"id": "flightpredict"}]
-    else:
-      return []
-
-  def newDisplayHandler(self,options,entity):
-    return PixieDustFlightPredict(options,entity)
-
-registerDisplayHandler(PixieDustFlightPredictPluginMeta())
-
-def flightPredict():
-  display(PixieDustFlightPredictPluginMeta)
+loadLabeledDataRDD=training.loadLabeledDataRDD

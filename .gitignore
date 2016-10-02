@@ -35,3 +35,4 @@ lib/python/notebook/metastore_db
 
 *.egg-info/
 *.pyc
+dist/
