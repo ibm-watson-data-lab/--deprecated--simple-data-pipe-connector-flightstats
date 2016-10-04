@@ -13,3 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------------
+from pixiedust.display.display import *
+
+class ConfigureTraining(Display):
+    def doRender(self, handlerId):
+        pass

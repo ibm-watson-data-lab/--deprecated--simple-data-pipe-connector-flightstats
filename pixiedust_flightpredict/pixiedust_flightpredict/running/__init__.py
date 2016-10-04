@@ -14,6 +14,5 @@
 # limitations under the License.
 # -------------------------------------------------------------------------------
 
-from training import *
-
-loadLabeledDataRDD=training.loadLabeledDataRDD
+def coucou():
+    print("david")

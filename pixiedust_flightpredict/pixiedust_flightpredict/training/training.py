@@ -102,7 +102,7 @@ def loadLabeledDataRDD(sqlTable):
         select += comma + attr
     select += ' from ' + sqlTable
     
-    df = sqlContext.sql(select)
+    df = get_ipython().user_ns.get("sqlContext").sql(select)
 
     handler=getTrainingHandler()
     datardd = df.map(lambda s: buildLabeledPoint(s, handler.computeClassification(s), handler))
@@ -149,38 +149,3 @@ def runMetrics(labeledDataRDD, *args):
         html+=confusionHtml
     
     display(HTML(html))
-    
-def makeList(l):
-    return l if isinstance(l, list) else [l]
-
-def scatterPlotForFeatures(df, f1,f2,legend1,legend2):
-    f1=f1.split(".")
-    f2=f2.split(".")
-    handler=getTrainingHandler()
-    darr=df.map(lambda s: ( handler.computeClassification(s),(\
-        reduce(lambda x,y: getattr(x,y) if isinstance(x, Row) else getattr(getattr(s,x),y), f1) if len(f1)>1 else getattr(s,f1[0]),\
-        reduce(lambda x,y: getattr(x,y) if isinstance(x, Row) else getattr(getattr(s,x),y), f2) if len(f2)>1 else getattr(s,f2[0])\
-        )))\
-        .reduceByKey(lambda x,y: makeList(x) + makeList(y))\
-        .collect()
-    numClasses=getTrainingHandler().numClasses()
-    citer=iter(cm.rainbow(np.linspace(0, 1, numClasses)))
-    colors = [next(citer) for i in range(0, numClasses)]
-    legends= [getTrainingHandler().getClassLabel(i) for i in range(0,numClasses)]
-    sets=[]
-    for t in darr:
-        sets.append((plt.scatter([x[0] for x in t[1]],[x[1] for x in t[1]],
-                     color=colors[t[0]],alpha=0.5),legends[t[0]]))
-
-    params = plt.gcf()
-    plSize = params.get_size_inches()
-    params.set_size_inches( (plSize[0]*3, plSize[1]*2) )
-    plt.ylabel(legend2)
-    plt.xlabel(legend1)
-    plt.legend([x[0] for x in sets],
-               [x[1] for x in sets],
-               scatterpoints=1,
-               loc='lower left',
-               ncol=numClasses,
-               fontsize=12)
-    plt.show()

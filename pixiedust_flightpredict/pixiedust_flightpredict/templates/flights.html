@@ -1,4 +1,5 @@
 {%extends "basedialog.html"%}
+{%import "commonExecuteCallback.js" as commons%}
 {%block title %}Predict Flight Delays with Apache Spark MLLib, FlightStats, and Weather Data{%endblock%}
 
 {%block body%}
@@ -238,6 +239,10 @@
 
   nextBtn.click(function(event) {
     event.preventDefault();
+    //Check the flights validatity
+    {% call(results) commons.ipython_execute("from pixiedust_flightpredict.running import * \\r\\ncoucou()", prefix) %}
+      alert({{results["error"] or results}});
+    {% endcall %};
 
     $('.tab-pane-form').removeClass('active');
     $('.tab-pane-flightpredict').addClass('active');
@@ -250,6 +255,7 @@
 
 
   $('#flight-predict-date').change(function() {
+    alert($(this).val())
     if ($(this).val() && $('#flight-predict-flight').val()) {
       nextBtn.prop('disabled', false);
     }

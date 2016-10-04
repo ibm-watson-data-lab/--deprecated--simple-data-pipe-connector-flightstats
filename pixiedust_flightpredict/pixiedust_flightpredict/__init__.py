@@ -17,9 +17,10 @@
 from pixiedust.display.display import *
 from pixiedust.display import *
 from .flightPredict import *
-from .vizFeatures import *
 import pixiedust
 import pixiedust.utils.dataFrameMisc as dataFrameMisc
+from pyspark.rdd import RDD
+from pyspark.mllib.regression import LabeledPoint
 
 myLogger = pixiedust.getLogger(__name__)
 
@@ -33,18 +34,39 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
       return [{"id": "flightpredict"}]
     elif dataFrameMisc.isPySparkDataFrame(entity):
       return [
-        {"categoryId": "FlightPredict", "title": "Visualize Features", "icon":"fa-map-marker", "id":"fp_viz_features"},
-        {"categoryId": "FlightPredict", "title": "Create Model", "icon":"fa-map-marker", "id":"fp_create_model"}
+        {"categoryId": "FlightPredict", "title": "Visualize Features", "icon-path":"vizFeatures.png", "id":"fp_viz_features"},
+        {"categoryId": "FlightPredict", "title": "Configure Training", "icon":"fa-map-marker", "id":"fp_configure_training"}
       ]
+    elif self.isLabeledRDD(entity):
+      return [
+        {"categoryId": "FlightPredict", "title": "Create Models", "icon-path":"vizFeatures.png", "id":"fp_create_models"},
+        {"categoryId": "FlightPredict", "title": "Show Histogram", "icon-path":"vizFeatures.png", "id":"fp_histogram"}
+      ]
+
     return []
+
+  def isLabeledRDD(self, entity):
+    if isinstance(entity,RDD):
+      sample = entity.take(1)
+      if sample is not None and len(sample)>0:
+        return isinstance(sample[0], LabeledPoint)
+    return False
 
   def newDisplayHandler(self,options,entity):
     handlerId=options.get("handlerId")
     myLogger.debug("Creating a new Display Handler with id {0}".format(handlerId))
     if handlerId == "fp_viz_features":
-      return VizualizeFeatures(options,entity)
-    elif handlerId == "fp_create_model":
-      return CreateModel(options,entity)
+      import vizFeatures
+      return vizFeatures.VizualizeFeatures(options,entity)
+    elif handlerId == "fp_configure_training":
+      import configureTraining
+      return configureTraining.ConfigureTraining(options,entity)
+    elif handlerId == "fp_create_models":
+      import createModels
+      return createModels.CreateModels(options, entity)
+    elif handlerId == "fp_histogram":
+      import histogramDisplay
+      return histogramDisplay.HistogramDisplay(options, entity)
     else:
       return PixieDustFlightPredict(options,entity)
 
