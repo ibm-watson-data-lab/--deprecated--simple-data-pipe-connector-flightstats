@@ -240,7 +240,7 @@
   nextBtn.click(function(event) {
     event.preventDefault();
     //Check the flights validatity
-    {% call(results) commons.ipython_execute("from pixiedust_flightpredict.running import * \\r\\ncoucou()", prefix) %}
+    {% call(results) commons.ipython_execute("from pixiedust_flightpredict.running.runModel import * \\r\\nprint(runModelTest('NK 641','2016-10-12'))", prefix) %}
       alert({{results["error"] or results}});
     {% endcall %};
 
@@ -254,8 +254,7 @@
   });
 
 
-  $('#flight-predict-date').change(function() {
-    alert($(this).val())
+  $('#flight-predict-date').change(function() {\
     if ($(this).val() && $('#flight-predict-flight').val()) {
       nextBtn.prop('disabled', false);
     }
