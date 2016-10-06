@@ -32,6 +32,8 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
   def getMenuInfo(self,entity):
     if entity==self.__class__:
       return [{"id": "flightpredict"}]
+    elif entity == "fp_configure_training":
+      return [{"id": "fp_configure_training"}]
     elif dataFrameMisc.isPySparkDataFrame(entity):
       return [
         {"categoryId": "FlightPredict", "title": "Visualize Features", "icon-path":"vizFeatures.png", "id":"fp_viz_features"},
@@ -73,17 +75,30 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
 def flightPredict():
   display(PixieDustFlightPredictPluginMeta)
 
-credentials={}
-def setCredentials(**kwargs):
-  credentials.update(kwargs)
+def configure():
+  display("fp_configure_training")
+
+class Configuration(object):
+  __metaclass__= type("",(type,),{
+        "configDict":{},
+        "__getitem__":lambda cls, key: cls.configDict.get(key),
+        "__setitem__":lambda cls, key,val: cls.configDict.update({key:val}),
+        "__getattr__":lambda cls, key: cls.configDict.get(key),
+        "__setattr__":lambda cls, key, val: cls.configDict.update({key:val})
+    })
+    
+  @staticmethod
+  def update(**kwargs):
+    for key,val in kwargs.iteritems():
+      Configuration[key]=val
 
 def loadDataSet(dbName,sqlTable):
-  if "cloudantHost" not in credentials or "cloudantUserName" not in credentials or "cloudantPassword" not in credentials:
+  if Configuration.cloudantHost is None or Configuration.cloudantUserName is None or Configuration.cloudantPassword is None:
     raise Exception("Missing credentials")
   cloudantdata = get_ipython().user_ns.get("sqlContext").read.format("com.cloudant.spark")\
-    .option("cloudant.host",credentials.get("cloudantHost"))\
-    .option("cloudant.username",credentials.get("cloudantUserName"))\
-    .option("cloudant.password",credentials.get("cloudantPassword"))\
+    .option("cloudant.host",Configuration.cloudantHost)\
+    .option("cloudant.username",Configuration.cloudantUserName)\
+    .option("cloudant.password",Configuration.cloudantPassword)\
     .option("schemaSampleSize", "-1")\
     .load(dbName)
 

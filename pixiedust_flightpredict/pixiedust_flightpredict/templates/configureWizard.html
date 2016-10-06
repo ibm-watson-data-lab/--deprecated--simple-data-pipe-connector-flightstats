@@ -1,0 +1,89 @@
+{%import "commonExecuteCallback.js" as commons%}
+
+<div class="container" id="myWizard" style="width:95%">
+   <div class="progress">
+     <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="5" style="width: 20%;">
+       Step 1 of {{steps|count}}
+     </div>
+   </div>
+  
+   <div class="navbar" style="display:none">
+      <div class="navbar-inner">
+            <ul class="nav nav-pills">
+              {%for step in steps%}
+                <li {%if loop.index == 1%}class="active"{%endif%}>
+                  <a href="#step{{loop.index}}" data-toggle="tab" data-step="{{loop.index}}">{{step["title"]}}</a>
+                </li>
+              {%endfor%}
+            </ul>
+      </div>
+   </div>
+   <div class="tab-content">
+       {% set stepContext = "html"%}
+       {%for step in steps%}
+       {% set stepId = "step" ~ loop.index%}
+        <div class="tab-pane fade in {%if loop.index == 1%}active{%endif%}" id="step{{loop.index}}"> 
+            <div class="page-header text-center">
+                <h1>{{step["title"]}}</h1>
+            </div>
+            {% with args=step["args"]%}
+            {%include module + ":" + step["template"]%}
+            {% endwith %}
+            {%if loop.index > 1%}
+            <a class="btn btn-default btn-lg prev" prev="step{{loop.index-1}}" href="#">Prev</a>
+            {%endif%}
+            {%if loop.index < loop.length%}
+            <a class="btn btn-default btn-lg next" next="step{{loop.index+1}}" href="#">Next</a>
+            {%endif%}
+        </div> 
+       {%endfor%}
+   </div>  
+</div>
+
+<script>
+$('.next').click(function(){
+  var nextId = $(this).attr("next");
+  $('[href=#'+nextId+']').tab('show');
+  return false;
+  
+})
+
+$('.prev').click(function(){
+  var nextId = $(this).attr("prev");
+  $('[href=#'+nextId+']').tab('show');
+  return false;
+  
+})
+
+var showTabCallbacks = {};
+function registerShowTabCallback(step, callback){
+  if (!showTabCallbacks.hasOwnProperty(step) ){
+    showTabCallbacks[step]=[];
+  }
+  showTabCallbacks[step].push(callback);
+}
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {  
+  //update progress
+  var step = $(e.target).data('step');
+  var percent = (parseInt(step) / {{steps|count}}) * 100;
+  
+  $('.progress-bar').css({width: percent + '%'});
+  $('.progress-bar').text("Step " + step + " of {{steps|count}}");
+  
+  //e.relatedTarget // previous tab
+
+  var stepId = "step"+step;
+  if (showTabCallbacks.hasOwnProperty(stepId)){
+    for (var i=0; i < showTabCallbacks[stepId].length; i++ ){
+      showTabCallbacks[stepId][i]();
+    }
+  }
+  
+})
+
+$('.first').click(function(){
+  $('#myWizard a:first').tab('show')
+})
+</script>
+
