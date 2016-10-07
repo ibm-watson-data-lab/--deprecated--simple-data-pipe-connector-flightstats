@@ -1,0 +1,34 @@
+from pixiedust_flightpredict.training.training import *
+from datetime import datetime
+class customTrainingHandler(defaultTrainingHandler):
+    def getClassLabel(self, value):
+        "Sample code"
+        if ( int(value)==0 ):
+            return "Delayed less than 13 minutes"
+        elif (int(value)==1 ):
+            return "Delayed between 13 and 41 minutes"
+        elif (int(value) == 2 ):
+            return "Delayed more than 41 minutes"
+        return value
+
+    def numClasses(self):
+        "Sample code"
+        return 3
+
+    def computeClassification(self, s):
+        "Sample code"
+        return super(customTrainingHandler, self).computeClassification(s)
+
+    def customTrainingFeaturesNames(self ):
+        "Sample code"
+        return ["departureTime"]
+
+    def customTrainingFeatures(self, s):
+        "Sample code"
+        dt=parser.parse(s.departureTime)
+        features=[]
+        for i in range(0,7):
+            features.append(1 if dt.weekday()==i else 0)
+        return features
+
+myCustomHandler=customTrainingHandler()

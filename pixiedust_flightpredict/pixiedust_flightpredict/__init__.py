@@ -37,12 +37,11 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
     elif dataFrameMisc.isPySparkDataFrame(entity):
       return [
         {"categoryId": "FlightPredict", "title": "Visualize Features", "icon-path":"vizFeatures.png", "id":"fp_viz_features"},
-        {"categoryId": "FlightPredict", "title": "Configure Training", "icon":"fa-map-marker", "id":"fp_configure_training"}
+        {"categoryId": "FlightPredict", "title": "Show Histogram", "icon-path":"vizFeatures.png", "id":"fp_histogram"}
       ]
     elif self.isLabeledRDD(entity):
       return [
-        {"categoryId": "FlightPredict", "title": "Create Models", "icon-path":"vizFeatures.png", "id":"fp_create_models"},
-        {"categoryId": "FlightPredict", "title": "Show Histogram", "icon-path":"vizFeatures.png", "id":"fp_histogram"}
+        {"categoryId": "FlightPredict", "title": "Create Models", "icon-path":"vizFeatures.png", "id":"fp_create_models"}
       ]
 
     return []

@@ -27,6 +27,8 @@ import sys
 if sys.version >= '3':
     from functools import reduce
 
+__all__ = ['defaultTrainingHandler']
+
 attributes=['dewPt','rh','vis','wc',
     #'wdir',
     'wspd','feels_like','uv_index']
