@@ -8,7 +8,7 @@
     <button id="edit{{prefix}}" class="btn btn-default" type="button">{{ "Save Configuration" if editMode else "Edit Configuration"}} </button>
     <script>
         $('#edit{{prefix}}').click(function(){
-            !{{display.executeDisplay('{"nostore_edit":' + ("false" if editMode else "true") + '}')}}()
+            {{display.executeDisplay('{"nostore_edit":' + ("false" if editMode else "true") + '}')}}
         })
     </script>
   </div>
