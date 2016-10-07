@@ -1,6 +1,31 @@
-{%import "commonExecuteCallback.js" as commons%}
+{%import "commonExecuteCallback.js" as commons with context%}
+{%import "executePythonDisplayMacro.js" as display with context%}
+{%set editMode = this.options.get("nostore_edit")=='true'%}
 
-<div class="container" id="myWizard" style="width:95%">
+<div class="page-header">
+  <h1>Welcome to Flight Tracker <small>powered by PixieDust, FlightStats, Apache Spark and IBM Weather on Bluemix<small></h1>
+  <div align="right" style="margin:10px">
+    <button id="edit{{prefix}}" class="btn btn-default" type="button">{{ "Save Configuration" if editMode else "Edit Configuration"}} </button>
+    <script>
+        $('#edit{{prefix}}').click(function(){
+            !{{display.executeDisplay('{"nostore_edit":' + ("false" if editMode else "true") + '}')}}()
+        })
+    </script>
+  </div>
+</div>
+
+<style>
+  .configureWizardContainer{
+    border: forestgreen;
+    border-width: 5px;
+    border-style: solid;
+    border-radius: 15px;
+    padding: 5px;
+  }
+</style>
+
+{% if editMode %}
+<div class="container configureWizardContainer" id="myWizard" style="width:95%">
    <div class="progress">
      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="5" style="width: 20%;">
        Step 1 of {{steps|count}}
@@ -86,4 +111,37 @@ $('.first').click(function(){
   $('#myWizard a:first').tab('show')
 })
 </script>
+
+{%else%}
+<table class="table table-hover" style="font-size:larger">
+  <thead>
+    <tr>
+      <th align="center" valign="middle">Status</th>
+      <th>Description</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for task in tasks %}
+    <tr>
+      <td><i class="fa fa-2x {{task['status-class']}}" aria-hidden="true"></i></td>
+      <td>{{task['task']}}</td>
+      <td>
+        {% if task['code'] and task['id']%}
+          <button class="btn btn-default" id="load{{task['id']+prefix}}">{{task['action']}}</button>
+          <script>
+              $("#load{{task['id']+prefix}}").click(function(){
+                  {% call(results) commons.ipython_execute(task['code'], prefix) %}
+                  {% endcall %};
+              });
+          </script>
+        {% else %}
+          {{task['action']}}
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{%endif%}
 

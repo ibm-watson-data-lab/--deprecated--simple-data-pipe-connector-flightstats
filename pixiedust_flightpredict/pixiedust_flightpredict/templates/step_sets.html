@@ -21,7 +21,6 @@
                 <button id="load{{t[1]+prefix}}">{{task["btnTitle"]}}</button>
                 <script>
                     $('#load{{t[1]+prefix}}').click(function(){
-                        debugger;
                         {% call(results) commons.ipython_execute(task['code'], prefix) %}
                         {% endcall %};
                     });
@@ -37,12 +36,5 @@
         var options = {};
         options[$(this).attr("name")]=$(this).val();
         {{utils.savePixiedustOptions(this.options.get('cell_id'), 'options')}}
-    });
-    
-    $('#datasets222{{prefix}} *').filter(':button').click(function(){
-        {% call(results) commons.ipython_execute("get_ipython().set_next_input('david')", prefix) %}
-            alert({{results["error"] or results}});
-        {% endcall %};
-    })
-    
+    });    
 </script>
