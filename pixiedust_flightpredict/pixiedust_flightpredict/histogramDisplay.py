@@ -41,7 +41,7 @@ class HistogramDisplay(Mpld3ChartDisplay):
         #Render the figure
         (dialogTemplate, dialogOptions) = self.getDialogInfo(handlerId)
         dialogBody=self.renderTemplate(dialogTemplate, **dialogOptions)
-        self.renderFigure(fig, self.renderTemplate("histogram.html", noOptions=True))
+        self.renderFigure(fig, dialogBody)
 
     def doRenderMpld3(self, handlerId, fig, ax, keyFields, keyFieldValues, keyFieldLabels, valueFields, valueFieldValues):
         pass

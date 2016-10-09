@@ -16,4 +16,3 @@
 
 from training import *
 
-loadLabeledDataRDD=training.loadLabeledDataRDD

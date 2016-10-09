@@ -8,7 +8,7 @@
     <button id="edit{{prefix}}" class="btn btn-default" type="button">{{ "Save Configuration" if editMode else "Edit Configuration"}} </button>
     <script>
         $('#edit{{prefix}}').click(function(){
-            {{display.executeDisplay('{"nostore_edit":' + ("false" if editMode else "true") + '}')}}
+            {{display.executeDisplay('{"nostore_edit":' + ("false" if editMode else "true") + '}', useCellMetadata=True)}}
         })
     </script>
   </div>
@@ -117,7 +117,7 @@ $('.first').click(function(){
   <thead>
     <tr>
       <th align="center" valign="middle">Status</th>
-      <th>Description</th>
+      <th>Task</th>
       <th>Action</th>
     </tr>
   </thead>

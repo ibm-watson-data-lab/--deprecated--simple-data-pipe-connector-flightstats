@@ -19,7 +19,9 @@ from pixiedust.display import *
 from .flightPredict import *
 import pixiedust
 import pixiedust.utils.dataFrameMisc as dataFrameMisc
+from pixiedust.utils.shellAccess import ShellAccess
 from pyspark.rdd import RDD
+from pyspark.sql import DataFrame
 from pyspark.mllib.regression import LabeledPoint
 
 myLogger = pixiedust.getLogger(__name__)
@@ -34,17 +36,21 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
       return [{"id": "flightpredict"}]
     elif entity == "fp_configure_training":
       return [{"id": "fp_configure_training"}]
-    elif dataFrameMisc.isPySparkDataFrame(entity):
-      return [
+
+    menus = []
+    dataSetsValues = Configuration.getDataSets()
+    dataSetsValues = dataSetsValues if len(dataSetsValues)==0 else zip(*dataSetsValues)[1]
+    if entity in dataSetsValues:
+      menus = menus + [
         {"categoryId": "FlightPredict", "title": "Visualize Features", "icon-path":"vizFeatures.png", "id":"fp_viz_features"},
         {"categoryId": "FlightPredict", "title": "Show Histogram", "icon-path":"vizFeatures.png", "id":"fp_histogram"}
       ]
-    elif self.isLabeledRDD(entity):
-      return [
-        {"categoryId": "FlightPredict", "title": "Create Models", "icon-path":"vizFeatures.png", "id":"fp_create_models"}
-      ]
+      if len(Configuration.getModels())>0 and Configuration.getLabeledData(entity) is not None:
+        menus.append( 
+          {"categoryId": "FlightPredict", "title": "Measure Accuracy", "icon-path":"vizFeatures.png", "id":"fp_run_metrics"}
+        )
 
-    return []
+    return menus
 
   def isLabeledRDD(self, entity):
     if isinstance(entity,RDD):
@@ -68,6 +74,9 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
     elif handlerId == "fp_histogram":
       import histogramDisplay
       return histogramDisplay.HistogramDisplay(options, entity)
+    elif handlerId == "fp_run_metrics":
+      import runMetrics
+      return runMetrics.RunMetricsDisplay(options, entity)
     else:
       return PixieDustFlightPredict(options,entity)
 
@@ -90,6 +99,22 @@ class Configuration(object):
   def update(**kwargs):
     for key,val in kwargs.iteritems():
       Configuration[key]=val
+
+  @staticmethod
+  def getModels():
+    return [(x,ShellAccess[x]) for x in ShellAccess if hasattr(ShellAccess[x], "predict") and callable(getattr(ShellAccess[x], "predict"))]
+
+  @staticmethod
+  def getDataSets():
+    return [(x,ShellAccess[x]) for x in ShellAccess if (x=="trainingData" or x=="testData") and isinstance(ShellAccess[x], DataFrame)]
+
+  @staticmethod
+  def getLabeledData(entity):
+    if ShellAccess[Configuration.DFTrainingVarName] == entity and ShellAccess[Configuration.LabeledRDDTrainingVarName] is not None:
+      return (ShellAccess[Configuration.LabeledRDDTrainingVarName], Configuration.TrainingSQLTableName)
+    elif ShellAccess[Configuration.DFTestVarName] == entity and ShellAccess[Configuration.LabeledRDDTestVarName] is not None:
+      return (ShellAccess[Configuration.LabeledRDDTestVarName], Configuration.TestSQLTableName)
+    return None
 
 def loadDataSet(dbName,sqlTable):
   if Configuration.cloudantHost is None or Configuration.cloudantUserName is None or Configuration.cloudantPassword is None:

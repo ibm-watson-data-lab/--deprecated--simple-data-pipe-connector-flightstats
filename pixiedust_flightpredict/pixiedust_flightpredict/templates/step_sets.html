@@ -1,40 +1,27 @@
 {%import "utils.js" as utils%}
 {%import "commonExecuteCallback.js" as commons with context%}
 
-{%for t in args%}
 <div class="container col-sm-12 well" id="datasets{{prefix}}">
-    <label><strong>{{t[0]}}</strong></label>
-        {%for f in t[2]%} 
-        <div class="row">
-            <div class="form-group col-sm-10" style="padding-right:10px; margin-left:20px">
-                <label for="{{t[1]+f[1]+prefix}}">{{f[0]}}</label>
-                <input type="text" class="form-control" id="{{t[1]+f[1]+prefix}}" name="{{t[1]+f[1]}}" value="{{this.options.get(t[1]+f[1]) or f[2]}}">
-            </div>
+    {%for f in args%} 
+    <div class="row">
+        <div class="form-group col-sm-10" style="padding-right:10px; margin-left:20px">
+            <label for="{{f[1]+prefix}}">{{f[0]}}</label>
+            <input type="text" class="form-control" id="{{f[1]+prefix}}" name="{{f[1]}}" value="{{this.options.get(f[1]) or f[2]}}">
         </div>
-        {%endfor%}
-        <div>
-            {% set task=this.checkDataSet(t) %}
-            {% if task == None %}
-                <strong>This data set is correctly loaded</strong>
-            {% else %}
-                <strong>{{task["task"]}}</strong>
-                <button id="load{{t[1]+prefix}}">{{task["btnTitle"]}}</button>
-                <script>
-                    $('#load{{t[1]+prefix}}').click(function(){
-                        {% call(results) commons.ipython_execute(task['code'], prefix) %}
-                        {% endcall %};
-                    });
-                </script>
-            {% endif %}
-        </div>
+    </div>
+    {%endfor%}
 </div>
-{%endfor%}
 
 <script>
     $('#datasets{{prefix}} *').filter(':input').filter(function(){ return $(this).attr("name")})
     .change(function(){
         var options = {};
         options[$(this).attr("name")]=$(this).val();
+        {%for f in args%}
+            {% if not this.options.get(f[1]) and f[2] %}
+            options['{{f[1]}}']='{{f[2]}}';
+            {%endif%}
+        {%endfor%}
         {{utils.savePixiedustOptions(this.options.get('cell_id'), 'options')}}
     });    
 </script>

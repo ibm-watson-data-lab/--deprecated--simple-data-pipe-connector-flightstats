@@ -1,0 +1,2 @@
+import pixiedust_flightpredict.training as training
+{{varName}} = training.loadLabeledDataRDD("{{sqlTableName}}")

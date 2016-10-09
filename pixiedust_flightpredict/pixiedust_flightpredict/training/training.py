@@ -16,6 +16,7 @@
 
 from pyspark.sql import SQLContext
 from pyspark.sql import Row
+from pixiedust.utils.shellAccess import ShellAccess
 from pyspark.mllib.regression import LabeledPoint
 from pyspark.mllib.linalg import Vectors
 from pyspark.mllib.evaluation import MulticlassMetrics
@@ -27,7 +28,7 @@ import sys
 if sys.version >= '3':
     from functools import reduce
 
-__all__ = ['defaultTrainingHandler']
+__all__ = ['defaultTrainingHandler', 'loadLabeledDataRDD', 'getNumClasses', 'getTrainingHandler']
 
 attributes=['dewPt','rh','vis','wc',
     #'wdir',
@@ -104,7 +105,7 @@ def loadLabeledDataRDD(sqlTable):
         select += comma + attr
     select += ' from ' + sqlTable
     
-    df = get_ipython().user_ns.get("sqlContext").sql(select)
+    df = ShellAccess.sqlContext.sql(select)
 
     handler=getTrainingHandler()
     datardd = df.map(lambda s: buildLabeledPoint(s, handler.computeClassification(s), handler))
