@@ -36,6 +36,8 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
       return [{"id": "flightpredict"}]
     elif entity == "fp_configure_training":
       return [{"id": "fp_configure_training"}]
+    elif entity == "fp_map_results":
+      return [{"id": "fp_map_results"}]
 
     menus = []
     dataSetsValues = Configuration.getDataSets()
@@ -77,11 +79,17 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
     elif handlerId == "fp_run_metrics":
       import runMetrics
       return runMetrics.RunMetricsDisplay(options, entity)
+    elif handlerId == "fp_map_results":
+      import mapResults
+      return mapResults.MapResultsDisplay(options, entity)
     else:
       return PixieDustFlightPredict(options,entity)
 
 def flightPredict():
   display(PixieDustFlightPredictPluginMeta)
+
+def displayMapResults():
+  display("fp_map_results")
 
 def configure():
   display("fp_configure_training")
@@ -115,6 +123,10 @@ class Configuration(object):
     elif ShellAccess[Configuration.DFTestVarName] == entity and ShellAccess[Configuration.LabeledRDDTestVarName] is not None:
       return (ShellAccess[Configuration.LabeledRDDTestVarName], Configuration.TestSQLTableName)
     return None
+
+  @staticmethod
+  def isReadyForRun():
+    return len(Configuration.getModels())>0 and Configuration.weatherUrl is not None
 
 def loadDataSet(dbName,sqlTable):
   if Configuration.cloudantHost is None or Configuration.cloudantUserName is None or Configuration.cloudantPassword is None:

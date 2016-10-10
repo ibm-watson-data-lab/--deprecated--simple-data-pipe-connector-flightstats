@@ -1,0 +1,57 @@
+{%extends "basedialog.html"%}
+{%block title %}Predict Flight Delays with Apache Spark MLLib, FlightStats, and Weather Data: Results{%endblock%}
+
+{%block body%}
+<style type="text/css">
+    #states path {
+        fill: #ccc;
+        stroke: #fff;
+    }
+
+    path.arc {
+        pointer-events: none;
+        fill: none;
+        stroke: #000;
+        display: none;
+    }
+
+    path.cell {
+        fill: none;
+        pointer-events: all;
+    }
+
+    circle {
+        fill: steelblue;
+        fill-opacity: .8;
+        stroke: #fff;
+    }
+    
+    .origin {
+        fill: green;
+        fill-opacity: .8;
+        stroke: #fff;
+    }
+
+    #cells.voronoi path.cell {
+        stroke: brown;
+    }
+
+    #cells g:hover path.arc {
+        display: inherit;
+    }
+
+    .modal-dialog-flightmapresults {
+      width: 95% !important;
+    }
+</style>
+
+<div id="airport{{prefix}}"/>
+<div id="map{{prefix}}" style="text-align:center"/>
+
+{%endblock%}
+
+{%block onDialogShown%}
+var tdiag = $(this).find('.modal-dialog').addClass('modal-dialog-flightmapresults');
+
+{%include module + ":mapResults.js" with context%}
+{%endblock%}

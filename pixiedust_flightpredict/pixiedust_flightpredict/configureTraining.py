@@ -30,7 +30,7 @@ LabeledRDDTestVarName = 'labeledTestData'
 
 class ConfigureTraining(Display):
     def loadTemplate(self, templateName, **kwargs):
-         return '\\"' + PixiedustTemplateEnvironment().getTemplate(templateName).render(**kwargs).replace('\n','\\\\n').replace('"', '\\\\\\"') + '\\"'
+         return '\\"' + self.renderTemplate(templateName,**kwargs).replace('\n','\\\\n').replace('"', '\\\\\\"') + '\\"'
 
     def doRender(self, handlerId):
         self.addProfilingTime = False
@@ -43,7 +43,7 @@ class ConfigureTraining(Display):
                 ("cloudantHost","Cloudant Host"),("cloudantUserName","Cloudant User Name"),("cloudantPassword","Cloudant Password"),
                 ("weatherUrl", "Weather URL")
             ]},
-            {"title": "Training Sets", "template": "step_sets.html", "args":[
+            {"title": "Training Set", "template": "step_sets.html", "args":[
                 ('Database Name', 'TrainingDbName',''),
                 ('SQL Table Name', 'TrainingSQLTableName','training'),
                 ('DataFrame Variable Name', 'DFTrainingVarName', DFTrainingVarName), 

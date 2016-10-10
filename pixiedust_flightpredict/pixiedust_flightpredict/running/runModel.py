@@ -16,6 +16,13 @@
 
 from .flightAccess import *
 from .weatherAccess import *
+from .flightHistory import *
+from pixiedust_flightpredict import Configuration
+from pixiedust_flightpredict.training import *
+from collections import Counter
+import pixiedust
+
+myLogger = pixiedust.getLogger(__name__)
 
 """
 {'appendix': {'airlines': [{'active': True,
@@ -104,7 +111,11 @@ from .weatherAccess import *
 """
 
 def runModel(flight, date):
+    if not Configuration.isReadyForRun():
+        raise ValueError("Unable to predict flight delay because no models are available. Please run configure for more details")
+
     response = getFlightSchedule(flight, date)
+    myLogger.debug("Schedule for flight {0} at date {1} : {2}".format(flight, date, response ))
     if "error" in response:
         return {"error": "Unable to access schedule {0}".format(response["error"])}
 
@@ -112,7 +123,7 @@ def runModel(flight, date):
     appendix=response['appendix']
     payload["flightInfo"]=scheduledFlight=response["scheduledFlights"][0]
     
-    payload["departureInfo"]=departureInfo={}
+    payload["departureAiportInfo"]=departureInfo={}
     departureInfo["airportInfo"]=depAirportJSON=appendix["airports"][0]
     departureInfo["weatherForecast"]= depWeather = getWeather(depAirportJSON['latitude'], depAirportJSON['longitude'], scheduledFlight["departureTime"])
 
@@ -120,6 +131,26 @@ def runModel(flight, date):
     arrivalInfo["airportInfo"]=arrAirportJSON=appendix["airports"][1]
     arrivalInfo["weatherForecast"]= arrWeather=getWeather(arrAirportJSON['latitude'], arrAirportJSON['longitude'], scheduledFlight["arrivalTime"] )
 
+    payload["prediction"]=prediction = {}
+    prediction["models"]=predictionModels = []
+    #create the features vector
+    features = createFeaturesVector(depWeather, arrWeather, scheduledFlight, depAirportJSON, arrAirportJSON)
+    #count the predicted classes to make an overall prediction
+    predictedClasses = []
+    trainingHandler = getTrainingHandler();
+    for modelVar,model in Configuration.getModels():
+        p = model.predict(features)
+        predictedClasses.append(p)
+        predictionModels.append({
+            "model": model.__class__.__name__,
+            "prediction": trainingHandler.getClassLabel(p)
+        })
+    classes = Counter(predictedClasses).most_common()
+    if len(classes)>1 and classes[0][1]==classes[1][1]:
+        prediction["overall"] = "Undecided: {0}/{1}".format(trainingHandler.getClassLabel(classes[0][0]), trainingHandler.getClassLabel(classes[1][0]))
+    else:
+        prediction["overall"] = trainingHandler.getClassLabel(classes[0][0])
+    """
     payload["prediction"]={
         "overall": "Delayed between 13 and 41 minutes",
         "models":[
@@ -129,28 +160,9 @@ def runModel(flight, date):
             {"model":"RandomForestModel: Delayed between 13 and 41 minutes"}
         ]
     }
-    return payload   
-
     """
-    #create the features vector
-    features=[]
-    for attr in f.attributes:
-        features.append(depWeather[mapAttribute(attr)])
-    for attr in f.attributes:
-        features.append(arrWeather[mapAttribute(attr)])
-    
-    #Call training handler for custom features
-    s=type('dummy', (object,), {'departureTime':departureDT, 'arrivalTime':arrivalDT, 'arrivalAirportFsCode': arrAirportCode, 
-                    'departureAirportFsCode':depAirportCode,'departureWeather': depWeather, 'arrivalWeather': arrWeather})
-    customFeaturesForRunModel=f.getTrainingHandler().customTrainingFeatures(s) 
-    for value in customFeaturesForRunModel:
-        features.append( value )
-
-    for model in mlModels:
-        label= model.__class__.__name__
-        html+='<li>' + label + ': ' + f.getTrainingHandler().getClassLabel(model.predict(features)) + '</li>'
-    """
-
+    saveFlightResults(payload)
+    return payload
     #payload format
     """
     {
@@ -176,152 +188,197 @@ def runModel(flight, date):
     }
     """
 
+def mapAttribute(attr):
+    if attr=="dewPt":
+        return "dewpt"
+    return attr
+
+def createFeaturesVector(depWeather, arrWeather, scheduledFlight, arrAiport, depAirport):
+    features=[]
+    for attr in attributes:
+        features.append(depWeather[mapAttribute(attr)])
+    for attr in attributes:
+        features.append(arrWeather[mapAttribute(attr)])
+    
+    #Call training handler for custom features
+    s=type('dummy', (object,), {
+        'departureTime':scheduledFlight["departureTime"], 'arrivalTime':scheduledFlight["arrivalTime"], 'arrivalAirportFsCode': arrAiport["fs"], 
+        'departureAirportFsCode':depAirport["fs"],'departureWeather': depWeather, 'arrivalWeather': arrWeather})
+
+    myLogger.debug("Creating features vector with {0}".format(s))
+    for value in getTrainingHandler().customTrainingFeatures(s):
+        features.append( value )
+    
+    return features
+
 def runModelTest(flight, date):
-    return {'arrivalAirportInfo': {'airportInfo': {'active': True,
-   'city': 'Las Vegas',
-   'cityCode': 'LAS',
-   'classification': 1,
-   'countryCode': 'US',
-   'countryName': 'United States',
-   'elevationFeet': 2095,
-   'faa': 'LAS',
-   'fs': 'LAS',
-   'iata': 'LAS',
-   'icao': 'KLAS',
-   'latitude': 36.081,
-   'localTime': '2016-10-04T12:28:48.884',
-   'longitude': -115.147599,
-   'name': 'McCarran International Airport',
-   'postalCode': '89119',
-   'regionName': 'North America',
-   'stateCode': 'NV',
-   'street1': '5757 Wayne Newton Boulevard',
-   'timeZoneRegionName': 'America/Los_Angeles',
-   'utcOffsetHours': -7.0,
-   'weatherZone': 'NVZ020'},
-  'weatherForecast': {'class': 'fod_short_range_hourly',
-   'clds': 0,
-   'day_ind': 'D',
-   'dewpt': -9,
-   'dow': 'Tuesday',
-   'expire_time_gmt': 1475609398,
-   'fcst_valid': 1475622000,
-   'fcst_valid_local': '2016-10-04T16:00:00-0700',
-   'feels_like': 26,
-   'golf_category': 'Very Good',
-   'golf_index': 9,
-   'gust': None,
-   'hi': 26,
-   'icon_code': 32,
-   'icon_extd': 3200,
-   'mslp': 1006.5,
-   'num': 4,
-   'phrase_12char': 'Sunny',
-   'phrase_22char': 'Sunny',
-   'phrase_32char': 'Sunny',
-   'pop': 0,
-   'precip_type': 'rain',
-   'qpf': 0.0,
-   'rh': 9,
-   'severity': 1,
-   'snow_qpf': 0.0,
-   'subphrase_pt1': 'Sunny',
-   'subphrase_pt2': '',
-   'subphrase_pt3': '',
-   'temp': 26,
-   'uv_desc': 'Low',
-   'uv_index': 2,
-   'uv_index_raw': 1.7,
-   'uv_warning': 0,
-   'vis': 16.0,
-   'wc': 26,
-   'wdir': 112,
-   'wdir_cardinal': 'ESE',
-   'wspd': 8,
-   'wxman': 'wx1000'}},
- 'departureInfo': {'airportInfo': {'active': True,
-   'city': 'Boston',
-   'cityCode': 'BOS',
-   'classification': 1,
-   'countryCode': 'US',
-   'countryName': 'United States',
-   'elevationFeet': 19,
-   'faa': 'BOS',
-   'fs': 'BOS',
-   'iata': 'BOS',
-   'icao': 'KBOS',
-   'latitude': 42.36646,
-   'localTime': '2016-10-04T15:28:48.884',
-   'longitude': -71.020176,
-   'name': 'Logan International Airport',
-   'postalCode': '02128-2909',
-   'regionName': 'North America',
-   'stateCode': 'MA',
-   'street1': 'One Harborside Drive',
-   'street2': '',
-   'timeZoneRegionName': 'America/New_York',
-   'utcOffsetHours': -4.0,
-   'weatherZone': 'MAZ015'},
-  'weatherForecast': {'class': 'fod_short_range_hourly',
-   'clds': 29,
-   'day_ind': 'D',
-   'dewpt': 10,
-   'dow': 'Tuesday',
-   'expire_time_gmt': 1475609399,
-   'fcst_valid': 1475611200,
-   'fcst_valid_local': '2016-10-04T16:00:00-0400',
-   'feels_like': 14,
-   'golf_category': 'Very Good',
-   'golf_index': 8,
-   'gust': None,
-   'hi': 15,
-   'icon_code': 34,
-   'icon_extd': 3400,
-   'mslp': 1027.1,
-   'num': 1,
-   'phrase_12char': 'M Sunny',
-   'phrase_22char': 'Mostly Sunny',
-   'phrase_32char': 'Mostly Sunny',
-   'pop': 0,
-   'precip_type': 'rain',
-   'qpf': 0.0,
-   'rh': 69,
-   'severity': 1,
-   'snow_qpf': 0.0,
-   'subphrase_pt1': 'Mostly',
-   'subphrase_pt2': 'Sunny',
-   'subphrase_pt3': '',
-   'temp': 15,
-   'uv_desc': 'Low',
-   'uv_index': 1,
-   'uv_index_raw': 1.31,
-   'uv_warning': 0,
-   'vis': 16.0,
-   'wc': 14,
-   'wdir': 54,
-   'wdir_cardinal': 'NE',
-   'wspd': 24,
-   'wxman': 'wx1000'}},
- 'flightInfo': {'arrivalAirportFsCode': 'LAS',
-  'arrivalTerminal': '1',
-  'arrivalTime': '2016-10-12T19:34:00.000',
-  'carrierFsCode': 'NK',
-  'codeshares': [],
-  'departureAirportFsCode': 'BOS',
-  'departureTerminal': 'B',
-  'departureTime': '2016-10-12T16:40:00.000',
-  'flightEquipmentIataCode': '32S',
-  'flightNumber': '641',
-  'isCodeshare': False,
-  'isWetlease': False,
-  'referenceCode': '1875-576194--',
-  'serviceClasses': ['R', 'Y'],
-  'serviceType': 'J',
-  'stops': 0,
-  'trafficRestrictions': []},
- 'prediction': {'models': [{'model': 'NaiveBayesModel',
-    'prediction': 'Delayed between 13 and 41 minutes'},
-   {'model': 'DecisionTreeModel: Delayed between 13 and 41 minutes'},
-   {'model': 'LogisticRegressionModel: Delayed between 13 and 41 minutes'},
-   {'model': 'RandomForestModel: Delayed between 13 and 41 minutes'}],
-  'overall': 'Delayed between 13 and 41 minutes'}}
+    payload = {
+        'arrivalAirportInfo': {
+            'airportInfo': {
+                'active': True,
+                'city': 'Las Vegas',
+                'cityCode': 'LAS',
+                'classification': 1,
+                'countryCode': 'US',
+                'countryName': 'United States',
+                'elevationFeet': 2095,
+                'faa': 'LAS',
+                'fs': 'LAS',
+                'iata': 'LAS',
+                'icao': 'KLAS',
+                'latitude': 36.081,
+                'localTime': '2016-10-04T12:28:48.884',
+                'longitude': -115.147599,
+                'name': 'McCarran International Airport',
+                'postalCode': '89119',
+                'regionName': 'North America',
+                'stateCode': 'NV',
+                'street1': '5757 Wayne Newton Boulevard',
+                'timeZoneRegionName': 'America/Los_Angeles',
+                'utcOffsetHours': -7.0,
+                'weatherZone': 'NVZ020'
+            },
+            'weatherForecast': {
+                'class': 'fod_short_range_hourly',
+                'clds': 0,
+                'day_ind': 'D',
+                'dewpt': -9,
+                'dow': 'Tuesday',
+                'expire_time_gmt': 1475609398,
+                'fcst_valid': 1475622000,
+                'fcst_valid_local': '2016-10-04T16:00:00-0700',
+                'feels_like': 26,
+                'golf_category': 'Very Good',
+                'golf_index': 9,
+                'gust': None,
+                'hi': 26,
+                'icon_code': 32,
+                'icon_extd': 3200,
+                'mslp': 1006.5,
+                'num': 4,
+                'phrase_12char': 'Sunny',
+                'phrase_22char': 'Sunny',
+                'phrase_32char': 'Sunny',
+                'pop': 0,
+                'precip_type': 'rain',
+                'qpf': 0.0,
+                'rh': 9,
+                'severity': 1,
+                'snow_qpf': 0.0,
+                'subphrase_pt1': 'Sunny',
+                'subphrase_pt2': '',
+                'subphrase_pt3': '',
+                'temp': 26,
+                'uv_desc': 'Low',
+                'uv_index': 2,
+                'uv_index_raw': 1.7,
+                'uv_warning': 0,
+                'vis': 16.0,
+                'wc': 26,
+                'wdir': 112,
+                'wdir_cardinal': 'ESE',
+                'wspd': 8,
+                'wxman': 'wx1000'
+            }
+        },
+        'departureAirportInfo': {
+            'airportInfo': {
+                'active': True,
+                'city': 'Boston',
+                'cityCode': 'BOS',
+                'classification': 1,
+                'countryCode': 'US',
+                'countryName': 'United States',
+                'elevationFeet': 19,
+                'faa': 'BOS',
+                'fs': 'BOS',
+                'iata': 'BOS',
+                'icao': 'KBOS',
+                'latitude': 42.36646,
+                'localTime': '2016-10-04T15:28:48.884',
+                'longitude': -71.020176,
+                'name': 'Logan International Airport',
+                'postalCode': '02128-2909',
+                'regionName': 'North America',
+                'stateCode': 'MA',
+                'street1': 'One Harborside Drive',
+                'street2': '',
+                'timeZoneRegionName': 'America/New_York',
+                'utcOffsetHours': -4.0,
+                'weatherZone': 'MAZ015'
+            },
+            'weatherForecast': {
+                'class': 'fod_short_range_hourly',
+                'clds': 29,
+                'day_ind': 'D',
+                'dewpt': 10,
+                'dow': 'Tuesday',
+                'expire_time_gmt': 1475609399,
+                'fcst_valid': 1475611200,
+                'fcst_valid_local': '2016-10-04T16:00:00-0400',
+                'feels_like': 14,
+                'golf_category': 'Very Good',
+                'golf_index': 8,
+                'gust': None,
+                'hi': 15,
+                'icon_code': 34,
+                'icon_extd': 3400,
+                'mslp': 1027.1,
+                'num': 1,
+                'phrase_12char': 'M Sunny',
+                'phrase_22char': 'Mostly Sunny',
+                'phrase_32char': 'Mostly Sunny',
+                'pop': 0,
+                'precip_type': 'rain',
+                'qpf': 0.0,
+                'rh': 69,
+                'severity': 1,
+                'snow_qpf': 0.0,
+                'subphrase_pt1': 'Mostly',
+                'subphrase_pt2': 'Sunny',
+                'subphrase_pt3': '',
+                'temp': 15,
+                'uv_desc': 'Low',
+                'uv_index': 1,
+                'uv_index_raw': 1.31,
+                'uv_warning': 0,
+                'vis': 16.0,
+                'wc': 14,
+                'wdir': 54,
+                'wdir_cardinal': 'NE',
+                'wspd': 24,
+                'wxman': 'wx1000'
+            }
+        },
+        'flightInfo': {
+            'arrivalAirportFsCode': 'LAS',
+            'arrivalTerminal': '1',
+            'arrivalTime': '2016-10-12T19:34:00.000',
+            'carrierFsCode': 'NK',
+            'codeshares': [],
+            'departureAirportFsCode': 'BOS',
+            'departureTerminal': 'B',
+            'departureTime': '2016-10-12T16:40:00.000',
+            'flightEquipmentIataCode': '32S',
+            'flightNumber': '641',
+            'isCodeshare': False,
+            'isWetlease': False,
+            'referenceCode': '1875-576194--',
+            'serviceClasses': ['R', 'Y'],
+            'serviceType': 'J',
+            'stops': 0,
+            'trafficRestrictions': []
+        },
+        'prediction': {
+            'models': [
+                {'model': 'NaiveBayesModel','prediction': 'Delayed between 13 and 41 minutes'},
+                {'model': 'DecisionTreeModel: Delayed between 13 and 41 minutes'},
+                {'model': 'LogisticRegressionModel: Delayed between 13 and 41 minutes'},
+                {'model': 'RandomForestModel: Delayed between 13 and 41 minutes'}
+            ],
+            'overall': 'Delayed between 13 and 41 minutes'
+        }
+    }
+
+    saveFlightResults(payload)
+    return payload

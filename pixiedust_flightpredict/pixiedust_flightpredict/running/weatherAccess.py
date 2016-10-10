@@ -17,10 +17,14 @@ import requests
 from datetime import datetime
 from dateutil import parser
 import pixiedust_flightpredict
+import pixiedust
+
+myLogger = pixiedust.getLogger(__name__)
 
 def getWeather(airportLat, airportLong, dtString):
-    cred = pixiedust_flightpredict.credentials
-    weatherUrl="https://4b88408f-11e5-4ddc-91a6-fbd442e84879:p6hxeJsfIb@twcservice.mybluemix.net"
+    weatherUrl = pixiedust_flightpredict.Configuration.weatherUrl
+    myLogger.debug("Using weatherUrl {0}".format(weatherUrl))
+    #weatherUrl="https://4b88408f-11e5-4ddc-91a6-fbd442e84879:p6hxeJsfIb@twcservice.mybluemix.net"
     dt=parser.parse(dtString)
     url=weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
     forecasts=requests.get(url, params=[('geocode',str(airportLat)+','+str(airportLong)),('units','m'),('language','en-US')]).json()['forecasts']
