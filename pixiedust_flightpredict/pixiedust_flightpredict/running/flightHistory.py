@@ -16,23 +16,27 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from pixiedust_flightpredict import Configuration
+from pixiedust.utils.shellAccess import ShellAccess
 import pixiedust
 
 myLogger = pixiedust.getLogger(__name__)
 
-historyDBName = "/flightpredictorhistory"
+historyDBName = "flightpredictorhistory"
 
 def saveFlightResults(payload):
     auth=HTTPBasicAuth(Configuration.cloudantUserName, Configuration.cloudantPassword)
 
     #make sure the database is created first
-    r = requests.put(Configuration.cloudantHost+historyDBName, auth=auth)
+    url = Configuration.cloudantHost
+    if "://" not in url:
+        url = "https://"+url
+    r = requests.put(url+ "/" + historyDBName, auth=auth)
     if r.status_code != 200 and r.status_code != 201 and r.status_code != 412:
         return myLogger.error("Error connecting to the history database: {0}".format(r.text))
 
     depAirportInfo = payload["departureAirportInfo"]["airportInfo"]
     arrAirportInfo = payload["arrivalAirportInfo"]["airportInfo"]
-    r = requests.post(Configuration.cloudantHost+historyDBName, auth=auth,json={
+    r = requests.post(url+"/" + historyDBName, auth=auth,json={
         'depAirportFSCode': depAirportInfo["fs"],
         'depAirportName': depAirportInfo["name"],
         'depAirportLong': depAirportInfo["longitude"],
@@ -45,4 +49,16 @@ def saveFlightResults(payload):
     })
     if r.status_code != 200 and r.status_code != 201:
         return myLogger.error("Error saving flight results in database to the history database: {0}".format(r.text))
+"""
+Load the flight history into a dataFrame
+"""
+def loadFlightHistory():
+    if Configuration.cloudantHost is None or Configuration.cloudantUserName is None or Configuration.cloudantPassword is None:
+        raise Exception("Missing credentials")
+    return ShellAccess.sqlContext.read.format("com.cloudant.spark")\
+        .option("cloudant.host",Configuration.cloudantHost)\
+        .option("cloudant.username",Configuration.cloudantUserName)\
+        .option("cloudant.password",Configuration.cloudantPassword)\
+        .option("schemaSampleSize", "-1")\
+        .load(historyDBName)
 
