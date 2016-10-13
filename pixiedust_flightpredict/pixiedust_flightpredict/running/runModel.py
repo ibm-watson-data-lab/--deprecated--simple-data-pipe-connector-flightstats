@@ -21,6 +21,7 @@ from pixiedust_flightpredict import Configuration
 from pixiedust_flightpredict.training import *
 from collections import Counter
 import pixiedust
+import json
 
 myLogger = pixiedust.getLogger(__name__)
 
@@ -381,4 +382,4 @@ def runModelTest(flight, date):
     }
 
     saveFlightResults(payload)
-    return payload
+    return json.dumps(payload)

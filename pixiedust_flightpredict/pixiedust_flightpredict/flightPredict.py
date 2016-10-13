@@ -16,17 +16,19 @@
 from pixiedust.display.display import *
 
 class PixieDustFlightPredict(Display):
-  def runFlightPredict(self):
-    flights = self.options.get("flights")
+  def checkFlightInfo(self):
+    flightnum = self.options.get("flightnum")
+    flightdate = self.options.get("flightdate")
     #todo: start flight predict
 
   def doRender(self, handlerId):
     self.addProfilingTime = False
-    flights = self.options.get("flights")
+    flightnum = self.options.get("flightnum")
+    flightdate = self.options.get("flightdate")
 
-    if flights is None:
-      #self._addHTMLTemplate("flightsScript.html")
+    if flightnum is None:
+      self._addHTMLTemplate("flightsScript.html")
       self._addHTMLTemplate("flights.html")
 
     else:
-      self.runFlightPredict()
+      self.checkFlightInfo()

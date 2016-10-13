@@ -1,0 +1,29 @@
+{%import "commonExecuteCallback.js" as commons%}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfYX6GG1foO1l7TAPk2LQVV_nACb7T4Q" type="text/javascript"></script>
+<script id="flightScript{{prefix}}">
+  window.Pixiedust = window.Pixiedust || {};
+  window.Pixiedust.flightpredict = window.Pixiedust.flightpredict || {};
+
+  (function(pix) {
+    pix.flightpredict = {
+      renderFlightInfoMap: function(departureInfo, arrivalInfo) {
+        var map = new google.maps.Map(document.getElementById("flightpredict-map"), {zoom: 4,center: new google.maps.LatLng(40, -100),mapTypeId: google.maps.MapTypeId.TERRAIN});
+        var depAirport = new google.maps.LatLng(departureInfo.latitude, departureInfo.longitude);
+        var arrAirport = new google.maps.LatLng(arrivalInfo.latitude, arrivalInfo.longitude);
+        var markerP1 = new google.maps.Marker({position: depAirport, map: map});
+        var markerP2 = new google.maps.Marker({position: arrAirport, map: map});
+        var flightPlanCoordinates = [depAirport,arrAirport];
+        var flightPath = new google.maps.Polyline({path: flightPlanCoordinates,strokeColor: "#0000FF",strokeOpacity: 1.0,strokeWeight: 2});
+        flightPath.setMap(map);
+      },
+
+      renderPredictionModels: function(predictionInfo) {
+        $('#prediction-models .memo').text(predictionInfo.overall);
+      },
+
+      renderWeatherForecast: function(weatherForecast) {
+
+      }
+    };
+  })(window.Pixiedust);
+</script>
