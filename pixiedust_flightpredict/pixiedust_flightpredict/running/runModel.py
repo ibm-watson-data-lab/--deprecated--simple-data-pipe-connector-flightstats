@@ -372,14 +372,23 @@ def runModelTest(flight, date):
         },
         'prediction': {
             'models': [
-                {'model': 'NaiveBayesModel','prediction': 'Delayed between 13 and 41 minutes'},
-                {'model': 'DecisionTreeModel: Delayed between 13 and 41 minutes'},
-                {'model': 'LogisticRegressionModel: Delayed between 13 and 41 minutes'},
-                {'model': 'RandomForestModel: Delayed between 13 and 41 minutes'}
+                {'model': 'NaiveBayesModel', 'prediction': 'Delayed between 13 and 41 minutes'},
+                {'model': 'DecisionTreeModel', 'prediction': 'Delayed between 13 and 41 minutes'},
+                {'model': 'LogisticRegressionModel', 'prediction': 'Delayed between 13 and 41 minutes'},
+                {'model': 'RandomForestModel', 'prediction': 'Delayed between 13 and 41 minutes'}
             ],
             'overall': 'Delayed between 13 and 41 minutes'
         }
     }
 
     saveFlightResults(payload)
+    return json.dumps(payload)
+
+def runFlightSearch(date, time):
+    payload = {
+        'flights': [
+            {'flightnumber': 'CVC 0811', 'time': '6:15pm', 'destination': 'Newark, NY'},
+            {'flightnumber': 'VA 0315', 'time': '6:30pm', 'destination': 'Boston, MA'} 
+        ]
+    }
     return json.dumps(payload)
