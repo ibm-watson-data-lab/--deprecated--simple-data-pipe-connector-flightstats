@@ -173,6 +173,58 @@
     .search-flight .pixiedust-formfield-default {
       display: none;
     }
+
+    .tab-pane-flightpredictdata ul {
+      list-style: outside none none;
+      padding: 0px;
+    }
+    .tab-pane-flightpredictdata li {
+      background-color: #f9f9f9;
+      display: block;
+      font-size: 1.125em;
+      margin-bottom: 10px;
+      padding: 0px;
+    }
+    .tab-pane-flightpredictdata li:hover {
+      cursor: pointer;
+    }
+    .tab-pane-flightpredictdata li > div:first-child {
+      border-left: 5px solid #f9f9f9;
+      font-weight: 500;
+      padding: 15px;
+    }
+    .tab-pane-flightpredictdata li.expanded > div:first-child,
+    .tab-pane-flightpredictdata li:hover > div:first-child {
+      background-color: #eeeeee;
+      border-color: #a6266e;
+      color: #a6266e;
+    }
+    #prediction-models,
+    #weather-forecasts {
+      height: calc(30vh + 30px);
+    }
+    #prediction-models .chart-stage,
+    #weather-forecasts .chart-stage {
+      height: calc(100% - 40px);
+      overflow: auto;
+    }
+    .prediction-model,
+    .weather-forecast {
+      display: none;
+      line-height: 1.5em;
+      padding: 10px;
+    }
+    .weather-forecast {
+      padding-left: 20px;
+    }
+    .prediction-model span:first-child {
+      line-height: 1.5em;
+      padding: 10px;
+    }
+    .prediction-model span:nth-child(2) {
+      color: #a6266e;
+      float: right;
+    }
   </style>
   <div class="tab-content container-fluid" >
     <div class="tab-pane tab-pane-flightpredictdata row">
@@ -241,30 +293,30 @@
                 <div class="pixiedust-formfield pixiedust-formfield-search">
                   <label for="flight-predict-time-one">Approximate Flight Time</label>
                   <select id="flight-predict-time-one" name="flight-predict-time-one" class="col-sm-12" type="text">
-                    <option value="0000">12:00am - 1:00am</option>
-                    <option value="0100">1:00am - 2:00am</option>
-                    <option value="0200">2:00am - 3:00am</option>
-                    <option value="0300">3:00am - 4:00am</option>
-                    <option value="0400">4:00am - 5:00am</option>
-                    <option value="0500">5:00am - 6:00am</option>
-                    <option value="0600">6:00am - 7:00am</option>
-                    <option value="0700">7:00am - 8:00am</option>
-                    <option value="0800">8:00am - 9:00am</option>
-                    <option value="0900">9:00am - 10:00am</option>
-                    <option value="1000">10:00am - 11:00am</option>
-                    <option value="1100">11:00am - 12:00pm</option>
-                    <option value="1200">12:00pm - 1:00pm</option>
-                    <option value="1300">1:00pm - 2:00pm</option>
-                    <option value="1400">2:00pm - 3:00pm</option>
-                    <option value="1500">3:00pm - 4:00pm</option>
-                    <option value="1600">4:00pm - 5:00pm</option>
-                    <option value="1700">5:00pm - 6:00pm</option>
-                    <option value="1800">6:00pm - 7:00pm</option>
-                    <option value="1900">7:00pm - 8:00pm</option>
-                    <option value="2000">8:00pm - 9:00pm</option>
-                    <option value="2100">9:00pm - 10:00pm</option>
-                    <option value="2200">10:00pm - 11:00pm</option>
-                    <option value="2300">11:00pm - 12:00am</option>
+                    <option value="0000">12:00am - 12:59am</option>
+                    <option value="0100">1:00am - 1:59am</option>
+                    <option value="0200">2:00am - 2:59am</option>
+                    <option value="0300">3:00am - 3:59am</option>
+                    <option value="0400">4:00am - 4:59am</option>
+                    <option value="0500">5:00am - 5:59am</option>
+                    <option value="0600">6:00am - 6:59am</option>
+                    <option value="0700">7:00am - 7:59am</option>
+                    <option value="0800">8:00am - 8:59am</option>
+                    <option value="0900">9:00am - 9:59am</option>
+                    <option value="1000">10:00am - 10:59am</option>
+                    <option value="1100">11:00am - 11:59am</option>
+                    <option value="1200">12:00pm - 12:59pm</option>
+                    <option value="1300">1:00pm - 1:59pm</option>
+                    <option value="1400">2:00pm - 2:59pm</option>
+                    <option value="1500">3:00pm - 3:59pm</option>
+                    <option value="1600">4:00pm - 4:59pm</option>
+                    <option value="1700">5:00pm - 5:59pm</option>
+                    <option value="1800">6:00pm - 6:59pm</option>
+                    <option value="1900">7:00pm - 7:59pm</option>
+                    <option value="2000">8:00pm - 8:59pm</option>
+                    <option value="2100">9:00pm - 8:59pm</option>
+                    <option value="2200">10:00pm - 10:59pm</option>
+                    <option value="2300">11:00pm - 11:59pm</option>
                   </select>
                 </div>
                 <div class="pixiedust-formfield pixiedust-formfield-search" style="text-align: right;">
@@ -296,30 +348,30 @@
                 <div class="pixiedust-formfield pixiedust-formfield-search">
                   <label for="flight-predict-time-two">Approximate Flight Time</label>
                   <select id="flight-predict-time-two" name="flight-predict-time-two" class="col-sm-12" type="text">
-                    <option value="0000">12:00am - 1:00am</option>
-                    <option value="0100">1:00am - 2:00am</option>
-                    <option value="0200">2:00am - 3:00am</option>
-                    <option value="0300">3:00am - 4:00am</option>
-                    <option value="0400">4:00am - 5:00am</option>
-                    <option value="0500">5:00am - 6:00am</option>
-                    <option value="0600">6:00am - 7:00am</option>
-                    <option value="0700">7:00am - 8:00am</option>
-                    <option value="0800">8:00am - 9:00am</option>
-                    <option value="0900">9:00am - 10:00am</option>
-                    <option value="1000">10:00am - 11:00am</option>
-                    <option value="1100">11:00am - 12:00pm</option>
-                    <option value="1200">12:00pm - 1:00pm</option>
-                    <option value="1300">1:00pm - 2:00pm</option>
-                    <option value="1400">2:00pm - 3:00pm</option>
-                    <option value="1500">3:00pm - 4:00pm</option>
-                    <option value="1600">4:00pm - 5:00pm</option>
-                    <option value="1700">5:00pm - 6:00pm</option>
-                    <option value="1800">6:00pm - 7:00pm</option>
-                    <option value="1900">7:00pm - 8:00pm</option>
-                    <option value="2000">8:00pm - 9:00pm</option>
-                    <option value="2100">9:00pm - 10:00pm</option>
-                    <option value="2200">10:00pm - 11:00pm</option>
-                    <option value="2300">11:00pm - 12:00am</option>
+                    <option value="0000">12:00am - 12:59am</option>
+                    <option value="0100">1:00am - 1:59am</option>
+                    <option value="0200">2:00am - 2:59am</option>
+                    <option value="0300">3:00am - 3:59am</option>
+                    <option value="0400">4:00am - 4:59am</option>
+                    <option value="0500">5:00am - 5:59am</option>
+                    <option value="0600">6:00am - 6:59am</option>
+                    <option value="0700">7:00am - 7:59am</option>
+                    <option value="0800">8:00am - 8:59am</option>
+                    <option value="0900">9:00am - 9:59am</option>
+                    <option value="1000">10:00am - 10:59am</option>
+                    <option value="1100">11:00am - 11:59am</option>
+                    <option value="1200">12:00pm - 12:59pm</option>
+                    <option value="1300">1:00pm - 1:59pm</option>
+                    <option value="1400">2:00pm - 2:59pm</option>
+                    <option value="1500">3:00pm - 3:59pm</option>
+                    <option value="1600">4:00pm - 4:59pm</option>
+                    <option value="1700">5:00pm - 5:59pm</option>
+                    <option value="1800">6:00pm - 6:59pm</option>
+                    <option value="1900">7:00pm - 7:59pm</option>
+                    <option value="2000">8:00pm - 8:59pm</option>
+                    <option value="2100">9:00pm - 8:59pm</option>
+                    <option value="2200">10:00pm - 10:59pm</option>
+                    <option value="2300">11:00pm - 11:59pm</option>
                   </select>
                 </div>
                 <div class="pixiedust-formfield pixiedust-formfield-search" style="text-align: right;">
@@ -380,6 +432,9 @@
   searchBtn.click(function(event) {
     event.preventDefault();
     event.stopPropagation();
+    searchBtn.prop('disabled', true);
+    nextBtn.prop('disabled', true);
+    pixiedustSpinner.css({'display': 'inline-block'});
 
     var suffix = $(this).attr('data-flight-suffix');
     var flightDate = $('#flight-predict-date-'+suffix, tdiag).val();
@@ -399,6 +454,9 @@
         var flights = jsonResults.flights || [];
         flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag))
       {%endif%}
+        searchBtn.prop('disabled', false);
+        nextBtn.prop('disabled', false);
+        pixiedustSpinner.css({'display': 'none'});
     {% endcall %}
   });
 
@@ -417,6 +475,10 @@
       .addClass('modal-dialog-flightpredictform');
 
     flightpredict.resetForm();
+
+    searchBtn.prop('disabled', false);
+    nextBtn.prop('disabled', false);
+    pixiedustSpinner.css({'display': 'none'});
   });
 
   nextBtn.click(function(event) {
@@ -455,6 +517,9 @@
       $('.flight-info .chart-notes').text(errorMessage);
     }
     else {
+      searchBtn.prop('disabled', true);
+      nextBtn.prop('disabled', true);
+      pixiedustSpinner.css({'display': 'inline-block'});
       window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
         "\nprint(runModelTest('" + flightNum + "', '" + flightDate + "'))";
 
@@ -483,6 +548,9 @@
             flightpredict.renderFlightInfoMap(jsonResults);
           }
         {%endif%}
+        searchBtn.prop('disabled', false);
+        nextBtn.prop('disabled', false);
+        pixiedustSpinner.css({'display': 'none'});
       {% endcall %};
     }
   });
