@@ -420,6 +420,7 @@
   var okBtn = $('.btn-ok', tdiag);
   var cancelBtn = $('.btn-cancel', tdiag);
   var searchBtn = $('.btn-search', tdiag);
+  var predictSelectOne =$('#flight-predict-select-one', tdiag)
 
   var restartBtn = $('<button class="btn btn-sm btn-restart">StartOver</button>');
   var backBtn = $('<button class="btn btn-sm btn-back">Go to Notebook</button>');
@@ -429,6 +430,14 @@
   okBtn.after(nextBtn);
   okBtn.after(restartBtn);
 
+  selectedFlightOneDestAirportCode = null;
+
+  predictSelectOne.change(function(event){
+    event.preventDefault();
+    selectedFlightOneDestAirportCode = $(this).val().split(":")[1];
+    console.log("Selected Flight One dest airport ", selectedFlightOneDestAirportCode);
+  });
+
   searchBtn.click(function(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -437,22 +446,29 @@
     pixiedustSpinner.css({'display': 'inline-block'});
 
     var suffix = $(this).attr('data-flight-suffix');
+    var depAirport = "LAS";
+    if ( suffix == "two"){
+      //Get the destination airport from first flight
+      depAirport = predictSelectOne.val().split(":")[1]
+    }
     var flightDate = $('#flight-predict-date-'+suffix, tdiag).val();
     var flightTime = $('#flight-predict-time-'+suffix, tdiag).val();
 
     window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
-      "\nprint(runFlightSearch('" + flightDate + "', '" + flightTime + "'))";
+      "\nprint(runFlightSearch('" + flightDate + "', '" + flightTime + "', departureAirport='" + depAirport + "'))";
 
     //search for flights
     {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
       console.log({{results["error"] or results}});
       {%if results["error"]%}
-        alert({{results}});
+        alert(JSON.stringify({{results}}));
       {%else%}
         $('.flight-info .chart-notes').empty();
+        {% if results != '' %}
         var jsonResults = JSON.parse({{results}});
         var flights = jsonResults.flights || [];
         flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag))
+        {%endif%}
       {%endif%}
         searchBtn.prop('disabled', false);
         nextBtn.prop('disabled', false);
@@ -503,6 +519,7 @@
           if (!flightNum) {
              errorMessage = 'Missing flight number';
           }
+          flightNum = flightNum.split(":")[0]
         }
       }
       else {
@@ -521,14 +538,14 @@
       nextBtn.prop('disabled', true);
       pixiedustSpinner.css({'display': 'inline-block'});
       window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
-        "\nprint(runModelTest('" + flightNum + "', '" + flightDate + "'))";
+        "\nprint(runModel('" + flightNum + "', '" + flightDate + "'))";
 
       //Check the flights validatity
       {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
         console.log({{results["error"] or results}});
         {%if results["error"]%}
           alert({{results}});
-        {%else%}
+        {%elif results != '' %}
           var jsonResults = JSON.parse({{results}});
           var flightInfo = null;
 
