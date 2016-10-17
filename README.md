@@ -18,9 +18,9 @@ To load flightstats.com data you have to have a <a href="https://developer.fligh
 
 ##### Services
 
-This connector requires the [Insights for Weather service](https://console.ng.bluemix.net/catalog/services/insights-for-weather/) in IBM Bluemix to be bound to the Simple Data Pipe application. 
+This connector requires the [Weather Company Data service](https://console.ng.bluemix.net/catalog/services/weather-company-data/) in IBM Bluemix to be bound to the Simple Data Pipe application. 
 
-Provision and bind an _Insights for Weather service_ instance using the Bluemix web console ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Bluemix-web-console)) or run the following Cloud Foundry commands ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Cloud-Foundry-command-line-client)):
+Provision and bind an _Weather Company Data service_ instance using the Bluemix web console ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Bluemix-web-console)) or run the following Cloud Foundry commands ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Cloud-Foundry-command-line-client)):
 
 ````
   $ cf create-service weatherinsights Free weather
@@ -28,7 +28,7 @@ Provision and bind an _Insights for Weather service_ instance using the Bluemix 
   $ cf restage simple-data-pipe
 ````
 
-> Pro Tip: If you want to re-use an existing instance that is not named `weather`, create a [USER-DEFINED Environment Variable](https://www.ng.bluemix.net/docs/manageapps/depapps.html#ud_env) in the Simple Data Pipe application named __WEATHER__ and set its value to the name of the existing Insights for Weather service. [(Show me how - Bluemix)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-create-a-user-defined-environment-variable-in-Bluemix-using-the-Bluemix-web-console)
+> Pro Tip: If you want to re-use an existing instance that is not named `weather`, create a [USER-DEFINED Environment Variable](https://www.ng.bluemix.net/docs/manageapps/depapps.html#ud_env) in the Simple Data Pipe application named __WEATHER__ and set its value to the name of the existing Weather Company Data service. [(Show me how - Bluemix)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-create-a-user-defined-environment-variable-in-Bluemix-using-the-Bluemix-web-console)
 [(Show me how - Cloud Foundry client)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-Do-I--create-a-user-defined-environment-variable-in-Bluemix-using-the-Cloud-Foundry-command-line-client)
 
 
