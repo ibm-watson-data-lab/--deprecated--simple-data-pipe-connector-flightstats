@@ -174,7 +174,7 @@
       populateFlightOptions: function(flights, selectNode) {
         for (var f in flights) {
           var flight = flights[f];
-          selectNode.append('<option value="' + flight.flightnumber + '">' + flight.time + ' - ' + flight.destination + ' (' + flight.flightnumber + ')' + '</option>');
+          selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + '">' + flight.time + ' - ' + flight.destination + ' (' + flight.flightnumber + ')' + '</option>');
         }
       }
     };

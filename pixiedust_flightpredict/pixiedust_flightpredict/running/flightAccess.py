@@ -31,19 +31,21 @@ def buildUrl(path, **kwargs):
         raise ValueError("appId or appKey is not defined")
     return (flexBaseUrl+path).format(**kwargs) + "?appId={0}&appKey={1}".format(appId, appKey)
 
+def parseDate(date):
+    parts=date.split("-")
+    if len(parts)!=3:
+        raise ValueError("Invalid date {0}".format(date))
+
+    #(year, month, day)
+    return (parts[0], parts[1], parts[2])
+
 def getFlightSchedule(flight, date):
     #parse the flight and date
     index = flight.rfind(" ")
     carrier = flight[:index]
     flightnumber = flight[index+1:]
 
-    parts=date.split("-")
-    if len(parts)!=3:
-        raise ValueError("Invalid date {0}".format(date))
-
-    year=parts[0]
-    month=parts[1]
-    day=parts[2]
+    (year,month,day) = parseDate(date)
 
     schedulesPath = "schedules/rest/v1/json/flight/{carrier}/{flightnumber}/departing/{year}/{month}/{day}"
     url = buildUrl(schedulesPath, carrier=carrier, flightnumber=flightnumber, year=year, month=month, day=day)
@@ -55,5 +57,40 @@ def getFlightSchedule(flight, date):
         raise requests.HTTPError(msg, response=response)
         
     return response.json()
+
+flightsCache={}
+def getFlights(airport, date, hour):
+    (year,month,day) = parseDate(date)
+    #check the cache first
+    if len(hour)>2:
+        hour = hour[:2]
+    key = airport+date+str(hour)
+    if key in flightsCache:
+        return flightsCache[key]
+
+    path = "schedules/rest/v1/json/from/{departureAirportCode}/departing/{year}/{month}/{day}/{hourOfDay}"
+
+    url = buildUrl(path, departureAirportCode=airport, year=year,month=month,day=day,hourOfDay=hour)
+    myLogger.debug("Calling getFlights with url: " + url)
+    response = requests.get( url )
+    if response.status_code != 200:
+        msg = "Error while trying to get flights for airport {0} at hour {1}. Error is {2}".format(airport, hour, str(response.reason))
+        myLogger.error(msg)
+        raise requests.HTTPError(msg, response=response)
+
+    payload = response.json()
+    if "error" in payload:
+        msg = "Error while trying to get flights for airport {0} at hour {1}. Error is {2}".format(airport, hour, payload['error']['errorMessage'])
+        myLogger.error(msg)
+        raise requests.HTTPError(msg, response = response)
+
+    ret = {
+        "scheduledFlights": payload['scheduledFlights'],
+        "airports": payload['appendix']['airports'] if 'airports' in payload['appendix'] else [],
+        "airlines": payload['appendix']['airlines'] if 'airlines' in payload['appendix'] else []
+    }
+    flightsCache[key]=ret
+    return ret
+
 
 

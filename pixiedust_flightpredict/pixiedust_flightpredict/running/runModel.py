@@ -124,7 +124,7 @@ def runModel(flight, date):
     appendix=response['appendix']
     payload["flightInfo"]=scheduledFlight=response["scheduledFlights"][0]
     
-    payload["departureAiportInfo"]=departureInfo={}
+    payload["departureAirportInfo"]=departureInfo={}
     departureInfo["airportInfo"]=depAirportJSON=appendix["airports"][0]
     departureInfo["weatherForecast"]= depWeather = getWeather(depAirportJSON['latitude'], depAirportJSON['longitude'], scheduledFlight["departureTime"])
 
@@ -162,8 +162,12 @@ def runModel(flight, date):
         ]
     }
     """
-    saveFlightResults(payload)
-    return payload
+    try:
+        saveFlightResults(payload)
+    except:
+        myLogger.exception("Unable to save flight results {0}".format(payload))
+
+    return json.dumps(payload)
     #payload format
     """
     {
@@ -194,7 +198,7 @@ def mapAttribute(attr):
         return "dewpt"
     return attr
 
-def createFeaturesVector(depWeather, arrWeather, scheduledFlight, arrAiport, depAirport):
+def createFeaturesVector(depWeather, arrWeather, scheduledFlight, arrAirport, depAirport):
     features=[]
     for attr in attributes:
         features.append(depWeather[mapAttribute(attr)])
@@ -203,7 +207,7 @@ def createFeaturesVector(depWeather, arrWeather, scheduledFlight, arrAiport, dep
     
     #Call training handler for custom features
     s=type('dummy', (object,), {
-        'departureTime':scheduledFlight["departureTime"], 'arrivalTime':scheduledFlight["arrivalTime"], 'arrivalAirportFsCode': arrAiport["fs"], 
+        'departureTime':scheduledFlight["departureTime"], 'arrivalTime':scheduledFlight["arrivalTime"], 'arrivalAirportFsCode': arrAirport["fs"], 
         'departureAirportFsCode':depAirport["fs"],'departureWeather': depWeather, 'arrivalWeather': arrWeather})
 
     myLogger.debug("Creating features vector with {0}".format(s))
@@ -384,11 +388,31 @@ def runModelTest(flight, date):
     saveFlightResults(payload)
     return json.dumps(payload)
 
-def runFlightSearch(date, time):
-    payload = {
-        'flights': [
-            {'flightnumber': 'CVC 0811', 'time': '6:15pm', 'destination': 'Newark, NY'},
-            {'flightnumber': 'VA 0315', 'time': '6:30pm', 'destination': 'Boston, MA'} 
-        ]
-    }
+def runFlightSearch(date, time, departureAirport=None):
+    if departureAirport is None:
+        departureAirport = "LAS"
+    
+    myLogger.debug("Calling runFlightSearch with date:{0}, time:{1}, departureAirport:{2}".format(date, time, departureAirport))
+    flights = getFlights(departureAirport, date, time )
+
+    def getAirportName(code):
+        for airport in flights['airports']:
+            if airport['fs'] == code:
+                return airport['name'] + ", " + airport['stateCode'] if 'stateCode' in airport else airport['countryName']
+
+    payload = {'flights':[]}
+
+    for scheduledFlight in flights['scheduledFlights']:
+        flight={}
+        flight['flightnumber'] = scheduledFlight['carrierFsCode'] + ' ' + scheduledFlight['flightNumber']
+        flight['time'] = scheduledFlight['departureTime']
+        flight['destAirportCode'] = scheduledFlight['arrivalAirportFsCode']
+        flight['destination'] = getAirportName(scheduledFlight['arrivalAirportFsCode'])
+        payload['flights'].append(flight)
+    #payload = {
+    #    'flights': [
+    #        {'flightnumber': 'CVC 0811', 'time': '6:15pm', 'destination': 'Newark, NY'},
+    #        {'flightnumber': 'VA 0315', 'time': '6:30pm', 'destination': 'Boston, MA'} 
+    #    ]
+    #}
     return json.dumps(payload)
