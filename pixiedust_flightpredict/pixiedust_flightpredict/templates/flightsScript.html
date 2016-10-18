@@ -20,6 +20,27 @@
       });
     }
 
+    function formatDateTime(datetime, opt) {
+      var datetimeStr = '';
+      if (!opt || opt === 'date') {
+        var day = datetime.getDate();
+        var month = datetime.getMonth() + 1;
+        var year = datetime.getFullYear();
+        day = day < 10 ? '0' + day : day;
+        month = month < 10 ? '0' + month : month;
+        datetimeStr += year + '-' + month + '-' + day + ' ';
+      }
+      if (!opt || opt === 'time') {
+        var hours = datetime.getHours();
+        var minutes = datetime.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = (hours % 12) || 12;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        datetimeStr += ' ' + hours + ':' + minutes + ampm;
+      }
+      return datetimeStr;
+    }
+
     pix.flightpredict = {
       resetForm: function() {
         $('#flightpredictform')[0].reset();
@@ -40,12 +61,12 @@
       },
 
       predictionTemplate: '<li>' +
-        '<div><span>{title}</span></div>' +
+        '<div class="prediction-model-title"><span>{flight}</span><span>{datetime}</span></div>' +
         '<div class="prediction-model">{models}</div>' +
         '</li>',
 
       weatherTemplate: '<li>' +
-        '<div><span>{title}</span></div>' +
+        '<div class="weather-forecast-title"><span>{flight}</span><span>{datetime}</span></div>' +
         '<div class="row weather-forecast">' +
         '<div class="col-sm-6">{departureweather}</div>' +
         '<div class="col-sm-6">{arrivalweather}</div>' +
@@ -55,13 +76,15 @@
         '<h3>{name}</h3>' +
         '<div>{street1}</div>' +
         '<div>{city}, {stateCode} {postalCode}</div>' +
-        '<div>Latitude: {latitude}</div>' +
-        '<div>Longitude: {longitude}</div>' +
+        '<div><span>Lat/Long:</span> <span>{latitude}, {longitude}</span></div>' +
         '</div>',
 
       flightMarkerTemplate: '<div class="flight-path-info">' +
-        '<h3>{carrierFsCode} {flightNumber}</h3>' +
-        '<div>{departureAirportFsCode} &gt; {arrivalAirportFsCode}</div>' +
+        '<h3><span>{departureAirportFsCode} &gt; {arrivalAirportFsCode}</span> <span>({carrierFsCode} {flightNumber})</span></h3>' +
+        '<div><span>Departure:</span> <span>{depdatetime}</span></div>' +
+        '<div><span>Arrival:</span> <span>{arrdatetime}</span></div>' +
+        '<div><span>Airline:</span> <span>{airline}</span></div>' +
+        '<div><span>Airplane:</span> <span>{airplane}</span></div>' +
         '</div>',
 
       themap: null,
@@ -86,7 +109,6 @@
 
         var departureInfo = info.departureAirportInfo.airportInfo;
         var arrivalInfo = info.arrivalAirportInfo.airportInfo;
-        var flightInfo = info.flightInfo;
 
         var depAirport = new google.maps.LatLng(departureInfo.latitude, departureInfo.longitude);
         var arrAirport = new google.maps.LatLng(arrivalInfo.latitude, arrivalInfo.longitude);
@@ -100,6 +122,17 @@
           strokeOpacity: 0.75,
           strokeWeight: 4
         });
+
+        var flightPathInfo = {
+          departureAirportFsCode: info.flightInfo.departureAirportFsCode,
+          arrivalAirportFsCode:  info.flightInfo.arrivalAirportFsCode,
+          carrierFsCode: info.flightInfo.carrierFsCode,
+          flightNumber: info.flightInfo.flightNumber,
+          depdatetime: formatDateTime(new Date(info.flightInfo.departureTime)),
+          arrdatetime: formatDateTime(new Date(info.flightInfo.arrivalTime)),
+          airline: '---airline---',
+          airplane: '---airplane---',
+        };
         
         flightPath.setMap(this.themap);
 
@@ -110,7 +143,7 @@
           return arrivalInfo.hasOwnProperty($1) ? arrivalInfo[$1] : $0;
         });
         var flightPathInfoContent = this.flightMarkerTemplate.replace(/\{(.+?)\}/g, function($0, $1) {
-          return flightInfo.hasOwnProperty($1) ? flightInfo[$1] : $0;
+          return flightPathInfo.hasOwnProperty($1) ? flightPathInfo[$1] : $0;
         });
 
         
@@ -132,19 +165,20 @@
         flightPath.addListener('click', function(event) {
           infoWindow.setContent(flightPathInfoContent);
           infoWindow.setPosition(event.latLng);
-          infoWindow.open(this.themap);
+          infoWindow.open(this.themap, arrAirportMarker);
         });
 
         google.maps.event.trigger(this.themap,'resize');
       },
 
-      renderPredictionModels: function(info) {
+      renderPredictionModels: function(info, expand) {
         var predictionInfo = info.prediction;
         var departureAirport = info.flightInfo.departureAirportFsCode;
         var arrivalAirport = info.flightInfo.arrivalAirportFsCode;
 
         var predictionModel = {
-          title: departureAirport + ' > ' + arrivalAirport,
+          flight: departureAirport + ' > ' + arrivalAirport,
+          datetime: formatDateTime(new Date(info.flightInfo.departureTime)),
           overall: predictionInfo.overall,
           models: ''
         };
@@ -159,11 +193,14 @@
         }));
 
         slideToggleArea(t, '.prediction-model');
+        if (expand) {
+          t.trigger('click');
+        }
 
         $('#prediction-models .prediction-models-list').append(t);
       },
 
-      renderWeatherForecast: function(info) {
+      renderWeatherForecast: function(info, expand) {
         var departureWeather = info.departureAirportInfo.weatherForecast;
         var arrivalWeather = info.arrivalAirportInfo.weatherForecast;
         var departureAirport = info.flightInfo.departureAirportFsCode;
@@ -172,7 +209,8 @@
         var arrivalCity = info.arrivalAirportInfo.airportInfo.city;
 
         var weatherForecast = {
-          title: departureAirport + ' > ' + arrivalAirport,
+          flight: departureAirport + ' > ' + arrivalAirport,
+          datetime: formatDateTime(new Date(info.flightInfo.departureTime)),
           departureweather: '<div>' + departureCity + '</div>' +
             '<div>' + departureWeather.phrase_22char + '</div>' +
             '<div>' + departureWeather.temp + '</div>' +
@@ -188,6 +226,9 @@
         }));
 
         slideToggleArea(t, '.weather-forecast');
+        if (expand) {
+          t.trigger('click');
+        }
 
         $('#weather-forecasts .weather-forecast-list').append(t);
       },
@@ -197,12 +238,7 @@
           var flight = flights[f];
 
           var datetime = new Date(flight.time);
-          var hours = datetime.getHours();
-          var minutes = datetime.getMinutes();
-          var ampm = hours >= 12 ? 'pm' : 'am';
-          hours = (hours % 12) || 12;
-          minutes = minutes < 10 ? '0' + minutes : minutes;
-          var time = hours + ':' + minutes + ampm;
+          var time = formatDateTime(datetime, 'time');
 
           selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + ':' + datetime.getTime() + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
           selectNode.change();

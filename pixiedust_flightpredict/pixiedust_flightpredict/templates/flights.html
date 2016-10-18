@@ -38,7 +38,8 @@
     .chart-wrapper .chart-stage .form-title {
       margin: 10px 0;
     }
-    .chart-wrapper .chart-notes {
+    .chart-wrapper .chart-notes,
+    .chart-wrapper .flight-predict-message {
       color: #a6266e;
       font-size: initial;
     }
@@ -171,9 +172,11 @@
     }
     .tab-pane-flightpredictdata li {
       background-color: #f9f9f9;
+      border-bottom: 1px solid #ddd;
+      border-right: 1px solid #ddd;
       display: block;
       font-size: 1.125em;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       padding: 0px;
     }
     .tab-pane-flightpredictdata li:hover {
@@ -199,6 +202,11 @@
       height: calc(100% - 40px);
       overflow: auto;
     }
+    .prediction-model-title > span:nth-child(2),
+    .weather-forecast-title > span:nth-child(2) {
+      float: right;
+      font-weight: 300;
+    }
     .prediction-model,
     .weather-forecast {
       display: none;
@@ -215,6 +223,33 @@
     .prediction-model span:nth-child(2) {
       color: #a6266e;
       float: right;
+    }
+    .airport-marker-info h3,
+    .flight-path-info h3 {
+      font-size: 20px;
+      margin: 0;
+      padding: 10px 0;
+    }
+    .airport-marker-info > div {
+      font-size: 14px;
+    }
+    .airport-marker-info > div:last-child {
+      padding: 10px 0;
+    }
+    .flight-path-info > div {
+      padding: 2px 0;
+    }
+    .flight-path-info > div:nth-child(4) {
+      padding-top: 6px;
+    }
+    .flight-path-info span:nth-child(2) {
+      float: right;
+      margin-left: 10px;
+    }
+    .flight-predict-message,
+    .flight-predict-status-image {
+      min-height: 50px;
+      padding: 15px 0;
     }
   </style>
   <div class="tab-content container-fluid" >
@@ -261,8 +296,8 @@
           <div class="chart-title">
             <span>Enter your flight information </span>
           </div>
-          <div class="chart-stage">
-            <div class="row" style="height: calc(70vh - 60px);">
+          <div class="chart-stage" style="height: calc(70vh - 60px);">
+            <div class="row">
               <form id="flightpredictform">
               <div class="col-sm-5 flight-one">
                 <div class="form-title">
@@ -361,6 +396,8 @@
               </div>
               </form>
             </div>
+            <div class="row flight-predict-message"></div>
+            <div class="row flight-predict-status-image"></div>
           </div>
           <div class="chart-notes">&nbsp;</div>
         </div>
@@ -402,6 +439,7 @@
   var departureTwo = $('#flight-predict-departure-two', tdiag);
   var flightDateOne = $('#flight-predict-date-one', tdiag);
   var flightDateTwo = $('#flight-predict-date-two', tdiag);
+  var messageNode = $('.flight-info .flight-predict-message', tdiag);
 
   var restartBtn = $('<button class="btn btn-sm btn-restart">StartOver</button>');
   var backBtn = $('<button class="btn btn-sm btn-back">Go to Notebook</button>');
@@ -421,7 +459,7 @@
   searchBtn.click(function(event) {
     event.preventDefault();
     event.stopPropagation();
-    $('.flight-info .chart-notes').empty();
+    messageNode.empty();
     searchBtn.prop('disabled', true);
     nextBtn.prop('disabled', true);
     pixiedustSpinner.css({'display': 'inline-block'});
@@ -450,13 +488,15 @@
     {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
       console.log({{results["error"] or results}});
       {%if results["error"]%}
-        alert(JSON.stringify({{results}}));
+        messageNode.text(JSON.stringify({{results}}));
       {%else%}
         {% if results != '' %}
           var jsonResults = JSON.parse({{results}});
           var flights = jsonResults.flights || [];
           flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag));
-        {%endif%}
+        {% else %}
+          messageNode.text('No flights found for that date and time. Try a different search.');
+        {% endif %}
       {%endif%}
         searchBtn.prop('disabled', false);
         nextBtn.prop('disabled', false);
@@ -486,11 +526,13 @@
   });
 
   var doRunModel = function(flightNum, flightDateTime, depAirport, callback) {
+    messageNode.empty();
     searchBtn.prop('disabled', true);
     nextBtn.prop('disabled', true);
     pixiedustSpinner.css({'display': 'inline-block'});
     var dt = new Date(+flightDateTime);
-    dt = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate();
+    dt = dt.toISOString();
+    //dt = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate();
 
     window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
       "\nprint(runModel('" + flightNum + "', '" + dt + "', departureAirport='" + depAirport + "'))";
@@ -498,9 +540,8 @@
     //Check the flights validatity
     {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
       console.log({{results["error"] or results}});
-      $('.flight-info .chart-notes').empty();
       {%if results["error"]%}
-        alert({{results}});
+        messageNode.text(JSON.stringify({{results}}));
       {%elif results != '' %}
         var jsonResults = JSON.parse({{results}});
         var flightInfo = null;
@@ -549,7 +590,7 @@
     }
 
     if (errorMessage) {
-      $('.flight-info .chart-notes').text(errorMessage);
+      messageNode.text(errorMessage);
     }
     else {
       var suffix = $(this).attr('data-flight-suffix');
@@ -581,14 +622,14 @@
   var switchToMap = function(flightone, flighttwo) {
     $('.tab-pane.active').removeClass('active');
     $('.tab-pane-flightpredictdata').addClass('active');
-    
+
     tdiag
       .removeClass('modal-dialog-flightpredictform')
       .addClass('modal-dialog-flightpredictdata');
 
     if (flightone) {
-      flightpredict.renderWeatherForecast(flightone);
-      flightpredict.renderPredictionModels(flightone);
+      flightpredict.renderWeatherForecast(flightone, true);
+      flightpredict.renderPredictionModels(flightone, true);
       flightpredict.renderFlightMap(flightone);
     }
     if (flighttwo) {
