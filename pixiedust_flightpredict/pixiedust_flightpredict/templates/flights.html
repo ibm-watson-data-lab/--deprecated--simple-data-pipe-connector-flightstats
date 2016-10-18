@@ -164,15 +164,6 @@
     .pixiedust-formfield select.focus {
       border-color: #a6266e;
     }
-    .pixiedust-formfield-search {
-      display: none;
-    }
-    .search-flight .pixiedust-formfield-search {
-      display: block;
-    }
-    .search-flight .pixiedust-formfield-default {
-      display: none;
-    }
 
     .tab-pane-flightpredictdata ul {
       list-style: outside none none;
@@ -274,23 +265,14 @@
             <div class="row" style="height: calc(70vh - 60px);">
               <form id="flightpredictform">
               <div class="col-sm-5 flight-one">
-                <div class="form-title pixiedust-formfield-default">
-                  <span>Enter the date and flight number of the first leg of your trip or </span>
-                  <span class="search">search for the flight.</span>
-                </div>
-                <div class="form-title pixiedust-formfield-search">
-                  <span>Enter the date and the approximate time of the first leg of your trip or </span>
-                  <span class="search">enter the flight number.</span>
+                <div class="form-title">
+                  <span>Enter the date and the approximate time of the first leg of your trip.</span>
                 </div>
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-date-one">Flight Date</label>
                   <input id="flight-predict-date-one" name="flight-predict-date-one" class="col-sm-12" type="date" placeholder="e.g., YYYY-MM-DD">
                 </div>
-                <div class="pixiedust-formfield pixiedust-formfield-default">
-                  <label for="flight-predict-flight-one">Flight Number</label>
-                  <input id="flight-predict-flight-one" name="flight-predict-flight-one" class="col-sm-12" type="text" placeholder="e.g., VA 0315">
-                </div>
-                <div class="pixiedust-formfield pixiedust-formfield-search">
+                <div class="pixiedust-formfield">
                   <label for="flight-predict-time-one">Approximate Flight Time</label>
                   <select id="flight-predict-time-one" name="flight-predict-time-one" class="col-sm-12" type="text">
                     <option value="0000">12:00am - 12:59am</option>
@@ -319,33 +301,28 @@
                     <option value="2300">11:00pm - 11:59pm</option>
                   </select>
                 </div>
-                <div class="pixiedust-formfield pixiedust-formfield-search" style="text-align: right;">
+                <div class="pixiedust-formfield" style="text-align: right;">
                   <button class="btn btn-sm btn-search" data-flight-suffix="one">Search Flights</button>
                 </div>
-                <div class="pixiedust-formfield pixiedust-formfield-search">
+                <div class="pixiedust-formfield">
                   <label for="flight-predict-select-one">Flight</label>
                   <select id="flight-predict-select-one" name="flight-predict-select-one" class="col-sm-12" type="text"></select>
                 </div>
               </div>
               <div class="col-sm-2"> </div>
               <div class="col-sm-5 flight-two">
-                <div class="form-title pixiedust-formfield-default">
-                  <span>If applicable, enter the date and flight number of the first leg of your trip or </span>
-                  <span class="search">search for the flight.</span>
+                <div class="form-title">
+                  <span>Enter the date and the approximate time of the second leg of your trip.</span>
                 </div>
-                <div class="form-title pixiedust-formfield-search">
-                  <span>Enter the date and the approximate time of the first leg of your trip </span>
-                  <span class="search">enter the flight number.</span>
+                <div class="pixiedust-formfield">
+                  <label for="flight-predict-departure-two">Departure Airport</label>
+                  <input id="flight-predict-departure-two" name="flight-predict-departure-two" class="col-sm-12" type="text" readonly disabled>
                 </div>
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-date-two">Flight Date</label>
                   <input id="flight-predict-date-two" name="flight-predict-date-two" class="col-sm-12" type="date" placeholder="e.g., YYYY-MM-DD">
                 </div>
-                <div class="pixiedust-formfield pixiedust-formfield-default">
-                  <label for="flight-predict-flight-two">Flight Number</label>
-                  <input id="flight-predict-flight-two" name="flight-predict-flight-two" class="col-sm-12" type="text" placeholder="e.g., CV 0315">
-                </div>
-                <div class="pixiedust-formfield pixiedust-formfield-search">
+                <div class="pixiedust-formfield">
                   <label for="flight-predict-time-two">Approximate Flight Time</label>
                   <select id="flight-predict-time-two" name="flight-predict-time-two" class="col-sm-12" type="text">
                     <option value="0000">12:00am - 12:59am</option>
@@ -374,10 +351,10 @@
                     <option value="2300">11:00pm - 11:59pm</option>
                   </select>
                 </div>
-                <div class="pixiedust-formfield pixiedust-formfield-search" style="text-align: right;">
+                <div class="pixiedust-formfield" style="text-align: right;">
                   <button class="btn btn-sm btn-search" data-flight-suffix="two">Search Flights</button>
                 </div>
-                <div class="pixiedust-formfield pixiedust-formfield-search">
+                <div class="pixiedust-formfield">
                   <label for="flight-predict-select-two">Flight</label>
                   <select id="flight-predict-select-two" name="flight-predict-select-two" class="col-sm-12" type="text"></select>
                 </div>
@@ -420,7 +397,11 @@
   var okBtn = $('.btn-ok', tdiag);
   var cancelBtn = $('.btn-cancel', tdiag);
   var searchBtn = $('.btn-search', tdiag);
-  var predictSelectOne =$('#flight-predict-select-one', tdiag)
+  var predictSelectOne = $('#flight-predict-select-one', tdiag);
+  var predictSelectTwo = $('#flight-predict-select-two', tdiag);
+  var departureTwo = $('#flight-predict-departure-two', tdiag);
+  var flightDateOne = $('#flight-predict-date-one', tdiag);
+  var flightDateTwo = $('#flight-predict-date-two', tdiag);
 
   var restartBtn = $('<button class="btn btn-sm btn-restart">StartOver</button>');
   var backBtn = $('<button class="btn btn-sm btn-back">Go to Notebook</button>');
@@ -430,26 +411,34 @@
   okBtn.after(nextBtn);
   okBtn.after(restartBtn);
 
-  selectedFlightOneDestAirportCode = null;
-
   predictSelectOne.change(function(event){
     event.preventDefault();
-    selectedFlightOneDestAirportCode = $(this).val().split(":")[1];
+    var selectedFlightOneDestAirportCode = $(this).val().split(":")[1];
     console.log("Selected Flight One dest airport ", selectedFlightOneDestAirportCode);
+    departureTwo.val(selectedFlightOneDestAirportCode);
   });
 
   searchBtn.click(function(event) {
     event.preventDefault();
     event.stopPropagation();
+    $('.flight-info .chart-notes').empty();
     searchBtn.prop('disabled', true);
     nextBtn.prop('disabled', true);
     pixiedustSpinner.css({'display': 'inline-block'});
 
     var suffix = $(this).attr('data-flight-suffix');
     var depAirport = "LAS";
-    if ( suffix == "two"){
+
+    if (suffix === 'two') {
       //Get the destination airport from first flight
       depAirport = predictSelectOne.val().split(":")[1]
+    }
+    else {
+      predictSelectOne.empty();
+
+      var currentdate = flightDateOne.datepicker('getDate');
+      flightDateTwo.datepicker('option', 'minDate', currentdate);
+      flightDateTwo.datepicker('setDate', currentdate);
     }
     var flightDate = $('#flight-predict-date-'+suffix, tdiag).val();
     var flightTime = $('#flight-predict-time-'+suffix, tdiag).val();
@@ -463,11 +452,10 @@
       {%if results["error"]%}
         alert(JSON.stringify({{results}}));
       {%else%}
-        $('.flight-info .chart-notes').empty();
         {% if results != '' %}
-        var jsonResults = JSON.parse({{results}});
-        var flights = jsonResults.flights || [];
-        flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag))
+          var jsonResults = JSON.parse({{results}});
+          var flights = jsonResults.flights || [];
+          flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag));
         {%endif%}
       {%endif%}
         searchBtn.prop('disabled', false);
@@ -497,10 +485,43 @@
     pixiedustSpinner.css({'display': 'none'});
   });
 
+  var searchFlights = function(flightNum, flightDate, depAirport, callback) {
+    searchBtn.prop('disabled', true);
+    nextBtn.prop('disabled', true);
+    pixiedustSpinner.css({'display': 'inline-block'});
+
+    window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
+      "\nprint(runModel('" + flightNum + "', '" + flightDate + "', departureAirport='" + depAirport + "'))";
+
+    //Check the flights validatity
+    {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
+      console.log({{results["error"] or results}});
+      $('.flight-info .chart-notes').empty();
+      {%if results["error"]%}
+        alert({{results}});
+      {%elif results != '' %}
+        var jsonResults = JSON.parse({{results}});
+        var flightInfo = null;
+
+        if (jsonResults.flightInfo && jsonResults.flightInfo) {
+          flightInfo = jsonResults.flightInfo;
+        }
+
+        if (callback) {
+          callback(flightInfo ? jsonResults : null);
+        }
+      {%endif%}
+
+      searchBtn.prop('disabled', false);
+      nextBtn.prop('disabled', false);
+      pixiedustSpinner.css({'display': 'none'});
+    {% endcall %};
+  };
+
   nextBtn.click(function(event) {
     event.preventDefault();
 
-    var flightDate = $('#flight-predict-date-one', tdiag).val();
+    var flightDate = flightDateOne.val();
     var flightNum = null;
     var flightTime = null;
     var errorMessage = null;
@@ -509,23 +530,17 @@
       errorMessage = 'Missing flight date';
     }
     else {
-      if ($('.flight-one').hasClass('search-flight')) {
-        flightTime = $('#flight-predict-time-one', tdiag).val();
-        if (!flightTime) {
-          errorMessage = 'Missing flight time';
-        }
-        else {
-          flightNum = $('#flight-predict-select-one', tdiag).val();
-          if (!flightNum) {
-             errorMessage = 'Missing flight number';
-          }
-          flightNum = flightNum.split(":")[0]
-        }
+      flightTime = $('#flight-predict-time-one', tdiag).val();
+      if (!flightTime) {
+        errorMessage = 'Missing flight time';
       }
       else {
-        flightNum = $('#flight-predict-flight-one', tdiag).val();
+        flightNum = predictSelectOne.val();
         if (!flightNum) {
-          errorMessage = 'Missing flight number';
+            errorMessage = 'Missing flight number';
+        }
+        else {
+          flightNum = flightNum.split(":")[0];
         }
       }
     }
@@ -534,49 +549,55 @@
       $('.flight-info .chart-notes').text(errorMessage);
     }
     else {
-      searchBtn.prop('disabled', true);
-      nextBtn.prop('disabled', true);
-      pixiedustSpinner.css({'display': 'inline-block'});
-      window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
-        "\nprint(runModel('" + flightNum + "', '" + flightDate + "'))";
+      var suffix = $(this).attr('data-flight-suffix');
+      var depAirport = "LAS";
+      
+      var flightOneInfo = null;
 
-      //Check the flights validatity
-      {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
-        console.log({{results["error"] or results}});
-        {%if results["error"]%}
-          alert({{results}});
-        {%elif results != '' %}
-          var jsonResults = JSON.parse({{results}});
-          var flightInfo = null;
+      searchFlights(flightNum, flightDate, depAirport, function(jsonResultsOne) {
+        flightOneInfo = jsonResultsOne;
 
-          if (jsonResults.flightInfo && jsonResults.flightInfo) {
-            flightInfo = jsonResults.flightInfo;
-          }
+        var flightNum2 = predictSelectTwo.val();
+        if (flightNum2) {
+          flightNum2 = flightNum2.split(":")[0];
+          var flightDate2 = flightDateTwo.val();
+          //Get the destination airport from first flight
+          var depAirport2 = predictSelectOne.val().split(":")[1];
 
-          if (flightInfo) {
-            $('.tab-pane.active').removeClass('active');
-            $('.tab-pane-flightpredictdata').addClass('active');
-            tdiag
-              .removeClass('modal-dialog-flightpredictform')
-              .addClass('modal-dialog-flightpredictdata');
-
-            flightpredict.renderWeatherForecast(jsonResults);
-            flightpredict.renderPredictionModels(jsonResults);
-            flightpredict.renderFlightInfoMap(jsonResults);
-          }
-        {%endif%}
-        searchBtn.prop('disabled', false);
-        nextBtn.prop('disabled', false);
-        pixiedustSpinner.css({'display': 'none'});
-      {% endcall %};
+          searchFlights(flightNum2, flightDate2, depAirport2, function(jsonResultsTwo) {
+            switchToMap(flightOneInfo, jsonResultsTwo);
+          });
+        }
+        else {
+          switchToMap(flightOneInfo);
+        }
+      });
     }
   });
+
+  var switchToMap = function(flightone, flighttwo) {
+    if (flightone) {
+      flightpredict.renderWeatherForecast(flightone);
+      flightpredict.renderPredictionModels(flightone);
+      flightpredict.renderFlightMap(flightone);
+    }
+    if (flighttwo) {
+      flightpredict.renderWeatherForecast(flighttwo);
+      flightpredict.renderPredictionModels(flighttwo);
+      flightpredict.renderFlightMap(flighttwo);
+    }
+    $('.tab-pane.active').removeClass('active');
+    $('.tab-pane-flightpredictdata').addClass('active');
+    tdiag
+      .removeClass('modal-dialog-flightpredictform')
+      .addClass('modal-dialog-flightpredictdata');
+  }
 
   $('.chart-wrapper.flight-info .search').click(function() {
     $(this).parent().parent().toggleClass('search-flight');
   });
 
-  $('#flight-predict-date-one').datepicker({
+  flightDateOne.datepicker({
     dateFormat: 'yy-mm-dd',
     constrainInput: true,
     minDate: new Date(),
@@ -585,7 +606,7 @@
     gotoCurrent: true
   });
 
-  $('#flight-predict-date-two').datepicker({
+  flightDateTwo.datepicker({
     dateFormat: 'yy-mm-dd',
     constrainInput: true,
     minDate: new Date(),

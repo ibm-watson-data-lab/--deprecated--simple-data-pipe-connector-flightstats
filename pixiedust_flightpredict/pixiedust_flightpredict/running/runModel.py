@@ -111,9 +111,12 @@ myLogger = pixiedust.getLogger(__name__)
    'trafficRestrictions': []}]}
 """
 
-def runModel(flight, date):
+def runModel(flight, date, departureAirport=None):
     if not Configuration.isReadyForRun():
         raise ValueError("Unable to predict flight delay because no models are available. Please run configure for more details")
+
+    if departureAirport is None:
+        departureAirport = "LAS"
 
     response = getFlightSchedule(flight, date)
     myLogger.debug("Schedule for flight {0} at date {1} : {2}".format(flight, date, response ))
@@ -223,7 +226,7 @@ def createFeaturesVector(depWeather, arrWeather, scheduledFlight, arrAirport, de
     
     return features
 
-def runModelTest(flight, date):
+def runModelTest(flight, date, departureAirport=None):
     payload = {
         'arrivalAirportInfo': {
             'airportInfo': {
