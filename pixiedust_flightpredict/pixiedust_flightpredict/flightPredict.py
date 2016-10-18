@@ -27,6 +27,11 @@ class PixieDustFlightPredict(Display):
     flightdate = self.options.get("flightdate")
 
     if flightnum is None:
+
+      #self._addScriptElement("https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfYX6GG1foO1l7TAPk2LQVV_nACb7T4Q", checkJSVar="google", 
+      #  callback=[self._addHTMLTemplate("flightsScript.html")]
+      #)
+
       self._addHTMLTemplate("flightsScript.html")
       self._addHTMLTemplate("flights.html")
 

@@ -1,5 +1,5 @@
 {%import "commonExecuteCallback.js" as commons%}
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfYX6GG1foO1l7TAPk2LQVV_nACb7T4Q" type="text/javascript"></script>
+<!--<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfYX6GG1foO1l7TAPk2LQVV_nACb7T4Q" type="text/javascript"></script>-->
 <script id="flightScript{{prefix}}">
   window.Pixiedust = window.Pixiedust || {};
   window.Pixiedust.flightpredict = window.Pixiedust.flightpredict || {};
@@ -35,6 +35,7 @@
 
         google.maps.event.clearInstanceListeners(window);
         google.maps.event.clearInstanceListeners(document);
+        $('#flightpredict-map').empty();
         this.themap = null;
       },
 

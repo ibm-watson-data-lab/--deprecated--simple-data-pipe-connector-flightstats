@@ -490,7 +490,6 @@
     nextBtn.prop('disabled', true);
     pixiedustSpinner.css({'display': 'inline-block'});
     var dt = new Date(+flightDateTime);
-    console.log(dt);
     dt = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate();
 
     window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
@@ -580,6 +579,13 @@
   });
 
   var switchToMap = function(flightone, flighttwo) {
+    $('.tab-pane.active').removeClass('active');
+    $('.tab-pane-flightpredictdata').addClass('active');
+    
+    tdiag
+      .removeClass('modal-dialog-flightpredictform')
+      .addClass('modal-dialog-flightpredictdata');
+
     if (flightone) {
       flightpredict.renderWeatherForecast(flightone);
       flightpredict.renderPredictionModels(flightone);
@@ -590,11 +596,6 @@
       flightpredict.renderPredictionModels(flighttwo);
       flightpredict.renderFlightMap(flighttwo);
     }
-    $('.tab-pane.active').removeClass('active');
-    $('.tab-pane-flightpredictdata').addClass('active');
-    tdiag
-      .removeClass('modal-dialog-flightpredictform')
-      .addClass('modal-dialog-flightpredictdata');
   }
 
   $('.chart-wrapper.flight-info .search').click(function() {
