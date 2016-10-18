@@ -58,25 +58,8 @@ for (key in graph.nodes){
     positions.push(projection(loc));
     keys.push(v)
 }
-    
-// Compute the Voronoi diagram of airports' projected positions.
-var polygons = d3.geom.voronoi(positions);
 var g = cells.selectAll("g#cells").data(keys).enter().append("svg:g").attr("dep", function(d){return d.id})
-g.append("svg:path")
-    .attr("class", "cell")
-    .attr("d", function(d, i) { return "M" + (polygons[i]?polygons[i].join("L"):"L") + "Z"; })
-    .on("mouseover", function(d, i) { 
-        d3.select("#airport" + prefix).text(d.name + "(" + d.id + ")" ); 
-    })
-    .on("click", function(d, i) { 
-        //alert(JSON.stringify(d) )
-        airport = d3.select(this.parentElement).attr("dep")
-        el = d3.select("g[dep='" + airport + "']");
-        el.classed("showFlights", !el.classed("showFlights"))
-    })
-
 function deselect(e) {
-    debugger;
     $('.pop').slideFadeToggle(function() {
         e.removeClass('selected');
     });    
@@ -89,7 +72,7 @@ $('#flightBadgeClose').click(function(){
 $.fn.slideFadeToggle = function(easing, callback) {
   return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
 };
-            
+          
 g.selectAll("path.arc")
     .data(function(d) { 
         return linksByOrigin[d.id] || []; 
@@ -136,4 +119,12 @@ circles.selectAll("circle")
     .attr("cx", function(d, i) {return positions[i][0]; })
     .attr("cy", function(d, i) {return positions[i][1];})
     .attr("r", function(d, i) { return Math.max(10, Math.sqrt(countByAirport[d.id])); })
+    .on("mouseover", function(d, i) { 
+        d3.select("#airport" + prefix).text(d.name + "(" + d.id + ")" ); 
+    })
+    .on("click", function(d, i) { 
+        airport = d.id;
+        el = d3.select("g[dep='" + airport + "']");
+        el.classed("showFlights", !el.classed("showFlights"))
+    })
     .sort(function(a, b) { return (countByAirport[b.id] - countByAirport[a.id]); })

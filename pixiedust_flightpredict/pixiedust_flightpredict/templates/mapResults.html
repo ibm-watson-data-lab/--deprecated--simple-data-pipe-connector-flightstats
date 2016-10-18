@@ -9,11 +9,25 @@
     }
 
     path.arc {
-        /*pointer-events: none;*/
         fill: red;
         stroke: aquamarine;
-        stroke-width: 10px;
+        stroke-width: 5px;
         display: none;
+        cursor: pointer;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: dash 5s linear forwards;
+    }
+
+    @keyframes dash {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    path.arc:hover {
+        fill: red;
+        stroke: cadetblue;
     }
 
     path.cell {
@@ -31,14 +45,6 @@
         fill: green;
         fill-opacity: .8;
         stroke: #fff;
-    }
-
-    #cells{
-        /*pointer-events:none*/
-    }
-
-    #cells.voronoi path.cell {
-        stroke: brown;
     }
 
     #cells g.showFlights path.arc {
