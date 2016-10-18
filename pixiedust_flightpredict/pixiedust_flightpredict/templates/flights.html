@@ -248,6 +248,7 @@
     }
     .flight-predict-message,
     .flight-predict-status-image {
+      font-weight: 400;
       min-height: 50px;
       padding: 15px 0;
     }
@@ -397,7 +398,8 @@
               </form>
             </div>
             <div class="row flight-predict-message"></div>
-            <div class="row flight-predict-status-image"></div>
+            <div class="row flight-predict-status-image">
+            </div>
           </div>
           <div class="chart-notes">&nbsp;</div>
         </div>
@@ -481,11 +483,11 @@
     var flightDate = $('#flight-predict-date-'+suffix, tdiag).val();
     var flightTime = $('#flight-predict-time-'+suffix, tdiag).val();
 
-    window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
+    var $$pixiedust_command = "from pixiedust_flightpredict.running.runModel import *" +
       "\nprint(runFlightSearch('" + flightDate + "', '" + flightTime + "', departureAirport='" + depAirport + "'))";
 
     //search for flights
-    {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
+    {% call(results) commons.ipython_execute("$$pixiedust_command", prefix) %}
       console.log({{results["error"] or results}});
       {%if results["error"]%}
         messageNode.text(JSON.stringify({{results}}));
@@ -493,9 +495,11 @@
         {% if results != '' %}
           var jsonResults = JSON.parse({{results}});
           var flights = jsonResults.flights || [];
-          flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag));
-        {% else %}
-          messageNode.text('No flights found for that date and time. Try a different search.');
+          if (flights.length > 0) {
+            flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag));
+          } else {
+            messageNode.text('No flights found for that date and time. Try a different search.');
+          }
         {% endif %}
       {%endif%}
         searchBtn.prop('disabled', false);
@@ -534,11 +538,11 @@
     dt = dt.toISOString();
     //dt = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate();
 
-    window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
+    var $$pixiedust_command = "from pixiedust_flightpredict.running.runModel import *" +
       "\nprint(runModel('" + flightNum + "', '" + dt + "', departureAirport='" + depAirport + "'))";
 
     //Check the flights validatity
-    {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
+    {% call(results) commons.ipython_execute("$$pixiedust_command", prefix) %}
       console.log({{results["error"] or results}});
       {%if results["error"]%}
         messageNode.text(JSON.stringify({{results}}));
