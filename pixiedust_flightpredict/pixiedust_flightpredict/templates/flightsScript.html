@@ -99,6 +99,7 @@
           strokeOpacity: 0.75,
           strokeWeight: 4
         });
+        
         flightPath.setMap(this.themap);
 
         var depAirportInfoContent = this.airportMarkerTemplate.replace(/\{(.+?)\}/g, function($0, $1) {
@@ -111,24 +112,26 @@
           return flightInfo.hasOwnProperty($1) ? flightInfo[$1] : $0;
         });
 
+        
         if (this.theinfowindow === null) {
           this.theinfowindow = new google.maps.InfoWindow({});
         }
+        var infoWindow = this.theinfowindow;
 
         depAirportMarker.addListener('click', function() {
-          this.theinfowindow.setContent(depAirportInfoContent);
-          this.theinfowindow.open(this.themap, depAirportMarker);
+          infoWindow.setContent(depAirportInfoContent);
+          infoWindow.open(this.themap, depAirportMarker);
         });
 
         arrAirportMarker.addListener('click', function() {
-          this.theinfowindow.setContent(arrAirportInfoContent);
-          this.theinfowindow.open(this.themap, arrAirportMarker);
+          infoWindow.setContent(arrAirportInfoContent);
+          infoWindow.open(this.themap, arrAirportMarker);
         });
 
         flightPath.addListener('click', function(event) {
-          this.theinfowindow.setContent(flightPathInfoContent);
-          this.theinfowindow.setPosition(event.latLng);
-          this.theinfowindow.open(this.themap);
+          infoWindow.setContent(flightPathInfoContent);
+          infoWindow.setPosition(event.latLng);
+          infoWindow.open(this.themap);
         });
 
         google.maps.event.trigger(this.themap,'resize');
@@ -200,7 +203,7 @@
           minutes = minutes < 10 ? '0' + minutes : minutes;
           var time = hours + ':' + minutes + ampm;
 
-          selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
+          selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + ':' + datetime.getTime() + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
           selectNode.change();
         }
       }

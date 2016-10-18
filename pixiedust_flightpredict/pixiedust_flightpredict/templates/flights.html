@@ -485,13 +485,16 @@
     pixiedustSpinner.css({'display': 'none'});
   });
 
-  var searchFlights = function(flightNum, flightDate, depAirport, callback) {
+  var doRunModel = function(flightNum, flightDateTime, depAirport, callback) {
     searchBtn.prop('disabled', true);
     nextBtn.prop('disabled', true);
     pixiedustSpinner.css({'display': 'inline-block'});
+    var dt = new Date(+flightDateTime);
+    console.log(dt);
+    dt = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate();
 
     window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.runModel import *" +
-      "\nprint(runModel('" + flightNum + "', '" + flightDate + "', departureAirport='" + depAirport + "'))";
+      "\nprint(runModel('" + flightNum + "', '" + dt + "', departureAirport='" + depAirport + "'))";
 
     //Check the flights validatity
     {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
@@ -541,6 +544,7 @@
         }
         else {
           flightNum = flightNum.split(":")[0];
+          flightDate = predictSelectOne.val().split(":")[2];
         }
       }
     }
@@ -554,17 +558,17 @@
       
       var flightOneInfo = null;
 
-      searchFlights(flightNum, flightDate, depAirport, function(jsonResultsOne) {
+      doRunModel(flightNum, flightDate, depAirport, function(jsonResultsOne) {
         flightOneInfo = jsonResultsOne;
 
         var flightNum2 = predictSelectTwo.val();
         if (flightNum2) {
           flightNum2 = flightNum2.split(":")[0];
-          var flightDate2 = flightDateTwo.val();
+          var flightDate2 = predictSelectTwo.val().split(":")[2];
           //Get the destination airport from first flight
           var depAirport2 = predictSelectOne.val().split(":")[1];
 
-          searchFlights(flightNum2, flightDate2, depAirport2, function(jsonResultsTwo) {
+          doRunModel(flightNum2, flightDate2, depAirport2, function(jsonResultsTwo) {
             switchToMap(flightOneInfo, jsonResultsTwo);
           });
         }
