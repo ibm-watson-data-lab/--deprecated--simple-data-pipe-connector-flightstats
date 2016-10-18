@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="row">
+        Flights from <b>{{flights[0][0][4]}}</b> to <b>{{flights[0][0][5]}}</b>
+    </div>
+    <div class="row" style="overflow: auto;max-height:400px">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                <th class="col-xs-2">Departure Date</th>
+                <th class="col-xs-2">Departure Time</th>
+                <th class="col-xs-2">Flight Number</th>
+                <th class="col-xs-2">Number of passengers</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for flight in flights%}
+                <tr>
+                    <td class="col-xs-2">{{flight[0][2]}}</td>
+                    <td class="col-xs-2">{{flight[0][3]}}</td>
+                    <td class="col-xs-2">{{flight[0][0]}} {{flight[0][1]}}</td>
+                    <td class="col-xs-2">{{flight[1]}}</td>
+                </tr>    
+                {%endfor%}         
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -123,13 +123,18 @@ def runModel(flight, date):
     payload={}
     appendix=response['appendix']
     payload["flightInfo"]=scheduledFlight=response["scheduledFlights"][0]
+
+    def getAirportJSON(code):
+        for airport in appendix["airports"]:
+            if airport['fs'] == code:
+                return airport
     
     payload["departureAirportInfo"]=departureInfo={}
-    departureInfo["airportInfo"]=depAirportJSON=appendix["airports"][0]
+    departureInfo["airportInfo"]=depAirportJSON=getAirportJSON( scheduledFlight['departureAirportFsCode'] )
     departureInfo["weatherForecast"]= depWeather = getWeather(depAirportJSON['latitude'], depAirportJSON['longitude'], scheduledFlight["departureTime"])
 
     payload["arrivalAirportInfo"]=arrivalInfo={}
-    arrivalInfo["airportInfo"]=arrAirportJSON=appendix["airports"][1]
+    arrivalInfo["airportInfo"]=arrAirportJSON=getAirportJSON( scheduledFlight['arrivalAirportFsCode'] )
     arrivalInfo["weatherForecast"]= arrWeather=getWeather(arrAirportJSON['latitude'], arrAirportJSON['longitude'], scheduledFlight["arrivalTime"] )
 
     payload["prediction"]=prediction = {}
@@ -162,6 +167,8 @@ def runModel(flight, date):
         ]
     }
     """
+
+    myLogger.debug("runModel Payload {0}".format(payload))
     try:
         saveFlightResults(payload)
     except:

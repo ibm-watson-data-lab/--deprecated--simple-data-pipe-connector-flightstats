@@ -9,9 +9,10 @@
     }
 
     path.arc {
-        pointer-events: none;
-        fill: none;
-        stroke: #000;
+        /*pointer-events: none;*/
+        fill: red;
+        stroke: aquamarine;
+        stroke-width: 10px;
         display: none;
     }
 
@@ -32,26 +33,72 @@
         stroke: #fff;
     }
 
+    #cells{
+        /*pointer-events:none*/
+    }
+
     #cells.voronoi path.cell {
         stroke: brown;
     }
 
-    #cells g:hover path.arc {
+    #cells g.showFlights path.arc {
         display: inherit;
     }
 
     .modal-dialog-flightmapresults {
       width: 95% !important;
     }
+
+    .messagepop {
+        background-color:#FFFFFF;
+        border:1px solid #999999;
+        cursor:default;
+        display:none;
+        margin-top: 15px;
+        position:absolute;
+        text-align:left;
+        min-width:300px;
+        min-height:300px;
+        z-index:50;
+        padding: 15px 15px 10px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 3px;
+        padding-left: 15px;
+        text-indent: -15px;
+    }
+
+    .messagepop p, .messagepop.div {
+        border-bottom: 1px solid #EFEFEF;
+        margin: 8px 0;
+        padding-bottom: 8px;
+    }
 </style>
 
 <div id="airport{{prefix}}"/>
 <div id="map{{prefix}}" style="text-align:center"/>
+
+<div id="flightBadge" class="messagepop pop">
+    <button type="button" class="close" id="flightBadgeClose">&times;</button>
+    <div id="flightBadgeBody">
+    </div>
+</div>
 
 {%endblock%}
 
 {%block onDialogShown%}
 var tdiag = $(this).find('.modal-dialog').addClass('modal-dialog-flightmapresults');
 
-{%include module + ":mapResults.js" with context%}
+var updateMap = function(){
+    if (typeof d3 == "undefined"){
+        return setTimeout(updateMap, 1000);
+    }
+
+    {%include module + ":mapResults.js" with context%}
+}
+
+updateMap();
+
 {%endblock%}
