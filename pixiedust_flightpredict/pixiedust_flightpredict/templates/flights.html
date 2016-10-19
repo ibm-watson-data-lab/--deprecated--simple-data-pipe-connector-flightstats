@@ -46,7 +46,7 @@
     .pixiedust-spinner {
       color: #fff;
       font-size: 24px;
-      margin-top: 2px;
+      float: right;
     }
     .pixiedust .modal-header {
       background-color: #152935;
@@ -252,6 +252,12 @@
       min-height: 50px;
       padding: 15px 0;
     }
+    .flight-one {
+      padding: 10px 80px 0 10px;
+    }
+    .flight-two {
+      padding: 10px 10px 0 80px;
+    }
   </style>
   <div class="tab-content container-fluid" >
     <div class="tab-pane tab-pane-flightpredictdata row">
@@ -300,9 +306,13 @@
           <div class="chart-stage" style="height: calc(70vh - 60px);">
             <div class="row">
               <form id="flightpredictform">
-              <div class="col-sm-5 flight-one">
+              <div class="col-sm-6 flight-one">
                 <div class="form-title">
                   <span>Enter the date and the approximate time of the first leg of your trip.</span>
+                </div>
+                <div class="pixiedust-formfield">
+                  <label for="flight-predict-departure-one">Departure Airport</label>
+                  <input id="flight-predict-departure-one" name="flight-predict-departure-one" class="col-sm-12" type="text" readonly disabled value="LAS">
                 </div>
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-date-one">Flight Date</label>
@@ -345,8 +355,8 @@
                   <select id="flight-predict-select-one" name="flight-predict-select-one" class="col-sm-12" type="text"></select>
                 </div>
               </div>
-              <div class="col-sm-2"> </div>
-              <div class="col-sm-5 flight-two">
+              
+              <div class="col-sm-6 flight-two">
                 <div class="form-title">
                   <span>Enter the date and the approximate time of the second leg of your trip.</span>
                 </div>
@@ -427,10 +437,12 @@
   var tdiag = $(this).find('.modal-dialog')
     .addClass('modal-dialog-flightpredictform');
 
-  var pixiedustSpinner = $('.pixiedust .modal-header button.close')
-    .html('<i class="fa fa-spinner fa-spin pixiedust-spinner"></i>')
+  var pixiedustSpinner = $('<i class="fa fa-spinner fa-spin pixiedust-spinner"></i>')
     .prop('disabled', true)
     .css({display: 'none'});
+  
+  $('.pixiedust .modal-header button.close')
+    .after(pixiedustSpinner);
 
   var restartBtn = $('.btn-restart', tdiag);
   var okBtn = $('.btn-ok', tdiag);
@@ -469,7 +481,7 @@
     var suffix = $(this).attr('data-flight-suffix');
     var depAirport = "LAS";
 
-    debugger;
+    predictSelectTwo.empty()
 
     if (suffix === 'two') {
       //Get the destination airport from first flight
@@ -532,7 +544,6 @@
   });
 
   var doRunModel = function(flightNum, flightDateTime, depAirport, callback) {
-    debugger;
     messageNode.empty();
     searchBtn.prop('disabled', true);
     nextBtn.prop('disabled', true);
@@ -570,8 +581,6 @@
 
   nextBtn.click(function(event) {
     event.preventDefault();
-
-    debugger;
 
     var flightDate = flightDateOne.val();
     var flightNum = null;
@@ -672,7 +681,7 @@
 
   flightpredict.resetForm();
 
-  pixiedustSpinner.after('<a class="note" target="_blank" href="https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats">Fork me on GitHub</a>');
+  pixiedustSpinner.before('<a class="note" target="_blank" href="https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats">Fork me on GitHub</a>');
 {%endblock%}
 
 {%block onDialogHide%}
