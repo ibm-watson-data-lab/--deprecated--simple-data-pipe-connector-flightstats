@@ -21,18 +21,19 @@
     }
 
     function formatDateTime(datetime, opt) {
+      debugger;
       var datetimeStr = '';
       if (!opt || opt === 'date') {
-        var day = datetime.getDate();
-        var month = datetime.getMonth() + 1;
-        var year = datetime.getFullYear();
+        var day = datetime.getUTCDate();
+        var month = datetime.getUTCMonth() + 1;
+        var year = datetime.getUTCFullYear();
         day = day < 10 ? '0' + day : day;
         month = month < 10 ? '0' + month : month;
         datetimeStr += year + '-' + month + '-' + day + ' ';
       }
       if (!opt || opt === 'time') {
-        var hours = datetime.getHours();
-        var minutes = datetime.getMinutes();
+        var hours = datetime.getUTCHours();
+        var minutes = datetime.getUTCMinutes();
         var ampm = hours >= 12 ? 'pm' : 'am';
         hours = (hours % 12) || 12;
         minutes = minutes < 10 ? '0' + minutes : minutes;
@@ -238,9 +239,10 @@
           var flight = flights[f];
 
           var datetime = new Date(flight.time);
+          var datetimeUTC = new Date(flight.timeUTC);
           var time = formatDateTime(datetime, 'time');
 
-          selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + ':' + datetime.getTime() + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
+          selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + ':' + datetime.getTime() + ":" + datetimeUTC.getTime() + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
           selectNode.change();
         }
       }

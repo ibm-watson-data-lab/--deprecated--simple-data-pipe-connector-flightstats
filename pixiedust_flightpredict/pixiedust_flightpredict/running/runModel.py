@@ -125,7 +125,7 @@ def runModel(flight, date, departureAirport=None):
 
     payload={}
     appendix=response['appendix']
-    payload["flightInfo"]=scheduledFlight=response["scheduledFlights"][0]
+    payload["flightInfo"]=scheduledFlight=response["scheduledFlight"]
 
     def getAirportJSON(code):
         for airport in appendix["airports"]:
@@ -134,11 +134,11 @@ def runModel(flight, date, departureAirport=None):
     
     payload["departureAirportInfo"]=departureInfo={}
     departureInfo["airportInfo"]=depAirportJSON=getAirportJSON( scheduledFlight['departureAirportFsCode'] )
-    departureInfo["weatherForecast"]= depWeather = getWeather(depAirportJSON['latitude'], depAirportJSON['longitude'], scheduledFlight["departureTime"])
+    departureInfo["weatherForecast"]= depWeather = getWeather(depAirportJSON['latitude'], depAirportJSON['longitude'], scheduledFlight["departureTimeUTC"])
 
     payload["arrivalAirportInfo"]=arrivalInfo={}
     arrivalInfo["airportInfo"]=arrAirportJSON=getAirportJSON( scheduledFlight['arrivalAirportFsCode'] )
-    arrivalInfo["weatherForecast"]= arrWeather=getWeather(arrAirportJSON['latitude'], arrAirportJSON['longitude'], scheduledFlight["arrivalTime"] )
+    arrivalInfo["weatherForecast"]= arrWeather=getWeather(arrAirportJSON['latitude'], arrAirportJSON['longitude'], scheduledFlight["arrivalTimeUTC"] )
 
     payload["prediction"]=prediction = {}
     prediction["models"]=predictionModels = []
@@ -416,6 +416,7 @@ def runFlightSearch(date, time, departureAirport=None):
         flight={}
         flight['flightnumber'] = scheduledFlight['carrierFsCode'] + ' ' + scheduledFlight['flightNumber']
         flight['time'] = scheduledFlight['departureTime']
+        flight['timeUTC'] = scheduledFlight['departureTimeUTC']
         flight['destAirportCode'] = scheduledFlight['arrivalAirportFsCode']
         flight['destination'] = getAirportName(scheduledFlight['arrivalAirportFsCode'])
         payload['flights'].append(flight)

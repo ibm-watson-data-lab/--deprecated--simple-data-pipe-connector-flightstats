@@ -469,6 +469,8 @@
     var suffix = $(this).attr('data-flight-suffix');
     var depAirport = "LAS";
 
+    debugger;
+
     if (suffix === 'two') {
       //Get the destination airport from first flight
       depAirport = predictSelectOne.val().split(":")[1]
@@ -530,16 +532,17 @@
   });
 
   var doRunModel = function(flightNum, flightDateTime, depAirport, callback) {
+    debugger;
     messageNode.empty();
     searchBtn.prop('disabled', true);
     nextBtn.prop('disabled', true);
     pixiedustSpinner.css({'display': 'inline-block'});
-    var dt = new Date(+flightDateTime);
-    dt = dt.toISOString();
+    //var dt = new Date(+flightDateTime);
+    //dt = dt.toISOString();
     //dt = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate();
 
     var $$pixiedust_command = "from pixiedust_flightpredict.running.runModel import *" +
-      "\nprint(runModel('" + flightNum + "', '" + dt + "', departureAirport='" + depAirport + "'))";
+      "\nprint(runModel('" + flightNum + "', " + flightDateTime + ", departureAirport='" + depAirport + "'))";
 
     //Check the flights validatity
     {% call(results) commons.ipython_execute("$$pixiedust_command", prefix) %}
@@ -568,6 +571,8 @@
   nextBtn.click(function(event) {
     event.preventDefault();
 
+    debugger;
+
     var flightDate = flightDateOne.val();
     var flightNum = null;
     var flightTime = null;
@@ -588,7 +593,7 @@
         }
         else {
           flightNum = flightNum.split(":")[0];
-          flightDate = predictSelectOne.val().split(":")[2];
+          flightDate = predictSelectOne.val().split(":")[3];
         }
       }
     }
@@ -608,7 +613,7 @@
         var flightNum2 = predictSelectTwo.val();
         if (flightNum2) {
           flightNum2 = flightNum2.split(":")[0];
-          var flightDate2 = predictSelectTwo.val().split(":")[2];
+          var flightDate2 = predictSelectTwo.val().split(":")[3];
           //Get the destination airport from first flight
           var depAirport2 = predictSelectOne.val().split(":")[1];
 
