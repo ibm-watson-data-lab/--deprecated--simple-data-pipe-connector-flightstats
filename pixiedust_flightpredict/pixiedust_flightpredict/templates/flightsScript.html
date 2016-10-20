@@ -83,7 +83,8 @@
         '<h3><span>{departureAirportFsCode} &gt; {arrivalAirportFsCode}</span> <span>({carrierFsCode} {flightNumber})</span></h3>' +
         '<div><span>Departure:</span> <span>{depdatetime}</span></div>' +
         '<div><span>Arrival:</span> <span>{arrdatetime}</span></div>' +
-        '<div><span>Airline:</span> <span>{airline}</span></div>' +
+        '<div><span>Airline Name:</span> <span>{airlineName}</span></div>' +
+        '<div><span>Airline Phone#:</span> <span>{airlinePhone}</span></div>' +
         '<div><span>Airplane:</span> <span>{airplane}</span></div>' +
         '</div>',
 
@@ -130,8 +131,9 @@
           flightNumber: info.flightInfo.flightNumber,
           depdatetime: formatDateTime(new Date(info.flightInfo.departureTime)),
           arrdatetime: formatDateTime(new Date(info.flightInfo.arrivalTime)),
-          airline: '---airline---',
-          airplane: '---airplane---',
+          airlineName: info.flightInfo.airlineInfo.name,
+          airlinePhone: info.flightInfo.airlineInfo.phoneNumber,
+          airplane: info.flightInfo.equipmentInfo.name
         };
         
         flightPath.setMap(this.themap);

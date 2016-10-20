@@ -65,7 +65,21 @@ def getFlightSchedule(flight, date):
         for airport in payload['appendix']['airports']:
             if airport['fs'] == airportCode:
                 return airport
-        myLogger.error("error find airport {0} from getFlightSchedule".format())
+        myLogger.error("error find airport {0} from getFlightSchedule".format(airportCode))
+
+    def findEquipment(code):
+        for equipment in payload['appendix']['equipments']:
+            if equipment['iata'] == code:
+                return equipment
+        myLogger.error("error find equipment {0} from getFlightSchedule".format(code))
+        return {}
+
+    def findAirline(code):
+        for airline in payload['appendix']['airlines']:
+            if airline['fs'] == code:
+                return airline
+        myLogger.error("error find airline {0} from getFlightSchedule".format(code))
+        return {}
 
     #find the right flight as there may be more than one
     scheduledFlights = payload.pop("scheduledFlights")
@@ -92,8 +106,14 @@ def getFlightSchedule(flight, date):
         thisFlight['arrivalTimeUTC'] = str( toUTC(thisFlight['arrivalTime'], arrAirport['timeZoneRegionName']))
         myLogger.info("Found flight corresponding to flight {0}: {1}".format(flight, thisFlight))
         payload['scheduledFlight']=thisFlight
+
+        #find equipment and airline info for this flight
+        thisFlight['equipmentInfo']=findEquipment(thisFlight['flightEquipmentIataCode'])
+        thisFlight['airlineInfo']=findAirline(thisFlight['carrierFsCode'])
     else:
         raise Exception("Unable to find flight corresponding to flight {0}".format(flight))
+
+    payload.pop('request')
     return payload
 
 flightsCache={}
