@@ -117,7 +117,7 @@
   width: 95% !important;
 }
 .modal-dialog-flightpredictform .modal-content {
-  background-image: url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/north-america-00.jpg);
+  background-image: url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/north_america_night.jpg);
   background-repeat: no-repeat;
   background-size: cover;
 }
