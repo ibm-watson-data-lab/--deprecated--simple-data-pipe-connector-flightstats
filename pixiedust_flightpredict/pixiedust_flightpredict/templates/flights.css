@@ -1,0 +1,283 @@
+.chart-wrapper {
+  margin: 10px;
+  padding: 10px;
+}
+.chart-wrapper .chart-title {
+  border-bottom: 1px solid #152935;
+  color: #152935;
+  font-size: 1.25em;
+  font-weight: 400;
+  padding: 10px 0px 5px;
+}
+.chart-wrapper .chart-title .memo {
+  color: #a6266e;
+  float: right;
+  font-size: 13px;
+  line-height: 26px;
+}
+.chart-wrapper.flight-info .search {
+  color: #a6266e;
+  cursor: pointer;
+  font-weight: 400;
+}
+.chart-wrapper.flight-info .search:hover {
+  text-decoration: underline;
+}
+.chart-wrapper .chart-stage {
+  overflow: hidden;
+  position: relative;
+  margin: 10px 0px 5px;
+}
+.chart-wrapper .chart-stage .form-title {
+  margin: 10px 0;
+}
+.chart-wrapper .chart-notes {
+  color: #a6266e;
+  font-size: initial;
+}
+.pixiedust-spinner {
+  color: #fff;
+  font-size: 24px;
+  float: right;
+}
+.pixiedust .modal-header {
+  background-color: #01021F;
+  border-color: #00b4a0;
+  color: #ffffff;
+}
+.pixiedust .modal-body {
+  padding: 10px;
+}
+.pixiedust .modal-dialog .btn.focus,
+.pixiedust .modal-dialog .btn:focus {
+  outline: none;
+}
+.pixiedust .modal-dialog .btn-cancel,
+.pixiedust .modal-dialog .btn-ok {
+  display: none;
+}
+.pixiedust .modal-dialog .btn-back {
+  background-color: #ffffff;
+  border: 2px solid #00b4a0;
+  color: #00b4a0;
+  float: left;
+  padding: 0.625em 1.375em;
+}
+.pixiedust .modal-dialog .btn-back:hover {
+  background-color: #00b4a0;
+  border-color: #00b4a0;
+  color: #fff;
+}
+.pixiedust .modal-dialog .btn-next,
+.pixiedust .modal-dialog .btn-ok {
+  background-color: #00b4a0;
+  border: 2px solid #00b4a0;
+  color: #fff;
+  padding: 0.625em 1.375em;
+}
+.pixiedust .modal-dialog .btn-next:hover,
+.pixiedust .modal-dialog .btn-ok:hover {
+  background-color: rgba(0,0,0,0.5);
+  border: 2px solid #00b4a0;
+  color: #00b4a0;
+}
+.pixiedust .modal-dialog .btn-restart {
+  background-color: #a6266e;
+  border: 2px solid #a6266e;
+  color: #fff;
+  padding: 0.625em 1.375em;
+}
+.pixiedust .modal-dialog .btn-restart:hover {
+  background-color: #fff;
+  border: 2px solid #a6266e;
+  color: #a6266e;
+}
+.pixiedust .modal-dialog .btn-search {
+  background-color: rgba(0,0,0,0.5);
+  border: 2px solid #00b4a0;
+  color: #00b4a0;
+  padding: 0.625em 1.375em;
+}
+.pixiedust .modal-dialog .btn-search:hover {
+  background-color: #00b4a0;
+  border-color: #00b4a0;
+  color: #fff;
+}
+.pixiedust .modal-footer {
+  border-top: 0px;
+  padding: 20px 30px;
+}
+.pixiedust .modal-dialog svg text {
+  fill: black;
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.modal-dialog-flightpredictform {
+  width: 95% !important;
+}
+.modal-dialog-flightpredictform .modal-content {
+  background-image: url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/north-america-00.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.pixiedust .modal-dialog.modal-dialog-flightpredictform .btn-back {
+  background-color: rgba(0,0,0,0.5);
+}
+.modal-dialog-flightpredictform .flight-info {
+  background-color: rgba(0,0,0,0.55);
+  letter-spacing: 1px;
+}
+.flight-info .chart-title,
+.flight-info .chart-stage {
+  color: #ffffff;
+}
+.flight-info .chart-title {
+  border-color: #00b4a0;
+}
+.flight-info input,
+.flight-info select {
+  color: #152935;
+}
+.flight-info input:disabled,
+.flight-info select:disabled {
+  background-color: #ddd;
+  color: #777;
+}
+.flight-predict-message {
+  background-color: #a6266e;
+  padding: 10px;
+  display: none;
+}
+
+.modal-dialog-flightpredictdata {
+  width: 95% !important;
+}
+.modal-dialog-flightpredictform .btn-restart {
+  display: none;
+}
+.modal-dialog-flightpredictdata .btn-next {
+  display: none;
+}
+.modal-header .note {
+  color: lightgray;
+  display: inline-block;
+  float: right;
+  font-size: 12px;
+  padding: 4px 10px;
+}
+.pixiedust-formfield {
+  padding: 10px;
+}
+.pixiedust-formfield .required {
+  color: #a6266e;
+}
+.pixiedust-formfield label {
+  font-size: 18px;
+}
+.pixiedust-formfield input,
+.pixiedust-formfield select {
+  border: 1px solid #1d3649;
+  font-size: 20px;
+  font-weight: 300;
+  margin: 0 0 20px;
+  padding: 5px 10px;
+}
+.pixiedust-formfield input:focus,
+.pixiedust-formfield input.focus,
+.pixiedust-formfield select:focus,
+.pixiedust-formfield select.focus {
+  border-color: #a6266e;
+}
+
+.tab-pane-flightpredictdata ul {
+  list-style: outside none none;
+  padding: 0px;
+}
+.tab-pane-flightpredictdata li {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: block;
+  font-size: 1.125em;
+  margin-bottom: 15px;
+  padding: 0px;
+}
+.tab-pane-flightpredictdata li:hover {
+  cursor: pointer;
+}
+.tab-pane-flightpredictdata li > div:first-child {
+  border-left: 5px solid #f9f9f9;
+  font-weight: 500;
+  padding: 15px;
+}
+.tab-pane-flightpredictdata li.expanded > div:first-child,
+.tab-pane-flightpredictdata li:hover > div:first-child {
+  background-color: #eeeeee;
+  border-color: #a6266e;
+  color: #a6266e;
+}
+#prediction-models,
+#weather-forecasts {
+  height: calc(30vh + 30px);
+}
+#prediction-models .chart-stage,
+#weather-forecasts .chart-stage {
+  height: calc(100% - 40px);
+  overflow: auto;
+}
+.prediction-model-title > span:nth-child(2),
+.weather-forecast-title > span:nth-child(2) {
+  float: right;
+  font-weight: 300;
+}
+.prediction-model,
+.weather-forecast {
+  display: none;
+  line-height: 1.5em;
+  padding: 10px;
+}
+.weather-forecast {
+  padding-left: 20px;
+}
+.prediction-model span:first-child {
+  line-height: 1.5em;
+  padding: 10px;
+}
+.prediction-model span:nth-child(2) {
+  color: #a6266e;
+  float: right;
+}
+.airport-marker-info h3,
+.flight-path-info h3 {
+  font-size: 20px;
+  margin: 0;
+  padding: 10px 0;
+}
+.airport-marker-info > div {
+  font-size: 14px;
+}
+.airport-marker-info > div:last-child {
+  padding: 10px 0;
+}
+.flight-path-info > div {
+  padding: 2px 0;
+}
+.flight-path-info > div:nth-child(4) {
+  padding-top: 6px;
+}
+.flight-path-info span:nth-child(2) {
+  float: right;
+  margin-left: 10px;
+}
+.flight-predict-status-image {
+  font-weight: 400;
+  min-height: 50px;
+  padding: 15px 0;
+}
+.flight-one {
+  padding: 10px 80px 0 10px;
+}
+.flight-two {
+  padding: 10px 10px 0 80px;
+}
