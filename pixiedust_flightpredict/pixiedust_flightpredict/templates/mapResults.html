@@ -1,5 +1,5 @@
 {%extends "basedialog.html"%}
-{%block title %}Predict Flight Delays with Apache Spark MLLib, FlightStats, and Weather Data: Results{%endblock%}
+{%block title %}Predict Flight Delays with Apache Spark MLlib, FlightStats, and IBM Insights for Weather: Results{%endblock%}
 
 {%block body%}
 <style type="text/css">
@@ -81,10 +81,64 @@
         margin: 8px 0;
         padding-bottom: 8px;
     }
+    .map-container {
+        display: inline-block;
+        text-align: center;
+        width: 75%;
+    }
+    .instructions-container {
+        display: inline-block;
+        vertical-align: top;
+        width: 22%;
+    }
+    .instructions-container p {
+        font-size: 18px;
+        margin: 20px 0;
+    }
+    .instructions-container li {
+        font-size: 16px;
+        padding-bottom: 16px;
+    }
+    .map-legend {
+        margin-left: 30px;
+        margin-top: 60px;
+    }
+    .map-legend .circle {
+        border-radius: 15px;
+        color: #fff;
+        display: inline-block;
+        height: 25px;
+        width: 25px;
+    }
+    .map-legend .departure {
+        background: #288E28;
+    }
+    .map-legend .arrival {
+        background: #6090B8;
+    }
+    .map-legend span {
+        font-weight: 700;
+        line-height: 40px;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
 </style>
 
-<div id="airport{{prefix}}"/>
-<div id="map{{prefix}}" style="text-align:center"/>
+<div id="airport{{prefix}}"/>&nbsp;<div>
+    <div id="map{{prefix}}" class="map-container"/>
+    <div id="instructions{{prefix}}" class="instructions-container">
+        <h1>What do we have here?</h1>
+        <p>An aggregation of all the flights people have looked up during this conference.</p>
+        <ul>
+            <li>Click on a departure airport (green circle) to see all the bound flights.</li>
+            <li>Click on a flight path (green line) to see additional info about the departing flights.</li>
+        </ul>
+        <div class="map-legend">
+            <div><span class="departure circle"></span> <span>Departure Airports</span></div>
+            <div><span class="arrival circle"></span> <span>Arrival Airports</span></div>
+        </div>
+    </div>
+</div>
 
 <div id="flightBadge" class="messagepop pop">
     <button type="button" class="close" id="flightBadgeClose">&times;</button>
