@@ -95,10 +95,10 @@ g.selectAll("path.arc")
             var d3EventX = d3.event.offsetX;
             var d3EventY = d3.event.offsetY;
             if (!window.Pixiedust) window.Pixiedust={}
-            window.Pixiedust.execute_command = "from pixiedust_flightpredict.running.flightHistory import *" +
+            var $$command = "from pixiedust_flightpredict.running.flightHistory import *" +
                 "\nprint(getBadgeHtml('" + d.source + "', '" + d.target + "'))";
 
-            {% call(results) commons.ipython_execute("pixiedust_command", prefix) %}
+            {% call(results) commons.ipython_execute("$$command", prefix) %}
                 $('#flightBadgeBody').html({{results}})
                 $('#flightBadge')
                     .css({left:(window.pageXOffset + d3EventX + 100)+'px', top: (window.pageYOffset + d3EventY)+'px',})
