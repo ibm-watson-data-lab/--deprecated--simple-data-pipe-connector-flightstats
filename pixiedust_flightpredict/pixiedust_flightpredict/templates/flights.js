@@ -66,6 +66,12 @@
     var flightDate = $('#flight-predict-date-'+suffix, tdiag).val();
     var flightTime = $('#flight-predict-time-'+suffix, tdiag).val();
 
+    // console.log('* FlightTime - ', flightTime)
+    // var d = (new Date(flightDate));
+    // d.setHours(flightTime);
+    // flightTime = d.toISOString().split('T')[1];
+    // console.log('* FlightTime (UTC) - ', flightTime)
+
     var $$pixiedust_command = "from pixiedust_flightpredict.running.runModel import *" +
       "\nprint(runFlightSearch('" + flightDate + "', '" + flightTime + "', departureAirport='" + depAirport + "'))";
 
@@ -234,6 +240,16 @@
     $(this).parent().parent().toggleClass('search-flight');
   });
 
+  $('.open-more').click(function() {
+    $('.flight-two').animate({
+      paddingLeft: '10px',
+      paddingRight: '10px',
+      marginLeft: '150px',
+      width:'325px'
+    });
+  });
+
+debugger;
   flightDateOne.datepicker({
     dateFormat: 'yy-mm-dd',
     constrainInput: true,

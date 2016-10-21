@@ -3,11 +3,11 @@
   padding: 10px;
 }
 .chart-wrapper .chart-title {
-  border-bottom: 1px solid #152935;
-  color: #152935;
-  font-size: 1.25em;
-  font-weight: 400;
-  padding: 10px 0px 5px;
+  border-bottom: 1px solid #00b4a0;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 200;
+  padding: 0 0 5px;
 }
 .chart-wrapper .chart-title .memo {
   color: #a6266e;
@@ -41,7 +41,7 @@
   float: right;
 }
 .pixiedust .modal-header {
-  background-color: #01021F;
+  background-color: rgba(0,0,0,0.45); /*#01021F;*/
   border-color: #00b4a0;
   color: #ffffff;
 }
@@ -88,7 +88,7 @@
   padding: 0.625em 1.375em;
 }
 .pixiedust .modal-dialog .btn-restart:hover {
-  background-color: #fff;
+  background-color: rgba(0,0,0,0.5);
   border: 2px solid #a6266e;
   color: #a6266e;
 }
@@ -113,21 +113,80 @@
   font-weight: normal;
 }
 
+
+.pixiedust .modal-title {
+  font-weight: 200;
+  letter-spacing: 1px;
+}
 .modal-dialog-flightpredictform {
   width: 95% !important;
 }
-.modal-dialog-flightpredictform .modal-content {
+.modal-dialog-flightpredictform .chart-title {
+  text-align: left;
+}
+.pixiedust .modal-dialog-flightpredictform .modal-content,
+.pixiedust .modal-dialog-flightpredictdata .modal-content {
   background-image: url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/north_america_night.jpg);
+  /*background-image: url(http://localhost:8888/notebooks/north-america-00.jpg);*/
   background-repeat: no-repeat;
   background-size: cover;
 }
-.pixiedust .modal-dialog.modal-dialog-flightpredictform .btn-back {
+.modal-dialog-flightpredictform .modal-content::after,
+.modal-dialog-flightpredictdata .modal-content::after {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    content: "";
+    position: absolute;
+    display: block;
+    opacity: 0.5;
+    background: -webkit-linear-gradient(left, #1d3649 0%, #325C80 50%);
+    background: linear-gradient(to right, #1d3649 0%, #325C80 50%);
+}
+.modal-dialog-flightpredictform .modal-content > div,
+.modal-dialog-flightpredictdata .modal-content > div {
+  position: relative;
+  z-index: 1;
+}
+.pixiedust .modal-dialog.modal-dialog-flightpredictform .btn-back:not(:hover),
+.pixiedust .modal-dialog.modal-dialog-flightpredictdata .btn-back:not(:hover) {
   background-color: rgba(0,0,0,0.5);
 }
 .modal-dialog-flightpredictform .flight-info {
-  background-color: rgba(0,0,0,0.55);
+  background-color: rgba(0, 0, 0, 0.55);
   letter-spacing: 1px;
+  margin: 25px auto;
+  padding: 10px 25px 0;
+  display: inline-block;
 }
+.modal-dialog-flightpredictform svg {
+  fill: #00b4a0;
+}
+.open-more {
+  color: #fff;
+  cursor: pointer;
+  text-align: right;
+  vertical-align: middle;
+}
+.open-more:hover span:first-child {
+  color:#00b4a0;
+}
+.open-more span:first-child {
+  display: block;
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+
+.modal-dialog-flightpredictform .modal-content .modal-footer,
+.modal-dialog-flightpredictdata .modal-content .modal-footer {
+  background-color: rgba(0,0,0,0.45); /*#01021F;*/
+  border-top: 1px solid #00b4a0;
+}
+
 .flight-info .chart-title,
 .flight-info .chart-stage {
   color: #ffffff;
@@ -138,6 +197,7 @@
 .flight-info input,
 .flight-info select {
   color: #152935;
+  z-index: 10;
 }
 .flight-info input:disabled,
 .flight-info select:disabled {
@@ -167,21 +227,24 @@
   padding: 4px 10px;
 }
 .pixiedust-formfield {
-  padding: 10px;
+  /*padding: 10px;*/
 }
 .pixiedust-formfield .required {
   color: #a6266e;
 }
 .pixiedust-formfield label {
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 200;
+  letter-spacing: 2px;
+  margin-bottom: 3px;
 }
 .pixiedust-formfield input,
 .pixiedust-formfield select {
   border: 1px solid #1d3649;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 300;
-  margin: 0 0 20px;
-  padding: 5px 10px;
+  margin: 0 0 24px;
+  padding: 3px 5px;
 }
 .pixiedust-formfield input:focus,
 .pixiedust-formfield input.focus,
@@ -275,9 +338,22 @@
   min-height: 50px;
   padding: 15px 0;
 }
-.flight-one {
-  padding: 10px 80px 0 10px;
+
+.flight-one,
+.flight-two {
+  display: inline-block;
+  vertical-align: top;
+  width: 325px;
+  padding: 10px;
+  text-align: left;
 }
 .flight-two {
-  padding: 10px 10px 0 80px;
+  overflow: hidden;
+  padding-left: 0;
+  padding-right: 0;
+  width: 0;
+}
+
+#ui-datepicker-div {
+  z-index: 1500 !important;
 }

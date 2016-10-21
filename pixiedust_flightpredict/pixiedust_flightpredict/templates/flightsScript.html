@@ -5,17 +5,21 @@
   window.Pixiedust.flightpredict = window.Pixiedust.flightpredict || {};
 
   (function(pix) {
-    function slideToggleArea(trigger, target) {
+    function slideToggleArea(trigger) {
       $(trigger).click(function() {
         var that = $(this);
         if (that.hasClass('expanded')) {
-          that.find(target).slideUp(500, function() {
+          that.find('.collapsible').slideUp(500, function() {
             that.removeClass('expanded');
           });
         }
         else {
+          var opened = that.parent().find('.expanded');
+          opened.find('.collapsible').slideUp(400, function() {
+            opened.removeClass('expanded');
+          });
           that.addClass('expanded');
-          that.find(target).slideDown(500);
+          that.find('.collapsible').slideDown(500);
         }
       });
     }
@@ -53,6 +57,7 @@
         $('#prediction-models .prediction-models-list').empty();
         $('#weather-forecasts .weather-forecast-list').empty();
         $('.flight-info .chart-notes').empty();
+        $('.flight-two').attr('style', null);
 
         google.maps.event.clearInstanceListeners(window);
         google.maps.event.clearInstanceListeners(document);
@@ -62,12 +67,12 @@
 
       predictionTemplate: '<li>' +
         '<div class="prediction-model-title"><span>{flight}</span><span>{datetime}</span></div>' +
-        '<div class="prediction-model">{models}</div>' +
+        '<div class="prediction-model collapsible">{models}</div>' +
         '</li>',
 
       weatherTemplate: '<li>' +
         '<div class="weather-forecast-title"><span>{flight}</span><span>{datetime}</span></div>' +
-        '<div class="row weather-forecast">' +
+        '<div class="row weather-forecast collapsible">' +
         '<div class="col-sm-6">{departureweather}</div>' +
         '<div class="col-sm-6">{arrivalweather}</div>' +
         '</div></li>',
@@ -121,7 +126,7 @@
           path: flightPlanCoordinates,
           strokeColor: '#0000FF',
           strokeOpacity: 0.75,
-          strokeWeight: 4
+          strokeWeight: 10
         });
 
         var flightPathInfo = {
@@ -194,7 +199,7 @@
           return predictionModel.hasOwnProperty($1) ? predictionModel[$1] : $0;
         }));
 
-        slideToggleArea(t, '.prediction-model');
+        slideToggleArea(t);
         if (expand) {
           t.trigger('click');
         }
@@ -227,7 +232,7 @@
           return weatherForecast.hasOwnProperty($1) ? weatherForecast[$1] : $0;
         }));
 
-        slideToggleArea(t, '.weather-forecast');
+        slideToggleArea(t);
         if (expand) {
           t.trigger('click');
         }
@@ -240,6 +245,8 @@
           var flight = flights[f];
 
           var datetime = new Date(flight.time);
+          //var datetimeUTC = new Date(flight.timeUTC.replace(' ', 'T')); //firefox doesnt like the space
+          //var time = formatDateTime(datetimeUTC, 'time');
           var datetimeUTC = new Date(flight.timeUTC);
           var time = formatDateTime(datetime, 'time');
 

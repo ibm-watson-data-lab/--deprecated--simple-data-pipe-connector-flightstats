@@ -44,8 +44,7 @@
       </div>
     </div>
     <div class="tab-pane tab-pane-flightpredictform row active">
-      <div class="col-sm-2"> </div>
-      <div class="col-sm-8">
+      <div style="text-align: center;">
         <div class="chart-wrapper flight-info">
           <div class="chart-title">
             <span>Enter your flight information </span>
@@ -53,10 +52,7 @@
           <div class="chart-stage" style="height: calc(70vh - 60px);">
             <div class="row">
               <form id="flightpredictform">
-              <div class="col-sm-6 flight-one">
-                <div class="form-title">
-                  <span>Enter the date and the approximate time of the first leg of your trip.</span>
-                </div>
+              <div class="flight-one">
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-departure-one">Departure Airport</label>
                   <input id="flight-predict-departure-one" name="flight-predict-departure-one" class="col-sm-12" type="text" readonly disabled value="LAS">
@@ -68,45 +64,51 @@
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-time-one">Approximate Flight Time</label>
                   <select id="flight-predict-time-one" name="flight-predict-time-one" class="col-sm-12" type="text">
-                    <option value="0000">12:00am - 12:59am</option>
-                    <option value="0100">1:00am - 1:59am</option>
-                    <option value="0200">2:00am - 2:59am</option>
-                    <option value="0300">3:00am - 3:59am</option>
-                    <option value="0400">4:00am - 4:59am</option>
-                    <option value="0500">5:00am - 5:59am</option>
-                    <option value="0600">6:00am - 6:59am</option>
-                    <option value="0700">7:00am - 7:59am</option>
-                    <option value="0800">8:00am - 8:59am</option>
-                    <option value="0900">9:00am - 9:59am</option>
-                    <option value="1000">10:00am - 10:59am</option>
-                    <option value="1100">11:00am - 11:59am</option>
-                    <option value="1200">12:00pm - 12:59pm</option>
-                    <option value="1300">1:00pm - 1:59pm</option>
-                    <option value="1400">2:00pm - 2:59pm</option>
-                    <option value="1500">3:00pm - 3:59pm</option>
-                    <option value="1600">4:00pm - 4:59pm</option>
-                    <option value="1700">5:00pm - 5:59pm</option>
-                    <option value="1800">6:00pm - 6:59pm</option>
-                    <option value="1900">7:00pm - 7:59pm</option>
-                    <option value="2000">8:00pm - 8:59pm</option>
-                    <option value="2100">9:00pm - 8:59pm</option>
-                    <option value="2200">10:00pm - 10:59pm</option>
-                    <option value="2300">11:00pm - 11:59pm</option>
+                    <option value="0">12:00am - 12:59am</option>
+                    <option value="1">1:00am - 1:59am</option>
+                    <option value="2">2:00am - 2:59am</option>
+                    <option value="3">3:00am - 3:59am</option>
+                    <option value="4">4:00am - 4:59am</option>
+                    <option value="5">5:00am - 5:59am</option>
+                    <option value="6">6:00am - 6:59am</option>
+                    <option value="7">7:00am - 7:59am</option>
+                    <option value="8">8:00am - 8:59am</option>
+                    <option value="9">9:00am - 9:59am</option>
+                    <option value="10">10:00am - 10:59am</option>
+                    <option value="11">11:00am - 11:59am</option>
+                    <option value="12">12:00pm - 12:59pm</option>
+                    <option value="13">1:00pm - 1:59pm</option>
+                    <option value="14">2:00pm - 2:59pm</option>
+                    <option value="15">3:00pm - 3:59pm</option>
+                    <option value="16">4:00pm - 4:59pm</option>
+                    <option value="17">5:00pm - 5:59pm</option>
+                    <option value="18">6:00pm - 6:59pm</option>
+                    <option value="19">7:00pm - 7:59pm</option>
+                    <option value="20">8:00pm - 8:59pm</option>
+                    <option value="21">9:00pm - 8:59pm</option>
+                    <option value="22">10:00pm - 10:59pm</option>
+                    <option value="23">11:00pm - 11:59pm</option>
                   </select>
                 </div>
-                <div class="pixiedust-formfield" style="text-align: right;">
+                <div class="pixiedust-formfield" style="text-align:right;top:-10px;position:relative;">
                   <button class="btn btn-sm btn-search" data-flight-suffix="one">Search Flights</button>
                 </div>
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-select-one">Flight</label>
                   <select id="flight-predict-select-one" name="flight-predict-select-one" class="col-sm-12" type="text"></select>
                 </div>
+                <div class="pixiedust-formfield open-more">
+                  <span>Taking multiple flights?<br/>Enter the second leg.<br/></span>
+                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                      height="24px" width="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve">
+                    <g>
+                      <polygon points="12,1 9,4 15,10 1,10 1,14 15,14 9,20 12,23 23,12"/>
+                    </g>
+                  </svg>
+                </div>
               </div>
               
-              <div class="col-sm-6 flight-two">
-                <div class="form-title">
-                  <span>Enter the date and the approximate time of the second leg of your trip.</span>
-                </div>
+              <div class="flight-two">
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-departure-two">Departure Airport</label>
                   <input id="flight-predict-departure-two" name="flight-predict-departure-two" class="col-sm-12" type="text" readonly disabled>
@@ -118,33 +120,33 @@
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-time-two">Approximate Flight Time</label>
                   <select id="flight-predict-time-two" name="flight-predict-time-two" class="col-sm-12" type="text">
-                    <option value="0000">12:00am - 12:59am</option>
-                    <option value="0100">1:00am - 1:59am</option>
-                    <option value="0200">2:00am - 2:59am</option>
-                    <option value="0300">3:00am - 3:59am</option>
-                    <option value="0400">4:00am - 4:59am</option>
-                    <option value="0500">5:00am - 5:59am</option>
-                    <option value="0600">6:00am - 6:59am</option>
-                    <option value="0700">7:00am - 7:59am</option>
-                    <option value="0800">8:00am - 8:59am</option>
-                    <option value="0900">9:00am - 9:59am</option>
-                    <option value="1000">10:00am - 10:59am</option>
-                    <option value="1100">11:00am - 11:59am</option>
-                    <option value="1200">12:00pm - 12:59pm</option>
-                    <option value="1300">1:00pm - 1:59pm</option>
-                    <option value="1400">2:00pm - 2:59pm</option>
-                    <option value="1500">3:00pm - 3:59pm</option>
-                    <option value="1600">4:00pm - 4:59pm</option>
-                    <option value="1700">5:00pm - 5:59pm</option>
-                    <option value="1800">6:00pm - 6:59pm</option>
-                    <option value="1900">7:00pm - 7:59pm</option>
-                    <option value="2000">8:00pm - 8:59pm</option>
-                    <option value="2100">9:00pm - 8:59pm</option>
-                    <option value="2200">10:00pm - 10:59pm</option>
-                    <option value="2300">11:00pm - 11:59pm</option>
+                    <option value="0">12:00am - 12:59am</option>
+                    <option value="1">1:00am - 1:59am</option>
+                    <option value="2">2:00am - 2:59am</option>
+                    <option value="3">3:00am - 3:59am</option>
+                    <option value="4">4:00am - 4:59am</option>
+                    <option value="5">5:00am - 5:59am</option>
+                    <option value="6">6:00am - 6:59am</option>
+                    <option value="7">7:00am - 7:59am</option>
+                    <option value="8">8:00am - 8:59am</option>
+                    <option value="9">9:00am - 9:59am</option>
+                    <option value="10">10:00am - 10:59am</option>
+                    <option value="11">11:00am - 11:59am</option>
+                    <option value="12">12:00pm - 12:59pm</option>
+                    <option value="13">1:00pm - 1:59pm</option>
+                    <option value="14">2:00pm - 2:59pm</option>
+                    <option value="15">3:00pm - 3:59pm</option>
+                    <option value="16">4:00pm - 4:59pm</option>
+                    <option value="17">5:00pm - 5:59pm</option>
+                    <option value="18">6:00pm - 6:59pm</option>
+                    <option value="19">7:00pm - 7:59pm</option>
+                    <option value="20">8:00pm - 8:59pm</option>
+                    <option value="21">9:00pm - 8:59pm</option>
+                    <option value="22">10:00pm - 10:59pm</option>
+                    <option value="23">11:00pm - 11:59pm</option>
                   </select>
                 </div>
-                <div class="pixiedust-formfield" style="text-align: right;">
+                <div class="pixiedust-formfield" style="text-align:right;top:-10px;position:relative;">
                   <button class="btn btn-sm btn-search" data-flight-suffix="two">Search Flights</button>
                 </div>
                 <div class="pixiedust-formfield">
@@ -161,7 +163,6 @@
           <div class="chart-notes">&nbsp;</div>
         </div>
       </div>
-      <div class="col-sm-2"> </div>
     </div>
   </div>
 {%endblock%}
