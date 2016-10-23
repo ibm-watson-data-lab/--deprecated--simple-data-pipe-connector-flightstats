@@ -20,16 +20,16 @@ import pixiedust
 import pytz
 from dateutil.parser import parse
 import datetime
+from pixiedust_flightpredict import Configuration
 
 myLogger=pixiedust.getLogger(__name__)
 
 flexBaseUrl = "https://api.flightstats.com/flex/"
 
-#Flight stats appId and appKey
-appId=os.environ["appId"]
-appKey=os.environ["appKey"]
-
 def buildUrl(path, **kwargs):
+    appId=os.environ.get("appId") or Configuration["appId"]
+    appKey=os.environ.get("appKey") or Configuration["appKey"]
+
     if appId is None or appKey is None:
         raise ValueError("appId or appKey is not defined")
     return (flexBaseUrl+path).format(**kwargs) + "?appId={0}&appKey={1}".format(appId, appKey)

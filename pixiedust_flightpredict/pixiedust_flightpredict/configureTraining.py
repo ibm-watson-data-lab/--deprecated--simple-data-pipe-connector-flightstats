@@ -41,7 +41,7 @@ class ConfigureTraining(Display):
             {"title": "Architecture", "template": "step_welcome.html"},
             {"title": "Credentials", "template": "step_credentials.html","args":[
                 ("cloudantHost","Cloudant Host"),("cloudantUserName","Cloudant User Name"),("cloudantPassword","Cloudant Password"),
-                ("weatherUrl", "Weather URL")
+                ("weatherUrl", "Weather URL"),("appId", "FlightStats API Id"),("appKey", "FlightStats API Key")
             ]},
             {"title": "Training Set", "template": "step_sets.html", "args":[
                 ('Database Name', 'TrainingDbName',''),
@@ -63,6 +63,7 @@ class ConfigureTraining(Display):
             tasks=[
                 self.checkConfigParams(["cloudantHost","cloudantUserName","cloudantPassword"], "Cloudant Configuration is OK"),
                 self.checkConfigParams(["weatherUrl"], "WeatherUrl Configuration is OK"),
+                self.checkConfigParams(["appId", "appKey"], "FlightStats Configuration is OK"),
                 self.checkDataSet( steps[2]["args"] ),
                 self.checkDataSet( steps[3]["args"] ),
                 self.checkLabeledRDD( LabeledRDDTrainingVarName, pixiedust_flightpredict.Configuration.TrainingSQLTableName ),

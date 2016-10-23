@@ -3,7 +3,10 @@
 {%set editMode = this.options.get("nostore_edit")=='true'%}
 
 <div class="page-header">
-  <h1>Welcome to Flight Tracker <small>powered by PixieDust, FlightStats, Apache Spark and IBM Weather on Bluemix<small></h1>
+  <div class="text-center">
+    <h1>Flight Predictor Configuration Dashboard</h1>
+    <smaller>powered by PixieDust, FlightStats, Apache Spark and IBM Weather on Bluemix<smaller>
+  </div>
   <div align="right" style="margin:10px">
     <button id="edit{{prefix}}" class="btn btn-default" type="button">{{ "Save Configuration" if editMode else "Edit Configuration"}} </button>
     <script>

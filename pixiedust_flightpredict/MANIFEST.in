@@ -1,0 +1,2 @@
+recursive-include pixiedust_flightpredict templates/*
+recursive-include pixiedust_flightpredict gencode/*
