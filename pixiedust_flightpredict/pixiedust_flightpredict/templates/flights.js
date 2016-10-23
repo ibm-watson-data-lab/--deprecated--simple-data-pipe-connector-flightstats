@@ -35,8 +35,28 @@
   predictSelectOne.change(function(event){
     event.preventDefault();
     var selectedFlightOneDestAirportCode = $(this).val().split(":")[1];
-    console.log("Selected Flight One dest airport ", selectedFlightOneDestAirportCode);
+    var dateTime = $(this).val().split(":")[2];
+    var selectedFlightOneDepTime = flightpredict.formatDateTime(new Date(+dateTime), 'time');
+    console.log('Selected Flight One dest airport ', selectedFlightOneDestAirportCode, ' at ', selectedFlightOneDepTime);
+
+    $('.fp-path-one').text(selectedFlightOneDepTime);
+    $('.fp-arr-one').text(selectedFlightOneDestAirportCode);
     departureTwo.val(selectedFlightOneDestAirportCode);
+
+    $('.fp-arr-two').attr('style', null).html('&nbsp;');
+    $('.fp-path-two').attr('style', null).html('&nbsp;');
+    predictSelectTwo.empty();
+  });
+
+  predictSelectTwo.change(function(event){
+    event.preventDefault();
+    var selectedFlightTwoDestAirportCode = $(this).val().split(":")[1];
+    var dateTime = $(this).val().split(":")[2];
+    var selectedFlightTwoDepTime = flightpredict.formatDateTime(new Date(+dateTime), 'time');
+    console.log('Selected Flight Two dest airport ', selectedFlightTwoDestAirportCode, ' at ', selectedFlightTwoDepTime);
+
+    $('.fp-path-two').text(selectedFlightTwoDepTime);
+    $('.fp-arr-two').text(selectedFlightTwoDestAirportCode);
   });
 
   searchBtn.click(function(event) {
@@ -50,14 +70,20 @@
     var suffix = $(this).attr('data-flight-suffix');
     var depAirport = "LAS";
 
-    predictSelectTwo.empty()
+    predictSelectTwo.empty();
 
     if (suffix === 'two') {
       //Get the destination airport from first flight
-      depAirport = predictSelectOne.val().split(":")[1]
+      depAirport = predictSelectOne.val().split(":")[1];
+      $('.fp-path-two').attr('style', null).html('&nbsp;');
+      $('.fp-arr-two').attr('style', null).html('&nbsp;');
     }
     else {
       predictSelectOne.empty();
+      $('.fp-path-one').attr('style', null).html('&nbsp;');
+      $('.fp-arr-one').attr('style', null).html('&nbsp;');
+      $('.fp-path-two').attr('style', null).html('&nbsp;');
+      $('.fp-arr-two').attr('style', null).html('&nbsp;');
 
       var currentdate = flightDateOne.datepicker('getDate');
       flightDateTwo.datepicker('option', 'minDate', currentdate);
@@ -87,6 +113,18 @@
           var flights = jsonResults.flights || [];
           if (flights.length > 0) {
             flightpredict.populateFlightOptions(flights, $('#flight-predict-select-'+suffix, tdiag));
+
+            $('.fp-arr-'+suffix).css({ opacity: 0.25, display: 'inline-block' });
+            $('.fp-path-'+suffix).animate({
+              opacity: 1,
+              width:'35%'
+            }, {
+              duration: 1000,
+              complete: function() {
+                var ap = $('#flight-predict-select-'+suffix, tdiag).val().split(":")[1];
+                $('.fp-arr-'+suffix).css({ opacity: 1 }).text(ap);
+              }
+            });
           } else {
             messageNode.text('No flights found for that date and time. Try a different search.');
             messageNode.slideDown();
@@ -240,7 +278,7 @@
     $(this).parent().parent().toggleClass('search-flight');
   });
 
-  $('.open-more').click(function() {
+  $('.fp-more-link').click(function() {
     $('.flight-two').animate({
       paddingLeft: '10px',
       paddingRight: '10px',
@@ -249,7 +287,6 @@
     });
   });
 
-debugger;
   flightDateOne.datepicker({
     dateFormat: 'yy-mm-dd',
     constrainInput: true,

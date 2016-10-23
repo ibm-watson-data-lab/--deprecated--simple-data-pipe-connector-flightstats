@@ -24,27 +24,6 @@
       });
     }
 
-    function formatDateTime(datetime, opt) {
-      var datetimeStr = '';
-      if (!opt || opt === 'date') {
-        var day = datetime.getUTCDate();
-        var month = datetime.getUTCMonth() + 1;
-        var year = datetime.getUTCFullYear();
-        day = day < 10 ? '0' + day : day;
-        month = month < 10 ? '0' + month : month;
-        datetimeStr += year + '-' + month + '-' + day + ' ';
-      }
-      if (!opt || opt === 'time') {
-        var hours = datetime.getUTCHours();
-        var minutes = datetime.getUTCMinutes();
-        var ampm = hours >= 12 ? 'pm' : 'am';
-        hours = (hours % 12) || 12;
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        datetimeStr += ' ' + hours + ':' + minutes + ampm;
-      }
-      return datetimeStr;
-    }
-
     pix.flightpredict = {
       resetForm: function() {
         $('#flightpredictform')[0].reset();
@@ -59,10 +38,36 @@
         $('.flight-info .chart-notes').empty();
         $('.flight-two').attr('style', null);
 
+        $('.fp-path-one').attr('style', null).html('&nbsp;');
+        $('.fp-arr-one').attr('style', null).html('&nbsp;');
+        $('.fp-path-two').attr('style', null).html('&nbsp;');
+        $('.fp-arr-two').attr('style', null).html('&nbsp;');
+
         google.maps.event.clearInstanceListeners(window);
         google.maps.event.clearInstanceListeners(document);
         $('#flightpredict-map').empty();
         this.themap = null;
+      },
+
+      formatDateTime(datetime, opt) {
+        var datetimeStr = '';
+        if (!opt || opt === 'date') {
+          var day = datetime.getUTCDate();
+          var month = datetime.getUTCMonth() + 1;
+          var year = datetime.getUTCFullYear();
+          day = day < 10 ? '0' + day : day;
+          month = month < 10 ? '0' + month : month;
+          datetimeStr += year + '-' + month + '-' + day + ' ';
+        }
+        if (!opt || opt === 'time') {
+          var hours = datetime.getUTCHours();
+          var minutes = datetime.getUTCMinutes();
+          var ampm = hours >= 12 ? 'pm' : 'am';
+          hours = (hours % 12) || 12;
+          minutes = minutes < 10 ? '0' + minutes : minutes;
+          datetimeStr += ' ' + hours + ':' + minutes + ampm;
+        }
+        return datetimeStr;
       },
 
       predictionTemplate: '<li>' +
@@ -134,8 +139,8 @@
           arrivalAirportFsCode:  info.flightInfo.arrivalAirportFsCode,
           carrierFsCode: info.flightInfo.carrierFsCode,
           flightNumber: info.flightInfo.flightNumber,
-          depdatetime: formatDateTime(new Date(info.flightInfo.departureTime)),
-          arrdatetime: formatDateTime(new Date(info.flightInfo.arrivalTime)),
+          depdatetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
+          arrdatetime: this.formatDateTime(new Date(info.flightInfo.arrivalTime)),
           airlineName: info.flightInfo.airlineInfo.name,
           airlinePhone: info.flightInfo.airlineInfo.phoneNumber,
           airplane: info.flightInfo.equipmentInfo.name
@@ -185,7 +190,7 @@
 
         var predictionModel = {
           flight: departureAirport + ' > ' + arrivalAirport,
-          datetime: formatDateTime(new Date(info.flightInfo.departureTime)),
+          datetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
           overall: predictionInfo.overall,
           models: ''
         };
@@ -217,7 +222,7 @@
 
         var weatherForecast = {
           flight: departureAirport + ' > ' + arrivalAirport,
-          datetime: formatDateTime(new Date(info.flightInfo.departureTime)),
+          datetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
           departureweather: '<div>' + departureCity + '</div>' +
             '<div>' + departureWeather.phrase_22char + '</div>' +
             '<div>' + departureWeather.temp + '</div>' +
@@ -246,9 +251,9 @@
 
           var datetime = new Date(flight.time);
           //var datetimeUTC = new Date(flight.timeUTC.replace(' ', 'T')); //firefox doesnt like the space
-          //var time = formatDateTime(datetimeUTC, 'time');
+          //var time = this.formatDateTime(datetimeUTC, 'time');
           var datetimeUTC = new Date(flight.timeUTC);
-          var time = formatDateTime(datetime, 'time');
+          var time = this.formatDateTime(datetime, 'time');
 
           selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + ':' + datetime.getTime() + ":" + datetimeUTC.getTime() + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
           selectNode.change();

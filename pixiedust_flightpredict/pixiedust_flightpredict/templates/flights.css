@@ -163,16 +163,20 @@
 .modal-dialog-flightpredictform svg {
   fill: #00b4a0;
 }
-.open-more {
+.fp-more-link {
   color: #fff;
   cursor: pointer;
   text-align: right;
   vertical-align: middle;
 }
-.open-more:hover span:first-child {
-  color:#00b4a0;
+.fp-more-link:hover span:first-child {
+  /*color:#00b4a0;*/
+  text-decoration: underline;
 }
-.open-more span:first-child {
+.fp-more-link:hover svg {
+  fill:#ffffff;
+}
+.fp-more-link span:first-child {
   display: block;
   font-size: 18px;
   font-weight: 200;
@@ -333,10 +337,40 @@
   float: right;
   margin-left: 10px;
 }
-.flight-predict-status-image {
+.fp-progress {
+  font-size: 20px;
   font-weight: 400;
-  min-height: 50px;
-  padding: 15px 0;
+  line-height: 60px;
+  bottom: 20px;
+  position: absolute;
+  color: #ffffff;
+  width: 100%;
+}
+.fp-dep,
+.fp-arr-one,
+.fp-arr-two {
+  border: 5px solid #a6266e;
+  border-radius: 50%;
+  display: none;
+  opacity: 0.5;
+  height: 75px;
+  width: 75px;
+}
+.fp-path-one,
+.fp-path-two {
+  border-bottom: 5px solid #a6266e;
+  bottom: 7px;
+  display: inline-block;
+  height: 50px;
+  margin: 0 -10px;
+  opacity: 0.5;
+  position: relative;
+  vertical-align: text-bottom;
+  width: 0;
+}
+.fp-dep {
+  display: inline-block;
+  opacity: 1;
 }
 
 .flight-one,
