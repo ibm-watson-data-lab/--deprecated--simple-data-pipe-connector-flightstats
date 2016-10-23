@@ -4,13 +4,95 @@ var True=true;
 var False=false;
 var graph = {"nodes": {{graphNodesJson}},"links":{{graphLinksJson}}};
 var prefix = '{{prefix}}';
-var w = 1000;
-var h = 600;
+var parentBox = d3.select("#map" + prefix).node().getBoundingClientRect();
+debugger;
+var w = parentBox.width;
+var h = parentBox.height;
 
 var linksByOrigin = {};
 var countByAirport = {};
 var locationByAirport = {};
 var positions = [];
+var d3_geo_radians = Math.PI / 180;
+d3.geo.azimuthal = function() {
+  var mode = "orthographic", // or stereographic, gnomonic, equidistant or equalarea
+      origin,
+      scale = 200,
+      translate = [480, 250],
+      x0,
+      y0,
+      cy0,
+      sy0;
+
+  function azimuthal(coordinates) {
+    var x1 = coordinates[0] * d3_geo_radians - x0,
+        y1 = coordinates[1] * d3_geo_radians,
+        cx1 = Math.cos(x1),
+        sx1 = Math.sin(x1),
+        cy1 = Math.cos(y1),
+        sy1 = Math.sin(y1),
+        cc = mode !== "orthographic" ? sy0 * sy1 + cy0 * cy1 * cx1 : null,
+        c,
+        k = mode === "stereographic" ? 1 / (1 + cc)
+          : mode === "gnomonic" ? 1 / cc
+          : mode === "equidistant" ? (c = Math.acos(cc), c ? c / Math.sin(c) : 0)
+          : mode === "equalarea" ? Math.sqrt(2 / (1 + cc))
+          : 1,
+        x = k * cy1 * sx1,
+        y = k * (sy0 * cy1 * cx1 - cy0 * sy1);
+    return [
+      scale * x + translate[0],
+      scale * y + translate[1]
+    ];
+  }
+
+  azimuthal.invert = function(coordinates) {
+    var x = (coordinates[0] - translate[0]) / scale,
+        y = (coordinates[1] - translate[1]) / scale,
+        p = Math.sqrt(x * x + y * y),
+        c = mode === "stereographic" ? 2 * Math.atan(p)
+          : mode === "gnomonic" ? Math.atan(p)
+          : mode === "equidistant" ? p
+          : mode === "equalarea" ? 2 * Math.asin(.5 * p)
+          : Math.asin(p),
+        sc = Math.sin(c),
+        cc = Math.cos(c);
+    return [
+      (x0 + Math.atan2(x * sc, p * cy0 * cc + y * sy0 * sc)) / d3_geo_radians,
+      Math.asin(cc * sy0 - (p ? (y * sc * cy0) / p : 0)) / d3_geo_radians
+    ];
+  };
+
+  azimuthal.mode = function(x) {
+    if (!arguments.length) return mode;
+    mode = x + "";
+    return azimuthal;
+  };
+
+  azimuthal.origin = function(x) {
+    if (!arguments.length) return origin;
+    origin = x;
+    x0 = origin[0] * d3_geo_radians;
+    y0 = origin[1] * d3_geo_radians;
+    cy0 = Math.cos(y0);
+    sy0 = Math.sin(y0);
+    return azimuthal;
+  };
+
+  azimuthal.scale = function(x) {
+    if (!arguments.length) return scale;
+    scale = +x;
+    return azimuthal;
+  };
+
+  azimuthal.translate = function(x) {
+    if (!arguments.length) return translate;
+    translate = [+x[0], +x[1]];
+    return azimuthal;
+  };
+
+  return azimuthal.origin([0, 0]);
+};
 
 var projection = d3.geo.azimuthal()
     .mode("equidistant")
@@ -26,7 +108,7 @@ var states = svg.append("svg:g").attr("id", "states")
 var circles = svg.append("svg:g").attr("id", "circles");
 var cells = svg.append("svg:g").attr("id", "cells");
 
-/*var arc = d3.geo.graticule().majorExtent()
+/*var arcGraticule = d3.geo.graticule().majorExtent()
     .source(function(d) { return locationByAirport[d.source]; })
     .target(function(d) { return locationByAirport[d.target]; });*/
 var arc = d3.geo.greatArc()
@@ -106,10 +188,14 @@ g.selectAll("path.arc")
             {% endcall %}
         }
     })
-    .on("mouseover", function(d,i){
-        console.log(d)
-    })
 
+var selectedAirport=null;
+function toggleAirportSelection(airport){
+    if ( airport ){
+        el = d3.select("g[dep='" + airport + "']");
+        el.classed("showFlights", !el.classed("showFlights"))
+    }
+}
 circles.selectAll("circle")
     .data(keys)
     .enter()
@@ -122,9 +208,18 @@ circles.selectAll("circle")
     .on("mouseover", function(d, i) { 
         d3.select("#airport" + prefix).text(d.name + "(" + d.id + ")" ); 
     })
-    .on("click", function(d, i) { 
-        airport = d.id;
-        el = d3.select("g[dep='" + airport + "']");
-        el.classed("showFlights", !el.classed("showFlights"))
+    .on("mouseout", function(d, i) { 
+        d3.select("#airport" + prefix).text(""); 
+    })
+    .on("click", function(d, i) {
+        if (d3.select(this).classed("origin") ){
+            toggleAirportSelection(selectedAirport);
+            if (selectedAirport !== d.id ){            
+                selectedAirport = d.id;
+                toggleAirportSelection(selectedAirport);
+            }else{
+                selectedAirport = null;
+            }
+        }
     })
     .sort(function(a, b) { return (countByAirport[b.id] - countByAirport[a.id]); })

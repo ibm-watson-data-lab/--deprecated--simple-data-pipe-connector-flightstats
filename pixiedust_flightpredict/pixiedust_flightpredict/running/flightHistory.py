@@ -34,9 +34,14 @@ def saveFlightResults(payload):
     url = Configuration.cloudantHost
     if "://" not in url:
         url = "https://"+url
-    r = requests.put(url+ "/" + historyDBName, auth=auth)
-    if r.status_code != 200 and r.status_code != 201 and r.status_code != 412:
-        return myLogger.error("Error connecting to the history database: {0}".format(r.text))
+    r = requests.get(url + "/" + historyDBName, auth=auth)
+    if r.status_code != 200:
+        if r.status_code == 404:
+            r = requests.put(url+ "/" + historyDBName, auth=auth)
+            if r.status_code != 200 and r.status_code != 201 and r.status_code != 412:
+                return myLogger.error("Error creating to the history database: {0}".format(r.text))
+        else:
+            return myLogger.error("Error connecting to the history database: {0}".format(r.text))
 
     depAirportInfo = payload["departureAirportInfo"]["airportInfo"]
     arrAirportInfo = payload["arrivalAirportInfo"]["airportInfo"]

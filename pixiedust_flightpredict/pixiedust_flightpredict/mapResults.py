@@ -28,8 +28,9 @@ class MapResultsDisplay(Display):
     def doRender(self, handlerId):
         self.addProfilingTime = False
         self._addScriptElement("https://d3js.org/d3.v3.js", checkJSVar="d3")
-        self._addScriptElement("https://mbostock.github.io/d3/talk/20111116/d3/d3.geo.js")
-        self._addScriptElement("https://mbostock.github.io/d3/talk/20111116/d3/d3.geom.js")
+        #self._addScriptElement("https://mbostock.github.io/d3/talk/20111116/d3/d3.geo.js")
+        #self._addScriptElement("https://cdnjs.cloudflare.com/ajax/libs/d3-geo-projection/0.2.16/d3.geo.projection.js")
+        #self._addScriptElement("https://mbostock.github.io/d3/talk/20111116/d3/d3.geom.js")
 
         #Load the data from the flight history db
         df = loadFlightHistory()
