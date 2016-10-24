@@ -5,6 +5,12 @@
   window.Pixiedust.flightpredict = window.Pixiedust.flightpredict || {};
 
   (function(pix) {
+    var weatherIconClasses = ['wi-tornado', 'wi-storm-showers', 'wi-hurricane', 'wi-storm-showers', 'wi-hail', 'wi-sleet', 'wi-sleet', 'wi-rain-mix', 'wi-rain', 'wi-rain-mix', 'wi-rain',
+      'wi-rain-mix', 'wi-showers', 'wi-showers', 'wi-snow', 'wi-snow-wind', 'wi-snow', 'wi-hail', 'wi-sleet', 'wi-sandstorm', 'wi-fog',
+      'wi-cloudy-windy', 'wi-smoke', 'wi-windy', 'wi-windy', 'wi-sandstorm', 'wi-cloud', 'wi-cloudy', 'wi-day-cloudy', 'wi-night-partly-cloudy', 'wi-night-partly-cloudy',
+      'wi-night-clear', 'wi-day-sunny', 'wi-night-clear', 'day-cloudy-high', 'wi-rain-mix', 'wi-day-sunny', 'wi-thunderstorm', 'wi-thunderstorm', 'wi-showers', 'wi-rain-wind',
+      'wi-snow', 'wi-snow-wind', 'wi-snow-wind', 'wi-na', 'wi-night-alt-showers', 'wi-night-alt-snow', 'wi-night-alt-thunderstorm'];
+
     function slideToggleArea(trigger) {
       $(trigger).click(function() {
         var that = $(this);
@@ -78,8 +84,8 @@
       weatherTemplate: '<li>' +
         '<div class="weather-forecast-title"><span>{flight}</span><span>{datetime}</span></div>' +
         '<div class="row weather-forecast collapsible">' +
-        '<div class="col-sm-6">{departureweather}</div>' +
-        '<div class="col-sm-6">{arrivalweather}</div>' +
+        '<div>{departureweather}</div>' +
+        '<div>{arrivalweather}</div>' +
         '</div></li>',
 
       airportMarkerTemplate: '<div class="airport-marker-info">' +
@@ -129,9 +135,9 @@
         var flightPlanCoordinates = [depAirport,arrAirport];
         var flightPath = new google.maps.Polyline({
           path: flightPlanCoordinates,
-          strokeColor: '#0000FF',
+          strokeColor: info.prediction.overall === 'On Time' ? '#00b4a0' : '#a6266e',
           strokeOpacity: 0.75,
-          strokeWeight: 10
+          strokeWeight: 8
         });
 
         var flightPathInfo = {
@@ -197,7 +203,7 @@
 
         for (var m in predictionInfo.models) {
           var model = predictionInfo.models[m];
-          predictionModel.models += '<div><span>' + model.model + '</span><span>' + model.prediction + '</span></div>';
+          predictionModel.models += '<div><span>' + model.model + '</span><span class="' + (model.prediction === 'On Time' ? 'ontime' : 'delayed') + '">' + model.prediction + '</span></div>';
         }
 
         var t = $(this.predictionTemplate.replace(/\{(.+?)\}/g, function($0, $1) {
@@ -218,19 +224,35 @@
         var departureAirport = info.flightInfo.departureAirportFsCode;
         var arrivalAirport = info.flightInfo.arrivalAirportFsCode;
         var departureCity = info.departureAirportInfo.airportInfo.city;
+        var departureState = info.departureAirportInfo.airportInfo.stateCode;
         var arrivalCity = info.arrivalAirportInfo.airportInfo.city;
+        var arrivalState = info.arrivalAirportInfo.airportInfo.stateCode;
+        var departureTemp = Math.round((departureWeather.temp * 1.8) + 32); //convert to fahrenheit
+        var arrivalTemp = Math.round((arrivalWeather.temp * 1.8) + 32); //convert to fahrenheit
+        var departureIcon = departureWeather.icon_code < weatherIconClasses.length ? weatherIconClasses[departureWeather.icon_code] : 'wi-na';
+        var arrivalIcon = arrivalWeather.icon_code < weatherIconClasses.length ? weatherIconClasses[arrivalWeather.icon_code] : 'wi-na';
 
         var weatherForecast = {
           flight: departureAirport + ' > ' + arrivalAirport,
           datetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
-          departureweather: '<div>' + departureCity + '</div>' +
+          departureweather: '<div class="fp-weather-temp">' + departureTemp + '<span>&deg; F</span></div>' +
+            '<div class="fp-weather-info">' +
+            '<div>' + departureCity + (departureState ? (', ' + departureState) : '') + '</div>' +
             '<div>' + departureWeather.phrase_22char + '</div>' +
-            '<div>' + departureWeather.temp + '</div>' +
-            '<div>' + departureWeather.wdir_cardinal + '</div>',
-          arrivalweather: '<div>' + arrivalCity + '</div>' +
+            '<div>' + departureWeather.wdir_cardinal + '</div>' +
+            '</div>' +
+            '<div class="fp-weather-icon">' +
+            '<i class="wi ' + departureIcon + '"></i>' +
+            '</div>',
+          arrivalweather: '<div class="fp-weather-temp">' + arrivalTemp + '<span>&deg; F</span></div>' +
+            '<div class="fp-weather-info">' +
+            '<div>' + arrivalCity + (arrivalState ? (', ' + arrivalState) : '') + '</div>' +
             '<div>' + arrivalWeather.phrase_22char + '</div>' +
-            '<div>' + arrivalWeather.temp + '</div>' +
-            '<div>' + arrivalWeather.wdir_cardinal + '</div>'
+            '<div>' + arrivalWeather.wdir_cardinal + '</div>' +
+            '</div>' +
+            '<div class="fp-weather-icon">' +
+            '<i class="wi ' + arrivalIcon + '"></i>' +
+            '</div>'
         };
 
         var t = $(this.weatherTemplate.replace(/\{(.+?)\}/g, function($0, $1) {

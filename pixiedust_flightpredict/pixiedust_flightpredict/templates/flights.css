@@ -1,3 +1,6 @@
+
+@import url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/css/weather-icons.min.css);
+
 .chart-wrapper {
   margin: 10px;
   padding: 10px;
@@ -262,27 +265,26 @@
   padding: 0px;
 }
 .tab-pane-flightpredictdata li {
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-left: 5px solid transparent;
+  color: #ffffff;
   display: block;
   font-size: 1.125em;
   margin-bottom: 15px;
   padding: 0px;
 }
-.tab-pane-flightpredictdata li:hover {
-  cursor: pointer;
+.tab-pane-flightpredictdata li:hover,
+.tab-pane-flightpredictdata li.expanded {
+  border-color: #999;
 }
 .tab-pane-flightpredictdata li > div:first-child {
-  border-left: 5px solid #f9f9f9;
+  cursor: pointer;
   font-weight: 500;
   padding: 15px;
 }
 .tab-pane-flightpredictdata li.expanded > div:first-child,
 .tab-pane-flightpredictdata li:hover > div:first-child {
-  background-color: #eeeeee;
-  border-color: #a6266e;
-  color: #a6266e;
+  background-color: rgba(0,0,0,0.55);
 }
 #prediction-models,
 #weather-forecasts {
@@ -304,6 +306,10 @@
   line-height: 1.5em;
   padding: 10px;
 }
+.prediction-model {
+  font-weight: 400;
+  font-size: 18px;
+}
 .weather-forecast {
   padding-left: 20px;
 }
@@ -312,8 +318,12 @@
   padding: 10px;
 }
 .prediction-model span:nth-child(2) {
-  color: #a6266e;
+  color: #00b4a0;
   float: right;
+  font-weight: 600;
+}
+.prediction-model span.delayed {
+  color: #a6266e;
 }
 .airport-marker-info h3,
 .flight-path-info h3 {
@@ -391,3 +401,42 @@
 #ui-datepicker-div {
   z-index: 1500 !important;
 }
+
+
+
+.weather-forecast > div {
+  margin: 0;
+  padding: 15px 0 25px 10px;
+}
+.weather-forecast > div:first-child {
+  border-bottom: 1px solid #c6c6c6;
+}
+.fp-weather-temp {
+  display: inline-block;
+  font-size: 55px;
+  vertical-align: top;
+  width: 26%
+}
+.fp-weather-temp span {
+  font-size: 20px;
+  vertical-align: super;
+}
+.fp-weather-icon {
+  display: inline-block;
+  font-size: 48px;
+  width: 24%
+}
+.fp-weather-info {
+  display: inline-block;
+  margin: 0 10px;
+  width: calc(50% - 30px);
+}
+.fp-weather-info div {
+  font-size: 14px;
+  line-height: 16px;
+}
+.fp-weather-info div:first-child {
+  font-size: 16px;
+  font-weight: bold;
+}
+
