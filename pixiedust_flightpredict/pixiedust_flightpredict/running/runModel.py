@@ -118,7 +118,7 @@ def runModel(flight, date, departureAirport=None):
     if departureAirport is None:
         departureAirport = "LAS"
 
-    response = getFlightSchedule(flight, date)
+    response = getFlightSchedule(flight, date, departureAirport)
     myLogger.debug("Schedule for flight {0} at date {1} : {2}".format(flight, date, response ))
     if "error" in response:
         return {"error": "Unable to access schedule {0}".format(response["error"])}

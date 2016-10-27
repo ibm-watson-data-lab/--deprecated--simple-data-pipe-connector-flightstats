@@ -37,18 +37,39 @@ def buildUrl(path, **kwargs):
 def toUTC(sDateTime, timeZoneRegionName):
     return pytz.timezone( timeZoneRegionName ).localize(parse(sDateTime)).astimezone (pytz.utc)
 
-def parseDate(date):
+airportCache={}
+def getAirportInfoFromFlightStats(code):
+    if code in airportCache:
+        return airportCache[code]
+
+    airportPath = "airports/rest/v1/json/{code}/today"
+    url = buildUrl(airportPath, code=code)
+    myLogger.debug("Calling airport api with url: " + url)
+    response = requests.get(url)
+    if response.status_code != 200:
+        msg = "Error while trying to get airport info for {0}. Error is {1}".format(code, str(response.reason))
+        myLogger.error(msg)
+        raise requests.HTTPError(msg, response=response)
+    
+    airportCache[code] = response.json()["airport"];
+    return airportCache[code]
+
+def parseDate(date, departureAirport = None):
     dt = pytz.utc.localize(datetime.datetime.utcfromtimestamp(date/1000))
+    if departureAirport:
+        info = getAirportInfoFromFlightStats( departureAirport )
+        dt = dt.astimezone(pytz.timezone(info['timeZoneRegionName']))
     return (dt.year,dt.month,dt.day,dt.hour)
 
-def getFlightSchedule(flight, date):
+def getFlightSchedule(flight, date, departureAirport):
     myLogger.debug("getFlightSchedule with args: {0}, {1}".format( flight, date ) )
     #parse the flight and date
     index = flight.rfind(" ")
     carrier = flight[:index]
     flightnumber = flight[index+1:]
 
-    (year,month,day,hour) = parseDate(date)
+    (year,month,day,hour) = parseDate(date, departureAirport)
+    (yearDT,monthDT,dayDT,hourDT) = parseDate(date)
 
     schedulesPath = "schedules/rest/v1/json/flight/{carrier}/{flightnumber}/departing/{year}/{month}/{day}"
     url = buildUrl(schedulesPath, carrier=carrier, flightnumber=flightnumber, year=year, month=month, day=day)
@@ -89,8 +110,8 @@ def getFlightSchedule(flight, date):
             airport = findAirport(scheduledFlight['departureAirportFsCode'])
             if airport is not None:
                 utcDT = toUTC( scheduledFlight["departureTime"], airport['timeZoneRegionName'])
-                myLogger.info("Comparing time for airport {0} between {1} and {2}".format( airport['name'], utcDT.hour, hour))
-                if utcDT.hour == hour:
+                myLogger.info("Comparing time for airport {0} between {1} and {2}".format( airport['name'], utcDT.hour, hourDT))
+                if utcDT.hour == hourDT:
                     thisFlight = scheduledFlight
                     thisFlight['departureTimeUTC'] = str(utcDT)
                     arrAirport = findAirport( scheduledFlight['arrivalAirportFsCode'])
