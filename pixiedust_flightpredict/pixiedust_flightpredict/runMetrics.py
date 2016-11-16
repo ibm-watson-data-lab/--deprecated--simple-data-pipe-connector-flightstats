@@ -21,7 +21,7 @@ from pyspark.mllib.evaluation import MulticlassMetrics
 
 class RunMetricsDisplay(Display):
     def doRender(self, handlerId):
-        html='<table width=100%><tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th></tr>'
+        html='<div class="pd_save"><table width=100%><tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th></tr>'
         confusionHtml = '<p>Confusion Tables for each Model</p>'
         for modelName,model in Configuration.getModels():
             label= model.__class__.__name__
@@ -55,7 +55,7 @@ class RunMetricsDisplay(Display):
                     confusionHtml += "</tr>"
                 confusionHtml += "</table>"
             
-        html+='</table>'
+        html+='</table></div>'
         
         if ( displayConfusionTable ):
             html+=confusionHtml
