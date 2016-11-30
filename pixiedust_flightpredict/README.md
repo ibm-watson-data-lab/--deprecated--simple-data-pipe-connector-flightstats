@@ -21,7 +21,7 @@ The instructions in notebook use the [pixiedust-flightpredict](https://pypi.pyth
 	
 	with
   
-  `!pip install --user --upgrade --no-deps -e <cloned_github_repo>/pixiedust_flightpredict`  
+  `!pip install --user --upgrade -e <cloned_github_repo>/pixiedust_flightpredict`  
   
 	where `<cloned_github_repo>` is the full path to the directory of cloned `simple-data-pipe-connector-flightstats` repo (e.g., `/Users/username/gitrepos/simple-data-pipe-connector-flightstats`)  
 
