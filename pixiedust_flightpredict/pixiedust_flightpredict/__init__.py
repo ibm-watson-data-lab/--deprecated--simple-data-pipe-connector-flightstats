@@ -25,6 +25,7 @@ from pyspark.sql import DataFrame
 from pyspark.mllib.regression import LabeledPoint
 
 myLogger = pixiedust.getLogger(__name__)
+initialAirport = "BOS"
 
 @PixiedustDisplay()
 class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
@@ -83,9 +84,12 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
       import mapResults
       return mapResults.MapResultsDisplay(options, entity)
     else:
+      options["initialAirport"] = initialAirport
       return PixieDustFlightPredict(options,entity)
 
-def flightPredict():
+def flightPredict(depAir="BOS"):
+  global initialAirport
+  initialAirport = depAir
   display(PixieDustFlightPredictPluginMeta)
 
 def displayMapResults():

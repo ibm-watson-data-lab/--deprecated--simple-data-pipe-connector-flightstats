@@ -55,7 +55,7 @@
               <div class="flight-one">
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-departure-one">Departure Airport</label>
-                  <input id="flight-predict-departure-one" name="flight-predict-departure-one" class="col-sm-12" type="text" readonly disabled value="LAS">
+                  <input id="flight-predict-departure-one" name="flight-predict-departure-one" class="col-sm-12" type="text" readonly disabled value="{{initialAirport}}">
                 </div>
                 <div class="pixiedust-formfield">
                   <label for="flight-predict-date-one">Flight Date</label>
@@ -158,7 +158,7 @@
             </div>
             <div class="row flight-predict-message"></div>
             <div class="row fp-progress">
-              <span class="fp-dep">LAS</span>
+              <span class="fp-dep">{{initialAirport}}</span>
               <span class="fp-path-one">&nbsp;</span>
               <span class="fp-arr-one">&nbsp;</span>
               <span class="fp-path-two">&nbsp;</span>

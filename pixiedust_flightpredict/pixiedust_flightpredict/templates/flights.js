@@ -19,6 +19,7 @@
   var searchBtn = $('.btn-search', tdiag);
   var predictSelectOne = $('#flight-predict-select-one', tdiag);
   var predictSelectTwo = $('#flight-predict-select-two', tdiag);
+  var departureOne = $('#flight-predict-departure-one', tdiag);
   var departureTwo = $('#flight-predict-departure-two', tdiag);
   var flightDateOne = $('#flight-predict-date-one', tdiag);
   var flightDateTwo = $('#flight-predict-date-two', tdiag);
@@ -68,7 +69,7 @@
     pixiedustSpinner.css({'display': 'inline-block'});
 
     var suffix = $(this).attr('data-flight-suffix');
-    var depAirport = "LAS";
+    var depAirport = departureOne.val();
 
     predictSelectTwo.empty();
 
@@ -229,7 +230,7 @@
     }
     else {
       var suffix = $(this).attr('data-flight-suffix');
-      var depAirport = "LAS";
+      var depAirport = departureOne.val();
       
       var flightOneInfo = null;
 
