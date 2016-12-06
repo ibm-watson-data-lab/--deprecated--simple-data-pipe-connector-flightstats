@@ -14,5 +14,5 @@
 # limitations under the License.
 # -------------------------------------------------------------------------------
 
-from training import *
+from .training import *
 

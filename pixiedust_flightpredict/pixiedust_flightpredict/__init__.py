@@ -23,6 +23,7 @@ from pixiedust.utils.shellAccess import ShellAccess
 from pyspark.rdd import RDD
 from pyspark.sql import DataFrame
 from pyspark.mllib.regression import LabeledPoint
+from six import iteritems, with_metaclass
 
 myLogger = pixiedust.getLogger(__name__)
 initialAirport = "BOS"
@@ -42,7 +43,7 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
 
     menus = []
     dataSetsValues = Configuration.getDataSets()
-    dataSetsValues = dataSetsValues if len(dataSetsValues)==0 else zip(*dataSetsValues)[1]
+    dataSetsValues = dataSetsValues if len(dataSetsValues)==0 else list(zip(*dataSetsValues))[1]
     if entity in dataSetsValues:
       menus = menus + [
         {"categoryId": "FlightPredict", "title": "Visualize Features", "icon-path":"vizFeatures.png", "id":"fp_viz_features"},
@@ -66,22 +67,22 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
     handlerId=options.get("handlerId")
     myLogger.debug("Creating a new Display Handler with id {0}".format(handlerId))
     if handlerId == "fp_viz_features":
-      import vizFeatures
+      from . import vizFeatures
       return vizFeatures.VizualizeFeatures(options,entity)
     elif handlerId == "fp_configure_training":
-      import configureTraining
+      from . import configureTraining
       return configureTraining.ConfigureTraining(options,entity)
     elif handlerId == "fp_create_models":
-      import createModels
+      from . import createModels
       return createModels.CreateModels(options, entity)
     elif handlerId == "fp_histogram":
-      import histogramDisplay
+      from . import histogramDisplay
       return histogramDisplay.HistogramDisplay(options, entity)
     elif handlerId == "fp_run_metrics":
-      import runMetrics
+      from . import runMetrics
       return runMetrics.RunMetricsDisplay(options, entity)
     elif handlerId == "fp_map_results":
-      import mapResults
+      from . import mapResults
       return mapResults.MapResultsDisplay(options, entity)
     else:
       options["initialAirport"] = initialAirport
@@ -98,18 +99,19 @@ def displayMapResults():
 def configure():
   display("fp_configure_training")
 
-class Configuration(object):
-  __metaclass__= type("",(type,),{
-        "configDict":{},
-        "__getitem__":lambda cls, key: cls.configDict.get(key),
-        "__setitem__":lambda cls, key,val: cls.configDict.update({key:val}),
-        "__getattr__":lambda cls, key: cls.configDict.get(key),
-        "__setattr__":lambda cls, key, val: cls.configDict.update({key:val})
-    })
+class Configuration(with_metaclass( 
+        type("",(type,),{
+            "configDict":{},
+            "__getitem__":lambda cls, key: cls.configDict.get(key),
+            "__setitem__":lambda cls, key,val: cls.configDict.update({key:val}),
+            "__getattr__":lambda cls, key: cls.configDict.get(key),
+            "__setattr__":lambda cls, key, val: cls.configDict.update({key:val})
+        }), object
+    )):
     
   @staticmethod
   def update(**kwargs):
-    for key,val in kwargs.iteritems():
+    for key,val in iteritems(kwargs):
       Configuration[key]=val
 
   @staticmethod
