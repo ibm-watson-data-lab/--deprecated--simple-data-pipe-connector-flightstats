@@ -26,8 +26,17 @@ def getWeather(airportLat, airportLong, dtString):
     myLogger.debug("Using weatherUrl {0}".format(weatherUrl))
     #weatherUrl="https://4b88408f-11e5-4ddc-91a6-fbd442e84879:p6hxeJsfIb@twcservice.mybluemix.net"
     dt=parser.parse(dtString)
-    url=weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
-    forecasts=requests.get(url, params=[('geocode',str(airportLat)+','+str(airportLong)),('units','m'),('language','en-US')]).json()['forecasts']
+
+    # weather insights
+    #url=weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
+    #forecasts=requests.get(url, params=[('geocode',str(airportLat)+','+str(airportLong)),('units','m'),('language','en-US')]).json()['forecasts']
+
+    # weather company data
+    url=weatherUrl + '/api/weather/v1/geocode/' + str(airportLat) + '/' + str(airportLong) + '/observations.json'
+    forecastsresp=requests.get(url, params=[('units','m'),('language','en-US')])
+    myLogger.debug(forecastsresp.content)
+    forecasts = forecastsresp.json()['forecasts']
+
     #find the forecasts that is closest to dt.tm_hour
     weatherForecast=None
     for f in forecasts:
