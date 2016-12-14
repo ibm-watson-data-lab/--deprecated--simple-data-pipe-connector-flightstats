@@ -32,7 +32,7 @@ def getWeather(airportLat, airportLong, dtString):
     #forecasts=requests.get(url, params=[('geocode',str(airportLat)+','+str(airportLong)),('units','m'),('language','en-US')]).json()['forecasts']
 
     # weather company data
-    url=weatherUrl + '/api/weather/v1/geocode/' + str(airportLat) + '/' + str(airportLong) + '/observations.json'
+    url=weatherUrl + '/api/weather/v1/geocode/{lat}/{long}/forecast/hourly/48hour.json'.format(lat=str(airportLat),long=str(airportLong))
     forecastsresp=requests.get(url, params=[('units','m'),('language','en-US')])
     myLogger.debug(forecastsresp.content)
     forecasts = forecastsresp.json()['forecasts']
