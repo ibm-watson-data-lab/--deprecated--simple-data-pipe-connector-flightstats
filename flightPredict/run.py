@@ -34,7 +34,7 @@ def getWeather(airportCode, dtString):
     import training as f
     dt=parser.parse(dtString)
     schema="" if (f.cloudantHost.startswith("http")) else "https://"
-    url=schema + f.cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
+    url=schema + f.cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&keys=[%22'+airportCode+'%22]'
     response = requests.get(url,auth=(f.cloudantUserName, f.cloudantPassword))
     doc = response.json()['rows'][0]['doc']
 
