@@ -1,6 +1,6 @@
 {
   "name": "simple-data-pipe-connector-flightstats",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connector for generating Training, Test and Blind data for Spark MLLib Flight predictor application",
   "main": "./lib",
   "scripts": {},
