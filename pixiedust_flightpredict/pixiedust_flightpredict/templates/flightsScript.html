@@ -145,8 +145,8 @@
           arrivalAirportFsCode:  info.flightInfo.arrivalAirportFsCode,
           carrierFsCode: info.flightInfo.carrierFsCode,
           flightNumber: info.flightInfo.flightNumber,
-          depdatetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
-          arrdatetime: this.formatDateTime(new Date(info.flightInfo.arrivalTime)),
+          depdatetime: this.formatDateTime(new Date(info.flightInfo.departureTime + 'Z')),
+          arrdatetime: this.formatDateTime(new Date(info.flightInfo.arrivalTime + 'Z')),
           airlineName: info.flightInfo.airlineInfo.name,
           airlinePhone: info.flightInfo.airlineInfo.phoneNumber,
           airplane: info.flightInfo.equipmentInfo.name
@@ -196,7 +196,7 @@
 
         var predictionModel = {
           flight: departureAirport + ' > ' + arrivalAirport,
-          datetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
+          datetime: this.formatDateTime(new Date(info.flightInfo.departureTime + 'Z')),
           overall: predictionInfo.overall,
           models: ''
         };
@@ -234,7 +234,7 @@
 
         var weatherForecast = {
           flight: departureAirport + ' > ' + arrivalAirport,
-          datetime: this.formatDateTime(new Date(info.flightInfo.departureTime)),
+          datetime: this.formatDateTime(new Date(info.flightInfo.departureTime + 'Z')),
           departureweather: '<div class="fp-weather-temp">' + departureTemp + '<span>&deg; F</span></div>' +
             '<div class="fp-weather-info">' +
             '<div>' + departureCity + (departureState ? (', ' + departureState) : '') + '</div>' +
@@ -271,10 +271,8 @@
         for (var f in flights) {
           var flight = flights[f];
 
-          var datetime = new Date(flight.time);
-          //var datetimeUTC = new Date(flight.timeUTC.replace(' ', 'T')); //firefox doesnt like the space
-          //var time = this.formatDateTime(datetimeUTC, 'time');
-          var datetimeUTC = new Date(flight.timeUTC);
+          var datetime = new Date(flight.time + 'Z');
+          var datetimeUTC = new Date(flight.timeUTC.replace(' ', 'T')); // firefox doesnt like the space
           var time = this.formatDateTime(datetime, 'time');
 
           selectNode.append('<option value="' + flight.flightnumber + ':' + flight.destAirportCode + ':' + datetime.getTime() + ":" + datetimeUTC.getTime() + '">' + time + ' - ' + flight.destAirportCode + ' (' + flight.flightnumber + ')' + '</option>');
