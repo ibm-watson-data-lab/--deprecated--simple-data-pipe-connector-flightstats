@@ -33,7 +33,7 @@ class PixieDustFlightPredictPluginMeta(DisplayHandlerMeta):
   def createCategories(self):
     return [{"id":"FlightPredict","title":"Flight Predictor", "icon-path":"flightPredict.jpeg"}]
   @addId
-  def getMenuInfo(self,entity):
+  def getMenuInfo(self,entity, dataHandler):
     if entity==self.__class__:
       return [{"id": "flightpredict"}]
     elif entity == "fp_configure_training":

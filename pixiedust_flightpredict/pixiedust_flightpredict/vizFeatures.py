@@ -14,17 +14,21 @@
 # limitations under the License.
 # -------------------------------------------------------------------------------
 
-import training
-from pixiedust.display.chart.mpld3ChartDisplay import Mpld3ChartDisplay
+import pixiedust_flightpredict.training as training
+from pixiedust.display.chart.renderers.baseChartDisplay import BaseChartDisplay
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from pyspark.sql import Row
+from functools import reduce
+import pixiedust
+
+myLogger = pixiedust.getLogger(__name__)
 
 def makeList(l):
     return l if isinstance(l, list) else [l]
 
-class VizualizeFeatures(Mpld3ChartDisplay):
+class VizualizeFeatures(BaseChartDisplay):
 
     def doRender(self, handlerId):
         f1="departureWeather.temp"
@@ -32,7 +36,7 @@ class VizualizeFeatures(Mpld3ChartDisplay):
         f1=f1.split(".")
         f2=f2.split(".")
         handler=training.getTrainingHandler()
-        darr=self.entity.map(lambda s: ( handler.computeClassification(s),(\
+        darr=self.entity.rdd.map(lambda s: ( handler.computeClassification(s),(\
             reduce(lambda x,y: getattr(x,y) if isinstance(x, Row) else getattr(getattr(s,x),y), f1) if len(f1)>1 else getattr(s,f1[0]),\
             reduce(lambda x,y: getattr(x,y) if isinstance(x, Row) else getattr(getattr(s,x),y), f2) if len(f2)>1 else getattr(s,f2[0])\
             )))\
@@ -56,10 +60,5 @@ class VizualizeFeatures(Mpld3ChartDisplay):
                 ncol=numClasses,
                 fontsize=12)
 
-        #Render the figure
-        (dialogTemplate, dialogOptions) = self.getDialogInfo(handlerId)
-        dialogBody=self.renderTemplate(dialogTemplate, **dialogOptions)
-        self.renderFigure(fig, dialogBody)
-
-    def doRenderMpld3(self, handlerId, fig, ax, keyFields, keyFieldValues, keyFieldLabels, valueFields, valueFieldValues):
+    def doRenderChart(self):
         pass

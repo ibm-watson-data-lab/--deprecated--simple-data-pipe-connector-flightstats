@@ -13,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------------
-from pixiedust.display.chart.mpld3ChartDisplay import Mpld3ChartDisplay
+from pixiedust.display.display import Display
+from pixiedust.display.chart.renderers.baseChartDisplay import BaseChartDisplay
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from pixiedust.utils.shellAccess import ShellAccess
 
-class HistogramDisplay(Mpld3ChartDisplay):
+class HistogramDisplay(BaseChartDisplay):
     def doRender(self, handlerId):
         rdd = ShellAccess.sqlContext.sql("select deltaDeparture from training").map(lambda s: s.deltaDeparture)\
                 .filter(lambda s: s < 50 and s > 12)
@@ -38,10 +39,5 @@ class HistogramDisplay(Mpld3ChartDisplay):
         ax.set_xticks(bins[:-1],[int(i) for i in bins[:-1]])
         ax.legend()
 
-        #Render the figure
-        (dialogTemplate, dialogOptions) = self.getDialogInfo(handlerId)
-        dialogBody=self.renderTemplate(dialogTemplate, **dialogOptions)
-        self.renderFigure(fig, dialogBody)
-
-    def doRenderMpld3(self, handlerId, fig, ax, keyFields, keyFieldValues, keyFieldLabels, valueFields, valueFieldValues):
+    def doRenderChart(self):
         pass
