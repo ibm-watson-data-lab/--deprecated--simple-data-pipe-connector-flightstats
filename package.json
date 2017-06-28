@@ -6,7 +6,7 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats.git"
+    "url": "https://github.com/ibm-watson-data-lab/simple-data-pipe-connector-flightstats.git"
   },
   "simple_data_pipe": {
                         "name": "flightstats",
@@ -37,7 +37,7 @@
   "author": "david_taieb@us.ibm.com",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats/issues"
+    "url": "https://github.com/ibm-watson-data-lab/simple-data-pipe-connector-flightstats/issues"
   },
   "readmeFilename": "README.md"
 }

@@ -3,7 +3,7 @@ from setuptools import setup,find_packages
 setup(name='pixiedust_flightpredict',
       version='0.12',
       description='Flight delay predictor application with PixieDust',
-      url='https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats/tree/master/pixiedust_flightpredict',
+      url='https://github.com/ibm-watson-data-lab/simple-data-pipe-connector-flightstats/tree/master/pixiedust_flightpredict',
       install_requires=['pixiedust'],
       author='David Taieb',
       author_email='david_taieb@us.ibm.com',

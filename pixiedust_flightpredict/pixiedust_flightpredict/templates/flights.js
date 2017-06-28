@@ -308,5 +308,5 @@
 
   flightpredict.resetForm();
 
-  pixiedustSpinner.before('<a class="note" target="_blank" href="https://github.com/ibm-cds-labs/simple-data-pipe-connector-flightstats">Fork me on GitHub</a>');
+  pixiedustSpinner.before('<a class="note" target="_blank" href="https://github.com/ibm-watson-data-lab/simple-data-pipe-connector-flightstats">Fork me on GitHub</a>');
 })((window.Pixiedust = window.Pixiedust || {}), jQuery)

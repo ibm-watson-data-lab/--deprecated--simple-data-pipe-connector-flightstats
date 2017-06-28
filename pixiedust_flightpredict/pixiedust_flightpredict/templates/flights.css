@@ -1,5 +1,5 @@
 
-@import url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/css/weather-icons.min.css);
+@import url(https://ibm-watson-data-lab.github.io/simple-data-pipe-connector-flightstats/css/weather-icons.min.css);
 
 .chart-wrapper {
   margin: 10px;
@@ -129,7 +129,7 @@
 }
 .pixiedust .modal-dialog-flightpredictform .modal-content,
 .pixiedust .modal-dialog-flightpredictdata .modal-content {
-  background-image: url(https://ibm-cds-labs.github.io/simple-data-pipe-connector-flightstats/north_america_night.jpg);
+  background-image: url(https://ibm-watson-data-lab.github.io/simple-data-pipe-connector-flightstats/north_america_night.jpg);
   /*background-image: url(http://localhost:8888/notebooks/north-america-00.jpg);*/
   background-repeat: no-repeat;
   background-size: cover;

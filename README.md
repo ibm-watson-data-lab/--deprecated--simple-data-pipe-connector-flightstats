@@ -2,7 +2,7 @@
 
 [Simple Data Pipe](https://developer.ibm.com/clouddataservices/simple-data-pipe/) connector for [flighstats.com](http://www.flightstats.com/). 
 
-This connector generates training, test and blind data for the flight predictor spark MLLib application. It uses the [flightstats API](https://developer.flightstats.com/api-docs/) to fetch flight departure information for selected US airports, combines it with local weather data and stores the data sets using the [Simple Data Pipe SDK](https://github.com/ibm-cds-labs/simple-data-pipe-sdk) in Cloudant. 
+This connector generates training, test and blind data for the flight predictor spark MLLib application. It uses the [flightstats API](https://developer.flightstats.com/api-docs/) to fetch flight departure information for selected US airports, combines it with local weather data and stores the data sets using the [Simple Data Pipe SDK](https://github.com/ibm-watson-data-lab/simple-data-pipe-sdk) in Cloudant. 
 
 Need to load data from other sources? Check out the [connector repository](https://developer.ibm.com/clouddataservices/simple-data-pipe-connectors/).
 
@@ -14,13 +14,13 @@ To load flightstats.com data you have to have a <a href="https://developer.fligh
 
 ##### Deploy the Simple Data Pipe
 
-  [Deploy the Simple Data Pipe in Bluemix](https://github.com/ibm-cds-labs/simple-data-pipe) using the Deploy to Bluemix button or manually.
+  [Deploy the Simple Data Pipe in Bluemix](https://github.com/ibm-watson-data-lab/simple-data-pipe) using the Deploy to Bluemix button or manually.
 
 ##### Services
 
 This connector requires the [Weather Company Data service](https://console.ng.bluemix.net/catalog/services/weather-company-data/) in IBM Bluemix to be bound to the Simple Data Pipe application. 
 
-Provision and bind an _Weather Company Data service_ instance using the Bluemix web console ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Bluemix-web-console)) or run the following Cloud Foundry commands ([Show me how](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-provision-and-bind-a-service-instance-in-Bluemix-using-the-Cloud-Foundry-command-line-client)):
+Provision and bind an _Weather Company Data service_ instance using the Bluemix web console ([Show me how](https://github.com/ibm-watson-data-lab/simple-data-pipe/wiki/Provision-and-bind-a-service-instance-in-Bluemix#bluemix)) or run the following Cloud Foundry commands ([Show me how](https://github.com/ibm-watson-data-lab/simple-data-pipe/wiki/Provision-and-bind-a-service-instance-in-Bluemix#cf)):
 
 ````
   $ cf create-service weatherinsights Free weather
@@ -28,13 +28,13 @@ Provision and bind an _Weather Company Data service_ instance using the Bluemix 
   $ cf restage simple-data-pipe
 ````
 
-> Pro Tip: If you want to re-use an existing instance that is not named `weather`, create a [USER-DEFINED Environment Variable](https://www.ng.bluemix.net/docs/manageapps/depapps.html#ud_env) in the Simple Data Pipe application named __WEATHER__ and set its value to the name of the existing Weather Company Data service. [(Show me how - Bluemix)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-do-I-create-a-user-defined-environment-variable-in-Bluemix-using-the-Bluemix-web-console)
-[(Show me how - Cloud Foundry client)](https://github.com/ibm-cds-labs/simple-data-pipe/wiki/How-Do-I--create-a-user-defined-environment-variable-in-Bluemix-using-the-Cloud-Foundry-command-line-client)
+> Pro Tip: If you want to re-use an existing instance that is not named `weather`, create a [USER-DEFINED Environment Variable](https://www.ng.bluemix.net/docs/manageapps/depapps.html#ud_env) in the Simple Data Pipe application named __WEATHER__ and set its value to the name of the existing Weather Company Data service. [(Show me how - Bluemix)](https://github.com/ibm-watson-data-lab/simple-data-pipe/wiki/Create-a-user-defined-environment-variable-in-Bluemix#bluemix)
+[(Show me how - Cloud Foundry client)](https://github.com/ibm-watson-data-lab/simple-data-pipe/wiki/Create-a-user-defined-environment-variable-in-Bluemix#cf)
 
 
 ##### Install the flightstats.com connector
 
-Install the connector using [these instructions](https://github.com/ibm-cds-labs/pipes/wiki/Installing-a-Simple-Data-Pipe-Connector) into the Simple Data Pipe. 
+Install the connector using [these instructions](https://github.com/ibm-watson-data-lab/pipes/wiki/Installing-a-Simple-Data-Pipe-Connector) into the Simple Data Pipe. 
 
 ##### Enable OAuth support and collect connectivity information
 
