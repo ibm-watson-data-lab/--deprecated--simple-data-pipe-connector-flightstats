@@ -3,21 +3,24 @@
   "version": "0.1.1",
   "description": "Connector for generating Training, Test and Blind data for Spark MLLib Flight predictor application",
   "main": "./lib",
-  "scripts": {},
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ibm-watson-data-lab/simple-data-pipe-connector-flightstats.git"
   },
   "simple_data_pipe": {
-                        "name": "flightstats",
-                        "service_dependencies": [
-                                                  {
-                                                    "service_name"  : "weatherinsights",
-                                                    "service_plan"  : "Free",
-                                                    "instance_name" : "weather",
-                                                    "vcap_env_service_alias" : "WEATHER"                               
-                                                  }
-                        ]
+    "name": "flightstats",
+    "service_dependencies": [
+      {
+        "service_name": "weatherinsights",
+        "service_plan": "Free",
+        "instance_name": "weather",
+        "vcap_env_service_alias": "WEATHER"
+      }
+    ]
   },
   "keywords": [
     "Simple Data Pipe",
@@ -32,12 +35,14 @@
     "simple-data-pipe-sdk": "^0.2.4",
     "request": "^2.67.0",
     "when": "~3.7.3",
-    "moment": "^2.10.3"
+    "moment": "^2.10.3",
+    "snyk": "^1.30.1"
   },
   "author": "david_taieb@us.ibm.com",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/ibm-watson-data-lab/simple-data-pipe-connector-flightstats/issues"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "snyk": true
 }
