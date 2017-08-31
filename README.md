@@ -1,6 +1,8 @@
 # Simple Data Pipe Connector for flightstats.com
 
-[Simple Data Pipe](https://developer.ibm.com/clouddataservices/simple-data-pipe/) connector for [flighstats.com](http://www.flightstats.com/). 
+:no_entry_sign: This project is no longer maintained.
+
+[Simple Data Pipe](https://developer.ibm.com/clouddataservices/simple-data-pipe/) connector for [flightstats.com](http://www.flightstats.com/). 
 
 This connector generates training, test and blind data for the flight predictor spark MLLib application. It uses the [flightstats API](https://developer.flightstats.com/api-docs/) to fetch flight departure information for selected US airports, combines it with local weather data and stores the data sets using the [Simple Data Pipe SDK](https://github.com/ibm-watson-data-lab/simple-data-pipe-sdk) in Cloudant. 
 
